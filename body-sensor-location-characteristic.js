@@ -28,8 +28,8 @@ util.inherits(BodySensorLocationCharacteristic, Characteristic);
 
 
 BodySensorLocationCharacteristic.prototype.onReadRequest = function(offset, callback) {
-    sensorLocation = Math.floor(Math.random() * 6) + 1;
-    callback(this.RESULT_SUCCESS, new Buffer(sensorLocation));
+    sensorLocation = parseInt(Math.floor(Math.random() * 6) + 1);
+    callback(this.RESULT_SUCCESS, new Buffer([sensorLocation]));
 };
 
 module.exports = BodySensorLocationCharacteristic;

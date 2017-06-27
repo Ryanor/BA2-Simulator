@@ -10,7 +10,7 @@ var HeartRateMeasurementCharacteristic = function() {
   HeartRateMeasurementCharacteristic.super_.call(this, {
     uuid: '2A37',
     value : null,
-    properties: ['read','notify'],
+    properties: ['notify','read'],
     descriptors: [
       new Descriptor({
         uuid: '2901',
@@ -28,13 +28,13 @@ util.inherits(HeartRateMeasurementCharacteristic, Characteristic);
 
 HeartRateMeasurementCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
     this.intervalId = setInterval(function() {
-        value = Math.floor(Math.random() * 6) + 1;
-        if( (value % 2) == 0) {
-            heartRate = hearRate + value;
+        var val = Math.floor(Math.random() * 6) + 1;
+        if( (val % 2) == 0) {
+            heartRate = parseInt(heartRate + val);
         } else {
-            heartRate = heartRate - value;
+            heartRate = parseInt(heartRate - val);
         }
-        updateValueCallback(new Buffer(heartRate));
+        updateValueCallback(new Buffer([heartRate]));
     }, 1000);
 };
 
@@ -44,8 +44,8 @@ HeartRateMeasurementCharacteristic.prototype.onUnsubscribe = function() {
 };
 
 
-HeartRateMeasurementCharacteristic.prototype.onReadRequest = function(offset, callback) {
-    callback(this.RESULT_SUCCESS, new Buffer(value));
-};
+//HeartRateMeasurementCharacteristic.prototype.onReadRequest = function(offset, callback) {
+ //   callback(this.RESULT_SUCCESS, new Buffer(value));
+//};
 
 module.exports = HeartRateMeasurementCharacteristic;
