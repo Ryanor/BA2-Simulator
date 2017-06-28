@@ -9,7 +9,6 @@ var heartRate = 60;
 var HeartRateMeasurementCharacteristic = function() {
   HeartRateMeasurementCharacteristic.super_.call(this, {
     uuid: '2A37',
-    value : null,
     properties: ['notify','read'],
     descriptors: [
       new Descriptor({
@@ -30,8 +29,11 @@ HeartRateMeasurementCharacteristic.prototype.onSubscribe = function(maxValueSize
         } else {
             heartRate = parseInt(heartRate - val);
         }
-        updateValueCallback(new Buffer([heartRate]));
-    }, 1000);
+        console.log(heartRate);
+        let data = new Buffer(2);
+        data.writeInt16BE(heartRate, 0);
+        updateValueCallback(data);
+    }, 5000);
 };
 
 

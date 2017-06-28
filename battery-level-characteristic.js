@@ -16,7 +16,7 @@ var BatteryLevelCharacteristic = function() {
         uuid: '2901',
         value: 'Battery level between 0 and 100 percent'
       }),
-      new Descriptor({
+        new Descriptor({
         uuid: '2904',
         value: new Buffer([0x04, 0x01, 0x27, 0xAD, 0x01, 0x00, 0x00 ]) // maybe 12 0xC unsigned 8 bit
       })
@@ -32,9 +32,10 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
       var data = stdout.toString();
       // data = Battery 0: Unknown, 98%
       var percent = data.split(',')[1].split('%')[0];
-      console.log(percent);
-      percent = parseInt(percent, 10);
-      callback(this.RESULT_SUCCESS, new Buffer([percent]));
+      console.log(percent.trim());
+      let data = new Buffer(2);
+      data.writeInt16BE(percent.trim(), 0);
+      callback(this.RESULT_SUCCESS, data);
     });
   } else {
     // return hardcoded value

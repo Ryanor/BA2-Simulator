@@ -4,7 +4,6 @@ var bleno = require('bleno');
 var Descriptor = bleno.Descriptor;
 var Characteristic = bleno.Characteristic;
 
-var sensorLocation = 0;
 
 var BodySensorLocationCharacteristic = function() {
   BodySensorLocationCharacteristic.super_.call(this, {
@@ -24,8 +23,8 @@ util.inherits(BodySensorLocationCharacteristic, Characteristic);
 
 
 BodySensorLocationCharacteristic.prototype.onReadRequest = function(offset, callback) {
-    sensorLocation = parseInt(Math.floor(Math.random() * 6) + 1);
-    callback(this.RESULT_SUCCESS, new Buffer([sensorLocation]));
+    var location = parseInt(Math.floor(Math.random() * 7));
+    callback(this.RESULT_SUCCESS, new Buffer([location]));
 };
 
 module.exports = BodySensorLocationCharacteristic;
