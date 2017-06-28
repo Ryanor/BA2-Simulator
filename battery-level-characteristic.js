@@ -31,7 +31,7 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
     exec('acpi battery', function (error, stdout, stderr) {
       var data = stdout.toString();
       // data = Battery 0: Unknown, 98%
-      var percent = data.split(',')[1]; //.split(',')[0];
+      var percent = data.split(',')[1].split('%')[0];
       console.log(percent);
       percent = parseInt(percent, 10);
       callback(this.RESULT_SUCCESS, new Buffer([percent]));
