@@ -15,10 +15,6 @@ var HeartRateMeasurementCharacteristic = function() {
       new Descriptor({
         uuid: '2901',
         value: 'Heart rate measurement between 0 and 240 bpm'
-      }),
-      new Descriptor({
-        uuid: '2904',
-        value: new Buffer([0x04, 0x01, 0x27, 0xAD, 0x01, 0x00, 0x00 ]) // maybe 12 0xC unsigned 8 bit
       })
     ]
   });
@@ -28,7 +24,7 @@ util.inherits(HeartRateMeasurementCharacteristic, Characteristic);
 
 HeartRateMeasurementCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
     this.intervalId = setInterval(function() {
-        var val = Math.floor(Math.random() * 6) + 1;
+        var val = parseInt(Math.floor(Math.random() * 6) + 1);
         if( (val % 2) == 0) {
             heartRate = parseInt(heartRate + val);
         } else {
@@ -43,9 +39,5 @@ HeartRateMeasurementCharacteristic.prototype.onUnsubscribe = function() {
     clearInterval(this.intervalId);
 };
 
-
-//HeartRateMeasurementCharacteristic.prototype.onReadRequest = function(offset, callback) {
- //   callback(this.RESULT_SUCCESS, new Buffer(value));
-//};
 
 module.exports = HeartRateMeasurementCharacteristic;
