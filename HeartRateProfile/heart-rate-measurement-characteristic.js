@@ -53,6 +53,7 @@ util.inherits(HeartRateMeasurementCharacteristic, Characteristic);
 HeartRateMeasurementCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
   // creates interval function  
   this.intervalId = setInterval(function() {
+    console.log("Get randomized value for heart beat");
     // create random value
     var val = parseInt(Math.floor(Math.random() * 6) + 1);
     // check if even
@@ -63,6 +64,7 @@ HeartRateMeasurementCharacteristic.prototype.onSubscribe = function(maxValueSize
       // substract the value
       heartRate = parseInt(heartRate - val);   
     }
+    console.log("Heart beats at : " + heartRate + " bpm");
     // crete buffer and write value into it
     let data = new Buffer(2);
     data.writeUInt16BE(heartRate, 0);

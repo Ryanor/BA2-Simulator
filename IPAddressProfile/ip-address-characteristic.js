@@ -58,19 +58,19 @@ IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
   if (os.platform() === 'linux') {
     // execute child process and get ip address from stdout
     exec("hostname -i", function (error, stdout, stderr) {
+    console.log("Get ip address from slave");
     // read data from console
-    var data = stdout.toString("utf-8").trim();
+    var data = new Buffer(stdout.toString("utf-8").trim());
     // e.g. 192.168.14.23
-    console.log(data);
-    console.log(data.length);
     // if more than two ip addresses are available take the first one
-    if(data.length > 15) {
-        data = data.split(' ')[0];
-    } 
-    console.log("Cleared to: " + data);
-    console.log(data.length);
-    var buffer = new Buffer(data.length);
-    callback(this.RESULT_SUCCESS, new Buffer([data]));
+    console.log(data);
+    //if(data.length > 15) {
+      //  data = data.split(' ')[0];
+    //} 
+    //console.log("IP address: " + data);
+    // return value to master
+    console.log(data.toString());
+    callback(this.RESULT_SUCCESS, data);
     });
   } else {
     callback(this.RESULT_SUCCESS, new Buffer("No ip found!"));

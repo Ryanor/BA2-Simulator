@@ -60,18 +60,20 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
     exec("acpi battery | head -n 1", function (error, stdout, stderr) {
       // read data from console
       // expected output ===>>  98%
+      console.log("Get battery level");
       var data = stdout.toString().trim();
       // parse data to Integer
       var percent = data.split(',')[1];
-      console.log(percent);
-      percent = parseInt(percent, 10);
-      console.log(percent);
+      console.log("Actual battery level: " + percent);
+      var level = parseInt(percent);
+      console.log(level);
       // send data to master
-      callback(this.RESULT_SUCCESS, new Buffer([percent]));
+      callback(this.RESULT_SUCCESS, new Buffer([level]));
     });
   } else {
     // create random value
     var rand = parseInt(Math.floor(Math.random() * 100) + 1);
+    console.log("Randomized battery level: " + rand);
     callback(this.RESULT_SUCCESS, new Buffer([rand]));
   }
 };

@@ -51,9 +51,11 @@ util.inherits(TemperatureMeasurementCharacteristic, Characteristic);
 TemperatureMeasurementCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
   // creates interval function  
   this.intervalId = setInterval(function() {
+    console.log("Get randomized temperature");
     // create random value
     var val = (Math.random() * (40 - 35) + 35).toFixed(2);
     // send data to master
+    console.log("Randomized body temperature: " + val + " °C");
     updateValueCallback(new Buffer(val));  
     // wait 2s
   }, 2000);

@@ -52,8 +52,10 @@ util.inherits(BodySensorLocationCharacteristic, Characteristic);
 * Creates a random number between 0 and 7 which are used for the position on the body
 */
 BodySensorLocationCharacteristic.prototype.onReadRequest = function(offset, callback) {
+  console.log("Get random value for body location");
   // create random value
   var location = parseInt(Math.floor(Math.random() * 7));
+  console.log("Location value: " + location);
   // return value to master
   callback(this.RESULT_SUCCESS, new Buffer([location]));
 };
