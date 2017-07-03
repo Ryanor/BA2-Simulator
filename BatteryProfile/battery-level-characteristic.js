@@ -56,23 +56,18 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
   // check operating system to be linux
   if (os.platform() === 'linux') {
     // execute child process and get battery level from stdout
-    exec("acpi battery | head -n 1 | cut -d ',' -f2", function (error, stdout, stderr) {
+    //exec("acpi battery | head -n 1 | cut -d ',' -f2", function (error, stdout, stderr) {
+    exec("acpi battery | head -n 1", function (error, stdout, stderr) {
       // read data from console
       // expected output ===>>  98%
-      var data = stdout.toString();
-      // split data to get only the numbers
-      var percent = data.split('%')[0];
+      var data = stdout.toString().trim();
+      // parse data to Integer
+      var percent = data.split(',')[1];
       console.log(percent);
-      // if percent not in the data range
-      if (percent < 0 || percent > 100) {
-          // create random value
-          this.value = parseInt(Math.floor(Math.random() * 100) + 1);
-          callback(this.RESULT_SUCCESS, new Buffer([this.value]));
-      } else {
-        // parse percent to Integer
-        this.value = parseInt(percent);
-        callback(this.RESULT_SUCCESS, new Buffer(this.value));
-      }
+      percent = parseInt(percent, 10);
+      console.log(percent);
+      // send data to master
+      callback(this.RESULT_SUCCESS, new Buffer([percent]));
     });
   } else {
     // create random value

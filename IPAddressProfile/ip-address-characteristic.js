@@ -61,12 +61,16 @@ IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
     // read data from console
     var data = stdout.toString("utf-8").trim();
     // e.g. 192.168.14.23
-    data = data.split('.');
     console.log(data);
-    
-    var address = parseInt([data],0);
-    console.log(address);
-    callback(this.RESULT_SUCCESS, new Buffer([address]));
+    console.log(data.length);
+    // if more than two ip addresses are available take the first one
+    if(data.length > 15) {
+        data = data.split(' ')[0];
+    } 
+    console.log("Cleared to: " + data);
+    console.log(data.length);
+    var buffer = new Buffer(data.length);
+    callback(this.RESULT_SUCCESS, new Buffer([data]));
     });
   } else {
     callback(this.RESULT_SUCCESS, new Buffer("No ip found!"));

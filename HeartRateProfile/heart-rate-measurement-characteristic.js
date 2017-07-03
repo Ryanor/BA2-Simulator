@@ -23,7 +23,7 @@ var Characteristic = bleno.Characteristic;
 var heartRate = 60;
 
 /**
-* Constructor for BodySensorLocationCharacteristic calls constructor from the parent class Characteristic
+* Constructor for HeartRateMeasurementCharacteristic calls constructor from the parent class Characteristic
 * Defines the UUID for the characteristic
 * Includes descriptors used
 */ 

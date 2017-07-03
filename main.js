@@ -19,7 +19,11 @@ var BatteryService = require('./BatteryProfile/battery-service');
 // import class HeartRateService
 var HeartRateService = require('./HeartRateProfile/heart-rate-service');
 
+// import class IPAddressService
 var IPAddressService = require('./IPAddressProfile/ip-address-service');
+
+// 
+var ThermometerService = require('./ThermometerProfile/thermometer-service.js');
 
 // creates BatteryService object
 var battery = new BatteryService();
@@ -27,10 +31,14 @@ var battery = new BatteryService();
 // creates HeartRateService object
 var heartRate = new HeartRateService();
 
+// create IPAddressService object
 var ipaddress = new IPAddressService();
 
+// create ThermometerService object
+var thermometer = new ThermometerService();
+
 // creates array of service objects
-var services = [ battery, heartRate, ipaddress];
+var services = [ battery, heartRate, ipaddress, thermometer];
 
 /*
 * If bleno could connection to the interface and the USB-dongle is pluged in
