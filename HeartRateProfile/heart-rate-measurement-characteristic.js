@@ -30,6 +30,7 @@ var heartRate = 60;
 var HeartRateMeasurementCharacteristic = function() {
   HeartRateMeasurementCharacteristic.super_.call(this, {
     uuid: '2A37',
+    value: null,
     properties: ['notify','read'],
     descriptors: [
       new Descriptor({
@@ -64,7 +65,7 @@ HeartRateMeasurementCharacteristic.prototype.onSubscribe = function(maxValueSize
     }
     // crete buffer and write value into it
     let data = new Buffer(2);
-    data.writeUInt16BE(heartRate, 10);
+    data.writeUInt16BE(heartRate, 0);
     // send data to master
     updateValueCallback(data);  
     // wait 2s

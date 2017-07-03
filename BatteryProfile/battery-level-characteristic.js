@@ -69,10 +69,9 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
           this.value = parseInt(Math.floor(Math.random() * 100) + 1);
           callback(this.RESULT_SUCCESS, new Buffer([this.value]));
       } else {
-        // create new buffer to write value into
-        var bat = new Buffer([parseInt(percent)]);
-        // create callback with success and buffered values  
-        callback(this.RESULT_SUCCESS, bat);
+        // parse percent to Integer
+        this.value = parseInt(percent);
+        callback(this.RESULT_SUCCESS, new Buffer(this.value));
       }
     });
   } else {

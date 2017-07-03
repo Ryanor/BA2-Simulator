@@ -54,22 +54,21 @@ util.inherits(IPAddressCharacteristic, Characteristic);
 */
 IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
   // check operating system to be linux
+ 
   if (os.platform() === 'linux') {
     // execute child process and get ip address from stdout
     exec("hostname -i", function (error, stdout, stderr) {
-      // read data from console
-      this.value = new Buffer([stdout.toString("utf-8")]);
-      // e.g. 192.168.14.23
-      if(this.value != null) {
-        console.log(this.value);
-      } else {
-        console.log("Value is null!");
-      }
-      callback(this.RESULT_SUCCESS, this.value);
-      
+    // read data from console
+    var data = stdout.toString("utf-8").trim();
+    // e.g. 192.168.14.23
+    data = data.split('.');
+    console.log(data);
+    
+    var address = parseInt([data],0);
+    console.log(address);
+    callback(this.RESULT_SUCCESS, new Buffer([address]));
     });
   } else {
-    
     callback(this.RESULT_SUCCESS, new Buffer("No ip found!"));
   }
 };
