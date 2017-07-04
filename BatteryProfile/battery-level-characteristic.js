@@ -57,15 +57,16 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
   if (os.platform() === 'linux') {
     console.log("Get battery level");
     // execute child process and get battery level from stdout
-    var battery_level = executeShellCommand( function (result){});
-    console.log(result);
-    // read data from console
-    // expected output ===>>  98%
-    console.log(battery_level);
-    var battery = parseInt(battery_level);
-    console.log("Actual battery level: " + battery);  
-    // send data to master
-    callback(this.RESULT_SUCCESS, new Buffer([battery]));
+    var bat = executeShellCommand( async function (result){
+      console.log(result);
+      // read data from console
+      // expected output ===>>  98%
+      var battery = parseInt(result);
+      console.log("Inside battery level: " + battery);  
+      return battery;
+      // send data to master
+    });        
+    callback(this.RESULT_SUCCESS, new Buffer([bat]));;
   } else {
     // create random value
     var rand = parseInt(Math.floor(Math.random() * 100) + 1);
@@ -74,8 +75,8 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
   }
 };
 
-function executeShellCommand( callback) {
-  exec("acpi battery | head -n 1", function (error, stdout, stderr) {
+var executeShellCommand = async function(callback) {
+  exec("acpi battery | head -n 1 | cut -d ',' -f2", function (error, stdout, stderr) {
     // error handling
     if (error instanceof Error) {
       console.log(error);
