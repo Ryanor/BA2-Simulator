@@ -1,0 +1,11 @@
+[Unit]
+Description=BLE-Simulator
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/node /home/pi/main.js 2>&1 /var/log/node/blesimulator.log
+RemainAfterExit=yes
+
+
+[Install]
+WantedBy=multi-user.target
