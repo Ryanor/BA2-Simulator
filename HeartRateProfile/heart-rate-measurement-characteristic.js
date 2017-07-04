@@ -31,7 +31,7 @@ var HeartRateMeasurementCharacteristic = function() {
   HeartRateMeasurementCharacteristic.super_.call(this, {
     uuid: '2A37',
     value: null,
-    properties: ['notify','read'],
+    properties: ['notify'],
     descriptors: [
       new Descriptor({
         uuid: '2901',

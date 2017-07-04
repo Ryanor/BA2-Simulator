@@ -54,24 +54,24 @@ util.inherits(IPAddressCharacteristic, Characteristic);
 */
 IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
   // check operating system to be linux
- 
   if (os.platform() === 'linux') {
     // execute child process and get ip address from stdout
     exec("hostname -i", function (error, stdout, stderr) {
     console.log("Get ip address from slave");
     // read data from console
-    var data = new Buffer(stdout.toString("utf-8").trim());
+    var data = stdout.toString("utf-8").trim();
     // e.g. 192.168.14.23
     // if more than two ip addresses are available take the first one
     console.log(data);
-    //if(data.length > 15) {
-      //  data = data.split(' ')[0];
-    //} 
-    //console.log("IP address: " + data);
-    // return value to master
-    console.log(data.toString());
-    callback(this.RESULT_SUCCESS, data);
+    if(data.length > 15) {
+      this.value = data.split(' ')[0];
+    } else {
+      this.value = data;
+    }
+    console.log("IP address: " + this.value);
+    // send value to master
     });
+    callback(this.RESULT_SUCCESS, new Buffer([this.value]));
   } else {
     callback(this.RESULT_SUCCESS, new Buffer("No ip found!"));
   }

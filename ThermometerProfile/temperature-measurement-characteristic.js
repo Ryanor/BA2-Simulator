@@ -29,7 +29,7 @@ var TemperatureMeasurementCharacteristic = function() {
   TemperatureMeasurementCharacteristic.super_.call(this, {
     uuid: '2A1C',
     value: null,
-    properties: ['notify','read'],
+    properties: ['notify'],
     descriptors: [
       new Descriptor({
         uuid: '2901',

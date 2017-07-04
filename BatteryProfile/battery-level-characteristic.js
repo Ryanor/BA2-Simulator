@@ -53,11 +53,17 @@ util.inherits(BatteryLevelCharacteristic, Characteristic);
 * We check the os if the application runs on linux, and if so, return the actual battery level
 */
 BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) {
+  var battery = 0;
   // check operating system to be linux
   if (os.platform() === 'linux') {
     // execute child process and get battery level from stdout
     //exec("acpi battery | head -n 1 | cut -d ',' -f2", function (error, stdout, stderr) {
     exec("acpi battery | head -n 1", function (error, stdout, stderr) {
+    // error handling
+    if (error instanceof Error) {
+        console.error(error);
+        throw error;
+    } else {
       // read data from console
       // expected output ===>>  98%
       console.log("Get battery level");
@@ -65,11 +71,11 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
       // parse data to Integer
       var percent = data.split(',')[1];
       console.log("Actual battery level: " + percent);
-      var level = parseInt(percent);
-      console.log(level);
-      // send data to master
-      callback(this.RESULT_SUCCESS, new Buffer([level]));
+      battery = parseInt(percent);
     });
+    console.log(battery);      
+    // send data to master
+    callback(this.RESULT_SUCCESS, new Buffer([battery]));
   } else {
     // create random value
     var rand = parseInt(Math.floor(Math.random() * 100) + 1);
