@@ -10,14 +10,6 @@
 // import utility library to build classes
 var util = require('util');
 
-var async = require('async');
-
-// import os library to test operating system
-var os = require('os');
-
-// uses child process library to open a command shell and execute system commands
-var exec = require('child_process').exec;
-
 // import bleno module for bluettoth low energy communication
 var bleno = require('bleno');
 
@@ -55,7 +47,7 @@ util.inherits(BatteryLevelCharacteristic, Characteristic);
 * This method is called if the master initiates an onReadRequest on the battery level characteristic.
 * We check the os if the application runs on linux, and if so, return the actual battery level
 */
-BatteryLevelCharacteristic.prototype.onReadRequest = async function(offset, callback) {
+BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) {
   console.log("Get battery level");
   // create random value
   var battery = parseInt(Math.floor(Math.random() * 99) + 1);

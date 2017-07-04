@@ -384,6 +384,60 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "nodejs/documentation/script/inherited-summary.js",
+    "file/NodeJS/documentation/script/inherited-summary.js.html",
+    "NodeJS/documentation/script/inherited-summary.js",
+    "file"
+  ],
+  [
+    "nodejs/documentation/script/inner-link.js",
+    "file/NodeJS/documentation/script/inner-link.js.html",
+    "NodeJS/documentation/script/inner-link.js",
+    "file"
+  ],
+  [
+    "nodejs/documentation/script/manual.js",
+    "file/NodeJS/documentation/script/manual.js.html",
+    "NodeJS/documentation/script/manual.js",
+    "file"
+  ],
+  [
+    "nodejs/documentation/script/patch-for-local.js",
+    "file/NodeJS/documentation/script/patch-for-local.js.html",
+    "NodeJS/documentation/script/patch-for-local.js",
+    "file"
+  ],
+  [
+    "nodejs/documentation/script/prettify/prettify.js",
+    "file/NodeJS/documentation/script/prettify/prettify.js.html",
+    "NodeJS/documentation/script/prettify/prettify.js",
+    "file"
+  ],
+  [
+    "nodejs/documentation/script/pretty-print.js",
+    "file/NodeJS/documentation/script/pretty-print.js.html",
+    "NodeJS/documentation/script/pretty-print.js",
+    "file"
+  ],
+  [
+    "nodejs/documentation/script/search.js",
+    "file/NodeJS/documentation/script/search.js.html",
+    "NodeJS/documentation/script/search.js",
+    "file"
+  ],
+  [
+    "nodejs/documentation/script/search_index.js",
+    "file/NodeJS/documentation/script/search_index.js.html",
+    "NodeJS/documentation/script/search_index.js",
+    "file"
+  ],
+  [
+    "nodejs/documentation/script/test-summary.js",
+    "file/NodeJS/documentation/script/test-summary.js.html",
+    "NodeJS/documentation/script/test-summary.js",
+    "file"
+  ],
+  [
     "nodejs/main.js",
     "file/NodeJS/main.js.html",
     "NodeJS/main.js",

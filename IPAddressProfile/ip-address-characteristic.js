@@ -10,8 +10,8 @@
 // import utility library to build classes
 var util = require('util');
 
-// import os library to test operating system
-var os = require('os');
+// import ip library to get ip address
+var ip = require('ip');
 
 // uses child process library to open a command shell and execute system commands
 var exec = require('child_process').exec;
@@ -47,6 +47,7 @@ var IPAddressCharacteristic = function() {
 // define inhertance
 util.inherits(IPAddressCharacteristic, Characteristic);
 
+
 /**
 * Override prototype method onReadRequest from class bleno.Characteristic 
 * This method is called if the master initiates an onReadRequest on the battery level characteristic.
@@ -54,17 +55,7 @@ util.inherits(IPAddressCharacteristic, Characteristic);
 */
 IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
   console.log("Get IP address of device");
-  var address = function getServerIp() {
-    var ifaces = os.networkInterfaces();
-    var values = Object.keys(ifaces).map(function(name) {
-      return ifaces[name];
-    });
-    values = [].concat.apply([], values).filter(function(val){ 
-      return val.family == 'IPv4' && val.internal == false; 
-    });
-
-  return values.length ? values[0].address : '0.0.0.0';
-  }
+  var address = ip.address();
   console.log("IP: " + address);
   callback(this.RESULT_SUCCESS, new Buffer(address));
 };

@@ -49,12 +49,6 @@
 // import utility library to build classes
 var util = require(&apos;util&apos;);
 
-// import os library to test operating system
-var os = require(&apos;os&apos;);
-
-// uses child process library to open a command shell and execute system commands
-var exec = require(&apos;child_process&apos;).exec;
-
 // import bleno module for bluettoth low energy communication
 var bleno = require(&apos;bleno&apos;);
 
@@ -63,6 +57,7 @@ var Descriptor = bleno.Descriptor;
 
 // create the Characteristic class which the battery level characteristic inherits from
 var Characteristic = bleno.Characteristic;
+
 
 /**
 * Constructor for BatteryLevelCharacteristic calls constructor from the parent class Characteristic
@@ -92,29 +87,12 @@ util.inherits(BatteryLevelCharacteristic, Characteristic);
 * We check the os if the application runs on linux, and if so, return the actual battery level
 */
 BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) {
-  // check operating system to be linux
-  if (os.platform() === &apos;linux&apos;) {
-    // execute child process and get battery level from stdout
-    //exec(&quot;acpi battery | head -n 1 | cut -d &apos;,&apos; -f2&quot;, function (error, stdout, stderr) {
-    exec(&quot;acpi battery | head -n 1&quot;, function (error, stdout, stderr) {
-      // read data from console
-      // expected output ===&gt;&gt;  98%
-      console.log(&quot;Get battery level&quot;);
-      var data = stdout.toString().trim();
-      // parse data to Integer
-      var percent = data.split(&apos;,&apos;)[1];
-      console.log(&quot;Actual battery level: &quot; + percent);
-      var level = parseInt(percent);
-      console.log(level);
-      // send data to master
-      callback(this.RESULT_SUCCESS, new Buffer([level]));
-    });
-  } else {
-    // create random value
-    var rand = parseInt(Math.floor(Math.random() * 100) + 1);
-    console.log(&quot;Randomized battery level: &quot; + rand);
-    callback(this.RESULT_SUCCESS, new Buffer([rand]));
-  }
+  console.log(&quot;Get battery level&quot;);
+  // create random value
+  var battery = parseInt(Math.floor(Math.random() * 99) + 1);
+  console.log(&quot;Battery level: &quot; + battery + &quot; %&quot;);
+  // return value to master 
+  callback(this.RESULT_SUCCESS, new Buffer([battery]));
 };
 
 // export class as BatteryLevelCharacteristic

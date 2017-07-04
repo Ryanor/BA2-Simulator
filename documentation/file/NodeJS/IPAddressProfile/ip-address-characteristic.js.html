@@ -49,8 +49,8 @@
 // import utility library to build classes
 var util = require(&apos;util&apos;);
 
-// import os library to test operating system
-var os = require(&apos;os&apos;);
+// import ip library to get ip address
+var ip = require(&apos;ip&apos;);
 
 // uses child process library to open a command shell and execute system commands
 var exec = require(&apos;child_process&apos;).exec;
@@ -86,34 +86,17 @@ var IPAddressCharacteristic = function() {
 // define inhertance
 util.inherits(IPAddressCharacteristic, Characteristic);
 
+
 /**
 * Override prototype method onReadRequest from class bleno.Characteristic 
 * This method is called if the master initiates an onReadRequest on the battery level characteristic.
 * We check the os if the application runs on linux, and if so, return the actual battery level
 */
 IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
-  // check operating system to be linux
- 
-  if (os.platform() === &apos;linux&apos;) {
-    // execute child process and get ip address from stdout
-    exec(&quot;hostname -i&quot;, function (error, stdout, stderr) {
-    console.log(&quot;Get ip address from slave&quot;);
-    // read data from console
-    var data = new Buffer(stdout.toString(&quot;utf-8&quot;).trim());
-    // e.g. 192.168.14.23
-    // if more than two ip addresses are available take the first one
-    console.log(data);
-    //if(data.length &gt; 15) {
-      //  data = data.split(&apos; &apos;)[0];
-    //} 
-    //console.log(&quot;IP address: &quot; + data);
-    // return value to master
-    console.log(data.toString());
-    callback(this.RESULT_SUCCESS, data);
-    });
-  } else {
-    callback(this.RESULT_SUCCESS, new Buffer(&quot;No ip found!&quot;));
-  }
+  console.log(&quot;Get IP address of device&quot;);
+  var address = ip.address();
+  console.log(&quot;IP: &quot; + address);
+  callback(this.RESULT_SUCCESS, new Buffer(address));
 };
 
 // Accept a new value for the characterstic&apos;s value
