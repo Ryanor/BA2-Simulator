@@ -53,27 +53,17 @@ util.inherits(BatteryLevelCharacteristic, Characteristic);
 * We check the os if the application runs on linux, and if so, return the actual battery level
 */
 BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) {
-  var battery = 0;
   // check operating system to be linux
   if (os.platform() === 'linux') {
+    console.log("Get battery level");
     // execute child process and get battery level from stdout
-    //exec("acpi battery | head -n 1 | cut -d ',' -f2", function (error, stdout, stderr) {
-    exec("acpi battery | head -n 1", function (error, stdout, stderr) {
-    // error handling
-    if (error instanceof Error) {
-        console.error(error);
-        throw error;
-    } else {
-      // read data from console
-      // expected output ===>>  98%
-      console.log("Get battery level");
-      var data = stdout.toString().trim();
-      // parse data to Integer
-      var percent = data.split(',')[1];
-      console.log("Actual battery level: " + percent);
-      battery = parseInt(percent);
-    });
-    console.log(battery);      
+    var battery_level = executeShellCommand( function (result){});
+    console.log(result);
+    // read data from console
+    // expected output ===>>  98%
+    console.log(battery_level);
+    var battery = parseInt(battery_level);
+    console.log("Actual battery level: " + battery);  
     // send data to master
     callback(this.RESULT_SUCCESS, new Buffer([battery]));
   } else {
@@ -83,6 +73,18 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function(offset, callback) 
     callback(this.RESULT_SUCCESS, new Buffer([rand]));
   }
 };
+
+function executeShellCommand( callback) {
+  exec("acpi battery | head -n 1", function (error, stdout, stderr) {
+    // error handling
+    if (error instanceof Error) {
+      console.log(error);
+      throw error;
+    } else {  
+      callback(stdout);   
+    }
+  });
+}
 
 // export class as BatteryLevelCharacteristic
 module.exports = BatteryLevelCharacteristic;
