@@ -53,28 +53,20 @@ util.inherits(IPAddressCharacteristic, Characteristic);
 * We check the os if the application runs on linux, and if so, return the actual battery level
 */
 IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
-  // check operating system to be linux
-  if (os.platform() === 'linux') {
-    // execute child process and get ip address from stdout
-    exec("hostname -i", function (error, stdout, stderr) {
-    console.log("Get ip address from slave");
-    // read data from console
-    var data = stdout.toString("utf-8").trim();
-    // e.g. 192.168.14.23
-    // if more than two ip addresses are available take the first one
-    console.log(data);
-    if(data.length > 15) {
-      this.value = data.split(' ')[0];
-    } else {
-      this.value = data;
-    }
-    console.log("IP address: " + this.value);
-    // send value to master
+  console.log("Get IP address of device");
+  var address = function getServerIp() {
+    var ifaces = os.networkInterfaces();
+    var values = Object.keys(ifaces).map(function(name) {
+      return ifaces[name];
     });
-    callback(this.RESULT_SUCCESS, new Buffer([this.value]));
-  } else {
-    callback(this.RESULT_SUCCESS, new Buffer("No ip found!"));
+    values = [].concat.apply([], values).filter(function(val){ 
+      return val.family == 'IPv4' && val.internal == false; 
+    });
+
+  return values.length ? values[0].address : '0.0.0.0';
   }
+  console.log("IP: " + address);
+  callback(this.RESULT_SUCCESS, new Buffer(address));
 };
 
 // Accept a new value for the characterstic's value
