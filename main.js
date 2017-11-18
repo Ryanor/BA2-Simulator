@@ -12,6 +12,8 @@
 // import bleno module for bluettoth low energy communication
 var bleno = require('bleno');
 
+var fs = require('fs');
+
 // import class BatteryService
 var BatteryService = require('./BatteryProfile/battery-service');
 
@@ -39,13 +41,15 @@ var thermometer = new ThermometerService();
 // creates array of service objects
 var services = [ battery, heartRate, ipaddress, thermometer];
 
+var json = JSON.stringify(services);
+fs.writeFile('myjsonfile.json', json);
 
 /*
 * If bleno could connection to the interface and the USB-dongle is pluged in
 * the state changes to power on, and the simulator starts advertising its services
 *
 */ 
-bleno.on('stateChange', function(state) {
+/*bleno.on('stateChange', function(state) {
   console.log("Programm started");
   console.log('on -> stateChange: ' + state);
 
@@ -62,7 +66,7 @@ bleno.on('stateChange', function(state) {
 * If advertising starts all services, characteristics and descriptors are built
 *
 */ 
-bleno.on('advertisingStart', function(error) {
+/*bleno.on('advertisingStart', function(error) {
   console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
 
   if (!error) {
@@ -71,4 +75,4 @@ bleno.on('advertisingStart', function(error) {
 		console.log('setServices: '  + (error ? 'error ' + error : 'success'));
     });
   }
-});
+});*/
