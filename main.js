@@ -12,6 +12,8 @@
 // import bleno module for bluettoth low energy communication
 var bleno = require('bleno');
 
+var http = require('http');
+
 // import class BatteryService
 var BatteryService = require('./BatteryProfile/battery-service');
 
@@ -38,6 +40,25 @@ var thermometer = new ThermometerService();
 
 // creates array of service objects
 var services = [ battery, heartRate, ipaddress, thermometer];
+
+// read ble services from webserver
+http.get('http://localhost:3000/profile/json', (resp) => {
+  var data = '';
+ 
+  // A chunk of data has been recieved.
+  resp.on('data', (chunk) => {
+    data += chunk;
+  });
+ 
+  // The whole response has been received. Print out the result.
+  resp.on('end', () => {
+    console.log(data);
+  });
+ 
+}).on("error", (err) => {
+  console.log("Error: " + err.message);
+});
+
 
 
 /*
