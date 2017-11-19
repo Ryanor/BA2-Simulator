@@ -1,13 +1,13 @@
 /**
-* Main class for the BLE-Simulator
-* includes module bleno for the BLE communication
-* Creates service objects which will be advertised to master devices
-* If a master connects to a service it can send onRead- onWriteRequest
-* and subscribe and unsubscribe to notifications
-*
-* @author gwu
-* @version 1.0
-*/
+ * Main class for the BLE-Simulator
+ * includes module bleno for the BLE communication
+ * Creates service objects which will be advertised to master devices
+ * If a master connects to a service it can send onRead- onWriteRequest
+ * and subscribe and unsubscribe to notifications
+ *
+ * @author gwu
+ * @version 1.0
+ */
 
 // import bleno module for bluettoth low energy communication
 var bleno = require('bleno');
@@ -39,57 +39,57 @@ var ipaddress = new IPAddressService();
 var thermometer = new ThermometerService();
 
 // creates array of service objects
-var services = [ battery, heartRate, ipaddress, thermometer];
+var services = [battery, heartRate, ipaddress, thermometer];
+
 
 // read ble services from webserver
-http.get('http://localhost:3000/profile/json', (resp) => {
-  var data = '';
- 
-  // A chunk of data has been recieved.
-  resp.on('data', (chunk) => {
-    data += chunk;
-  });
- 
-  // The whole response has been received. Print out the result.
-  resp.on('end', () => {
-    console.log(data);
-  });
- 
-}).on("error", (err) => {
-  console.log("Error: " + err.message);
-});
+http.get('http://localhost:3000/profile/json', function (resp) {
+    var data = '';
 
+    // A chunk of data has been recieved.
+    resp.on('data', function (chunk) {
+        data += chunk;
+    });
+
+    // The whole response has been received. Print out the result.
+    resp.on('end', function () {
+        console.log(data);
+    });
+
+}).on("error", function (err) {
+    console.log("Error: " + err.message);
+});
 
 
 /*
 * If bleno could connection to the interface and the USB-dongle is pluged in
 * the state changes to power on, and the simulator starts advertising its services
 *
-*/ 
-bleno.on('stateChange', function(state) {
-  console.log("Programm started");
-  console.log('on -> stateChange: ' + state);
+*/
+bleno.on('stateChange', function (state) {
+    console.log("Programm started");
+    console.log('on -> stateChange: ' + state);
 
-  if (state === 'poweredOn') {
-    // start advertising services
-    bleno.startAdvertising('BLE Services', ['12AB']);
-  } else {
-    // stop advertising
-    bleno.stopAdvertising();
-  }
+    if (state === 'poweredOn') {
+        // start advertising services
+        bleno.startAdvertising('BLE Services', ['12AB']);
+    } else {
+        // stop advertising
+        bleno.stopAdvertising();
+    }
 });
 
 /*
 * If advertising starts all services, characteristics and descriptors are built
 *
-*/ 
-bleno.on('advertisingStart', function(error) {
-  console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
+*/
+bleno.on('advertisingStart', function (error) {
+    console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
 
-  if (!error) {
-    bleno.setServices( services, function(error){
-		// outprint user information
-		console.log('setServices: '  + (error ? 'error ' + error : 'success'));
-    });
-  }
+    if (!error) {
+        bleno.setServices(services, function (error) {
+            // outprint user information
+            console.log('setServices: ' + (error ? 'error ' + error : 'success'));
+        });
+    }
 });
