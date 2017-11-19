@@ -43,7 +43,7 @@ var services = [battery, heartRate, ipaddress, thermometer];
 
 
 // read ble services from webserver
-http.get('http://localhost:3000/profile/json', function (resp) {
+http.get('http://localhost:3000/profile/json1', function (resp) {
     var data = '';
 
     // A chunk of data has been recieved.
@@ -54,11 +54,14 @@ http.get('http://localhost:3000/profile/json', function (resp) {
     // The whole response has been received. Print out the result.
     resp.on('end', function () {
         console.log(data);
+        // callback to build all services from response message
     });
+
 
 }).on("error", function (err) {
     console.log("Error: " + err.message);
 });
+
 
 
 /*
