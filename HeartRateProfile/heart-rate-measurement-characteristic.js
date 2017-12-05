@@ -66,7 +66,7 @@ HeartRateMeasurementCharacteristic.prototype.onSubscribe = function(maxValueSize
     }
     console.log("Heart beats at : " + heartRate + " bpm");
     // crete buffer and write value into it
-    let data = new Buffer(2);
+    var data = new Buffer(2);
     data.writeUInt16BE(heartRate, 0);
     // send data to master
     updateValueCallback(data);  
