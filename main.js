@@ -36,6 +36,9 @@ var IPAddressService = require('./IPAddressProfile/ip-address-service');
 // import class ThermometerService
 var ThermometerService = require('./ThermometerProfile/thermometer-service.js');
 
+// import class EnvironmentService
+var EnvironmentService = require('./EnvironmentProfile/environment_service.js');
+
 // creates BatteryService object
 var battery = new BatteryService();
 
@@ -48,10 +51,13 @@ var ipaddress = new IPAddressService();
 // create ThermometerService object
 var thermometer = new ThermometerService();
 
-// creates array of service objects
-//var services = [battery, heartRate, ipaddress, thermometer];
+// create EnvironmentService object
+var environment = new EnvironmentService();
 
-var services = [];
+// creates array of service objects
+var services = [ipaddress, environment];
+
+//var services = [];
 
 var profile;
 
@@ -94,7 +100,7 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
                 characteristics: []
             });
         }
-        services.push(Service);
+        //services.push(Service);
     });
 
 
