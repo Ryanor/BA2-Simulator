@@ -15,41 +15,41 @@ var bleno = require('bleno');
 var http = require('http');
 
 // create the PrimaryService class which the battery class inherits from
-var BlenoPrimaryService = bleno.PrimaryService;
+//var BlenoPrimaryService = bleno.PrimaryService;
 
 // create the Characteristic class which the battery level characteristic inherits from
-var Characteristic = bleno.Characteristic;
+//var Characteristic = bleno.Characteristic;
 
 // predefine the included descriptors of the service
-var Descriptor = bleno.Descriptor;
+//var Descriptor = bleno.Descriptor;
 
 
 // import class BatteryService
-var BatteryService = require('./BatteryProfile/battery-service');
+//var BatteryService = require('./BatteryProfile/battery-service');
 
 // import class HeartRateService
-var HeartRateService = require('./HeartRateProfile/heart-rate-service');
+//var HeartRateService = require('./HeartRateProfile/heart-rate-service');
 
 // import class IPAddressService
 var IPAddressService = require('./IPAddressProfile/ip-address-service');
 
 // import class ThermometerService
-var ThermometerService = require('./ThermometerProfile/thermometer-service.js');
+//var ThermometerService = require('./ThermometerProfile/thermometer-service.js');
 
 // import class EnvironmentService
 var EnvironmentService = require('./EnvironmentProfile/environment_service.js');
 
 // creates BatteryService object
-var battery = new BatteryService();
+//var battery = new BatteryService();
 
 // creates HeartRateService object
-var heartRate = new HeartRateService();
+//var heartRate = new HeartRateService();
 
 // create IPAddressService object
 var ipaddress = new IPAddressService();
 
 // create ThermometerService object
-var thermometer = new ThermometerService();
+//var thermometer = new ThermometerService();
 
 // create EnvironmentService object
 var environment = new EnvironmentService();
@@ -58,7 +58,7 @@ var environment = new EnvironmentService();
 var services = [ipaddress, environment];
 
 //var services = [];
-
+/*
 var profile;
 
 // read ble services from webserver
@@ -106,7 +106,7 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
 
 }).on("error", function (err) {
     console.log("Error: " + err.message);
-});
+}); */
 
 
 /*
@@ -137,6 +137,10 @@ bleno.on('advertisingStart', function (error) {
     if (!error) {
         bleno.setServices(services, function (error) {
             // outprint user information
+            console.log("Set services:");
+            for(var service in services) {
+                console.log((service + 1) + ". Service set");
+            }
             console.log('setServices: ' + (error ? 'error ' + error : 'success'));
         });
     }
