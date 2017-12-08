@@ -15,13 +15,13 @@ var bleno = require('bleno');
 var http = require('http');
 
 // create the PrimaryService class which the battery class inherits from
-//var BlenoPrimaryService = bleno.PrimaryService;
+var BlenoPrimaryService = bleno.PrimaryService;
 
 // create the Characteristic class which the battery level characteristic inherits from
-//var Characteristic = bleno.Characteristic;
+var Characteristic = bleno.Characteristic;
 
 // predefine the included descriptors of the service
-//var Descriptor = bleno.Descriptor;
+var Descriptor = bleno.Descriptor;
 
 
 // import class BatteryService
@@ -37,7 +37,7 @@ var IPAddressService = require('./IPAddressProfile/ip-address-service');
 //var ThermometerService = require('./ThermometerProfile/thermometer-service.js');
 
 // import class EnvironmentService
-var EnvironmentService = require('./EnvironmentProfile/environment_service.js');
+//var EnvironmentService = require('./EnvironmentProfile/environment_service.js');
 
 // creates BatteryService object
 //var battery = new BatteryService();
@@ -52,13 +52,13 @@ var ipaddress = new IPAddressService();
 //var thermometer = new ThermometerService();
 
 // create EnvironmentService object
-var environment = new EnvironmentService();
+//var environment = new EnvironmentService();
 
 // creates array of service objects
-var services = [ipaddress, environment];
+var services = [ipaddress]; //, environment];
 
 //var services = [];
-/*
+
 var profile;
 
 // read ble services from webserver
@@ -78,19 +78,38 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
         profile = JSON.parse(data);
         console.log(profile[0].uuid);
 
-        var characteristics = profile[0].characteristics;
-        console.log(characteristics.length);
-        for(var char in characteristics) {
-            var characteristic = characteristics[char];
+        var characteristics = [];
+        var characteristicContainer = profile[0].characteristics;
 
-            console.log("Char. uuid: " + characteristic.uuid);
-            console.log("Char. value: " + characteristic.value);
-            console.log("Char. values length: " + characteristic.values.length);
-            console.log("Char. Descr. amount: " + characteristic.descriptors.length);
-            for(var descr in characteristic.descriptors) {
-                var descriptor = characteristic.descriptors[descr];
-                console.log("Descr. uuid: " + descriptor.uuid);
-                console.log("Descr. value: " + descriptor.value);
+        console.log(characteristicContainer.length);
+
+        // check if characteristics are available
+        if (characteristicContainer.length >= 0) {
+            // get characteristic data
+            for (var char in characteristics) {
+                var characteristic = characteristics[char];
+
+                console.log("Char. uuid: " + characteristic.uuid);
+                console.log("Char. value: " + characteristic.value);
+                console.log("Char. values length: " + characteristic.values.length);
+                console.log("Char. properties: " + characteristic.properties);
+                console.log("Char. Descr. amount: " + characteristic.descriptors.length);
+
+                if (characteristic.descriptors.length > 0) {
+
+                    var descriptors = [];
+
+                    for (var descr in characteristic.descriptors) {
+                        console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
+                        console.log("Descr. value: " + characteristic.descriptors[descr].value);
+                        descriptors.push(new Descriptor({
+                            uuid: characteristic.descriptors[descr].uuid,
+                            value: characteristic.descriptors[descr].value
+                        }));
+                    }
+                }
+
+                characteristics.push();
             }
         }
 
@@ -100,13 +119,14 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
                 characteristics: []
             });
         }
+
         //services.push(Service);
     });
 
 
 }).on("error", function (err) {
     console.log("Error: " + err.message);
-}); */
+});
 
 
 /*
@@ -138,7 +158,7 @@ bleno.on('advertisingStart', function (error) {
         bleno.setServices(services, function (error) {
             // outprint user information
             console.log("Set services:");
-            for(var service in services) {
+            for (var service in services) {
                 console.log((service + 1) + ". Service set");
             }
             console.log('setServices: ' + (error ? 'error ' + error : 'success'));
