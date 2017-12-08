@@ -53,9 +53,11 @@ PressureCharacteristic.prototype.onReadRequest = function(offset, callback) {
     // create random value
     createRandomValue(0.1, 1);
     pressure = pressure.toFixed(1);
-
+    // crete buffer and write value into it
+    //var data = new Buffer(2);
+    //data.writeUInt16BE(humidity, 0);
     // return value to master
-    callback(this.RESULT_SUCCESS, new Buffer([pressure]));
+    callback(this.RESULT_SUCCESS, new Buffer(pressure));
 };
 
 /**
@@ -73,7 +75,7 @@ PressureCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValu
         //var data = new Buffer(2);
         //data.writeUInt16BE(humidity, 0);
         // send data to master
-        updateValueCallback(new Buffer[pressure]);
+        updateValueCallback(new Buffer(pressure));
         // wait 2s
     }, 2000);
 };

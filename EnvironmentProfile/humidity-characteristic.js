@@ -54,9 +54,9 @@ HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
     // create random value
     createRandomValue(0.01, 0.1);
     humidity = humidity.toFixed(2);
-
+    // crete buffer and write value into it
     // return value to master
-    callback(this.RESULT_SUCCESS, new Buffer([humidity]));
+    callback(this.RESULT_SUCCESS, new Buffer(humidity));
 };
 
 /**
@@ -75,7 +75,7 @@ HumidityCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValu
         //var data = new Buffer(2);
         //data.writeUInt16BE(humidity, 0);
         // send data to master
-        updateValueCallback(new Buffer[humidity]);
+        updateValueCallback(new Buffer(humidity));
         // wait 2s
     }, 2000);
 };
