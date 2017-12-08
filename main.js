@@ -77,14 +77,14 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
         for(var char in characteristics) {
             var characteristic = characteristics[char];
 
-            console.log(characteristic.uuid);
-            console.log(characteristic.value);
-            console.log(characteristic.values.length);
-            console.log(characteristic.descriptors.length);
+            console.log("Char. uuid: " + characteristic.uuid);
+            console.log("Char. value: " + characteristic.value);
+            console.log("Char. values length: " + characteristic.values.length);
+            console.log("Char. Descr. amount: " + characteristic.descriptors.length);
             for(var descr in characteristic.descriptors) {
                 var descriptor = characteristic.descriptors[descr];
-                console.log(descriptor.uuid);
-                console.log(descriptor.value);
+                console.log("Descr. uuid: " + descriptor.uuid);
+                console.log("Descr. value: " + descriptor.value);
             }
         }
 
