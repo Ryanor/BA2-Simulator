@@ -16,11 +16,14 @@ var util = require('util');
 
 var http = require('http');
 
-// create the PrimaryService class which the battery class inherits from
-var BlenoService = bleno.PrimaryService;
+// import the base Service class where every service inherits from
+var BLEService = require('./BaseClasses/BLEService');
+
+// import the base Service class where every service inherits from
+var BLECharacteristic = require('./BaseClasses/BLECharacteristic');
 
 // create the Characteristic class which the battery level characteristic inherits from
-var BlenoCharacteristic = bleno.Characteristic;
+//var BlenoCharacteristic = bleno.Characteristic;
 
 // predefine the included descriptors of the service
 var BlenoDescriptor = bleno.Descriptor;
@@ -74,24 +77,26 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
 
     // The whole response has been received. Print out the result.
     resp.on('end', function () {
-        console.log(data);
+        //console.log(data);
         // callback to build all services from response message
 
         profile = JSON.parse(data);
 
         var characteristics = [];
         var characteristicContainer = profile[0].characteristics;
+        console.log("Amount of characteristics: " + characteristicContainer.length);
 
         // check if characteristics are available
-        if (characteristicContainer.length >= 0) {
+        if (characteristicContainer.length > 0) {
+
             // get characteristic data
-            for (var char in characteristics) {
-                var characteristic = characteristics[char];
+            for (var char in characteristicContainer) {
+                var characteristic = characteristicContainer[char];
 
                 console.log("Char. uuid: " + characteristic.uuid);
                 console.log("Char. value: " + characteristic.value);
                 console.log("Char. values length: " + characteristic.values.length);
-                console.log("Char. properties: " + characteristic.properties);
+                console.log("Char. properties: " + characteristic.permission);
                 console.log("Char. Descr. amount: " + characteristic.descriptors.length);
 
                 if (characteristic.descriptors.length > 0) {
@@ -102,36 +107,32 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
                         console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
                         console.log("Descr. value: " + characteristic.descriptors[descr].value);
                         descriptors.push(new BlenoDescriptor({
-                            uuid: characteristic.descriptors[descr].uuid,
+                            uuid: characteristic.descriptors[descr].uuid.substr(4, 4).toUpperCase().toString(),
                             value: characteristic.descriptors[descr].value
                         }));
                     }
                 }
 
                 //var char = function Characteristic() {
-                characteristics.push(BlenoCharacteristic.super_.call(this, {
-                    uuid: characteristic.uuid,
-                    value: characteristic.value,
-                    properties: characteristic.properties,
+                var bleCharacteristic = new BLECharacteristic({
+                    uuid: characteristic.uuid.substr(4, 4).toUpperCase().toString(),
+                    properties: characteristic.permission,
                     descriptors: descriptors
-                }));
+                });
 
-                //characteristics.push(char);
+                characteristics.push(bleCharacteristic);
             }
         }
 
         var serviceuuid = profile[0].uuid.substr(4, 4).toUpperCase().toString();
         console.log("Service UUID: " + serviceuuid);
 
-        function Service() {
-            Service.super_.call(this, {
-                uuid: serviceuuid,
-                characteristics: characteristics
-            });
-        }
-        util.inherits(Service, BlenoService);
+        var bleService = new BLEService({
+            uuid: serviceuuid,
+            characteristics: characteristics
+        });
 
-        services.push(Service);
+        services.push(bleService);
 
         for (var i in services) {
             console.log(services[i].toString());
