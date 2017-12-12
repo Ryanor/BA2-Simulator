@@ -32,7 +32,7 @@ var Characteristic = bleno.Characteristic;
 */ 
 var IPAddressCharacteristic = function() {
   IPAddressCharacteristic.super_.call(this, {
-    uuid: '34CD',
+    uuid: '34XY',
     value: null,
     properties: ['read','write'],
     descriptors: [

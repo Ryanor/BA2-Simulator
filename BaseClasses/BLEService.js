@@ -27,6 +27,13 @@ function BLEService(params) {
     });
 }
 
+BLEService.prototype.toString = function() {
+    return JSON.stringify({
+        uuid: this.uuid,
+        characteristics: this.characteristics
+    });
+};
+
 util.inherits(BLEService, BlenoPrimaryService);
 
 // export class as BLEService

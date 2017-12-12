@@ -12,8 +12,6 @@
 // import bleno module for bluettoth low energy communication
 var bleno = require('bleno');
 
-var util = require('util');
-
 var http = require('http');
 
 // import the base Service class where every service inherits from
@@ -87,7 +85,7 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
         console.log("Amount of characteristics: " + characteristicContainer.length);
 
         // check if characteristics are available
-        if (characteristicContainer.length > 0) {
+        if (characteristicContainer.length < 0) {
 
             // get characteristic data
             for (var char in characteristicContainer) {
@@ -99,7 +97,7 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
                 console.log("Char. properties: " + characteristic.permission);
                 console.log("Char. Descr. amount: " + characteristic.descriptors.length);
 
-                if (characteristic.descriptors.length > 0) {
+                if (characteristic.descriptors.length < 0) {
 
                     var descriptors = [];
 
@@ -117,7 +115,9 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
                 var bleCharacteristic = new BLECharacteristic({
                     uuid: characteristic.uuid.substr(4, 4).toUpperCase().toString(),
                     properties: characteristic.permission,
-                    descriptors: descriptors
+                    descriptors: descriptors,
+                    type: characteristic.type,
+                    interval: 1000
                 });
 
                 characteristics.push(bleCharacteristic);
@@ -132,18 +132,16 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
             characteristics: characteristics
         });
 
-        services.push(bleService);
+        //services.push(bleService);
 
-        for (var i in services) {
+        /*for (var i in services) {
             console.log(services[i].toString());
-        }
+        }*/
     });
 
 }).on("error", function (err) {
     console.log("Error: " + err.message);
 });
-
-delay(2000);
 
 
 /*
@@ -153,11 +151,12 @@ delay(2000);
 */
 bleno.on('stateChange', function (state) {
     console.log("Programm started");
+    delay(2000);
     console.log('on -> stateChange: ' + state);
 
     if (state === 'poweredOn') {
         // start advertising services
-        bleno.startAdvertising('BLE Simulator', ['12AB']);
+        bleno.startAdvertising('BLE Simulator', ['89AB']);
     } else {
         // stop advertising
         bleno.stopAdvertising();
@@ -171,18 +170,18 @@ bleno.on('stateChange', function (state) {
 *
 */
 bleno.on('advertisingStart', function (error) {
-    console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
+   console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
 
-    if (!error) {
-        bleno.setServices(services, function (error) {
-            // outprint user information
-            console.log("Set services:");
-            for (var service in services) {
-                console.log((service + 1) + ". Service set");
-            }
-            console.log('setServices: ' + (error ? 'error ' + error : 'success'));
-        });
-    }
+   if (!error) {
+       bleno.setServices(services, function (error) {
+           // outprint user information
+           console.log("Set services:");
+           for (var service in services) {
+               console.log(service + ". Service set");
+           }
+           console.log('setServices: ' + (error ? 'error ' + error : 'success'));
+       });
+   }
 });
 
 function delay(ms) {
