@@ -65,7 +65,7 @@ var services = [ipaddress]; //, environment];
 var profile;
 
 // read ble services from webserver
-http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
+http.get('http://192.168.0.3:3000/profile/json1', function (resp) {
     var data = '';
 
     // A chunk of data has been recieved.
@@ -132,7 +132,7 @@ http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
             characteristics: characteristics
         });
 
-        //services.push(bleService);
+        services.push(bleService);
 
         /*for (var i in services) {
             console.log(services[i].toString());
