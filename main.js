@@ -85,7 +85,7 @@ http.get('http://192.168.0.3:3000/profile/json1', function (resp) {
         console.log("Amount of characteristics: " + characteristicContainer.length);
 
         // check if characteristics are available
-        if (characteristicContainer.length < 0) {
+        if (characteristicContainer.length > 0) {
 
             // get characteristic data
             for (var char in characteristicContainer) {
@@ -97,7 +97,7 @@ http.get('http://192.168.0.3:3000/profile/json1', function (resp) {
                 console.log("Char. properties: " + characteristic.permission);
                 console.log("Char. Descr. amount: " + characteristic.descriptors.length);
 
-                if (characteristic.descriptors.length < 0) {
+                if (characteristic.descriptors.length > 0) {
 
                     var descriptors = [];
 
