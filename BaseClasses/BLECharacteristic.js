@@ -41,7 +41,7 @@ var postValue = 0;
  *      random values: created from a start value stepping up and down within a range min and max
  *
  */
-var BLECharacteristic = function(params) {
+var BLECharacteristic = function (params) {
     BLECharacteristic.super_.call(this, {
         uuid: params.uuid,
         value: null,
@@ -68,10 +68,10 @@ var BLECharacteristic = function(params) {
  * This method is called if the master initiates an onReadRequest on the body sensor location characteristic.
  * Creates a random number between 0 and 7 which are used for the position on the body
  */
-BLECharacteristic.prototype.onReadRequest = function(offset, callback) {
+BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
-    if(this.characteristic === 'random') {
-        switch(this.type) {
+    if (this.characteristic === 'random') {
+        switch (this.type) {
             case "float":
                 // create random value
                 createRandomFloatValue(0.01, 0.1, this.precision);
@@ -82,18 +82,18 @@ BLECharacteristic.prototype.onReadRequest = function(offset, callback) {
                 createRandomIntValueFromBase(1, 6);
                 break;
 
-                default:
+            default:
         }
     }
 
-    if(this.characteristic === 'array') {
+    if (this.characteristic === 'array') {
 
-        getNextValue();
+        getNextValue(this.values);
         index = index + 1;
     }
 
-    if(this.characteristic === 'range') {
-        switch(this.type) {
+    if (this.characteristic === 'range') {
+        switch (this.type) {
             case "float":
                 // create random value
                 createRandomFloatValue(0.01, 0.1, this.precision);
@@ -117,11 +117,11 @@ BLECharacteristic.prototype.onReadRequest = function(offset, callback) {
  * This method is called if the master subscribes to the characteristic so it gets a new value every 2s interval.
  * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
  */
-BLECharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
+BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
     // creates interval function
-    this.intervalId = setInterval(function() {
-        if(this.characteristic === 'random') {
-            switch(this.type) {
+    this.intervalId = setInterval(function () {
+        if (this.characteristic === 'random') {
+            switch (this.type) {
                 case "float":
                     // create random value
                     createRandomFloatValue(0.01, 0.1, this.precision);
@@ -137,13 +137,13 @@ BLECharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCall
                 default:
             }
         }
-        if(this.characteristic === 'values') {
-            getNextValue();
+        if (this.characteristic === 'values') {
+            getNextValue(this.values);
             index = index + 1;
         }
 
-        if(this.characteristic === 'range') {
-            switch(this.type) {
+        if (this.characteristic === 'range') {
+            switch (this.type) {
                 case "float":
                     // create random value
                     createRandomFloatValue(0.01, 0.1, this.precision);
@@ -170,11 +170,11 @@ BLECharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCall
  * This method is called if the master unsubscribes from the characteristic.
  * Interval is cleared and no data will be transmitted
  */
-BLECharacteristic.prototype.onUnsubscribe = function() {
+BLECharacteristic.prototype.onUnsubscribe = function () {
     clearInterval(this.intervalId);
 };
 
-Characteristic.prototype.toString = function() {
+Characteristic.prototype.toString = function () {
     return JSON.stringify({
         uuid: this.uuid,
         properties: this.properties,
@@ -182,53 +182,60 @@ Characteristic.prototype.toString = function() {
         value: this.value,
         values: this.values,
         interval: this.interval,
-        characteristic : this.characteristic,
+        characteristic: this.characteristic,
         descriptors: this.descriptors
     });
 };
 
-function getNextValue() {
+function getNextValue(values) {
 
-    if(index > this.values.length || index < 0) {
+    if (index > values.length || index < 0) {
         index = 0;
     }
-    postValue = this.values[index];
+
+    postValue = values[index];
 }
 
 function createRandomFloatValue(min, max, precision) {
     console.log("Get randomized FLOAT value");
     // create random value
+
     var delta = (Math.random() * (max - min) + min).toFixed(precision);
     // check if even
-    if( (delta % 2) === 0) {
+    if ((delta % 2) === 0) {
         // add the value
         postValue = postValue + delta;
     } else {
         // substract the value
         postValue = postValue - delta;
     }
+
     console.log("FLOAT: " + postValue);
 }
 
 function createRandomIntValueFromBase(min, max) {
     console.log("Get randomized INT value:");
     // create random value
-    var delta = (Math.random() * (max - min) + min);
+
+    var delta = parseInt(Math.floor((Math.random() * (max - min) + min)));
     // check if even
-    if( (delta % 2) === 0) {
+    if ((delta % 2) === 0) {
         // add the value
         postValue = postValue + delta;
     } else {
         // substract the value
         postValue = postValue - delta;
     }
+
     console.log("INT: " + postValue);
 }
 
 function createRandomIntValueInRange(min, max) {
     console.log("Get randomized INT value:");
     // create random value
-    var postValue = (Math.random() * (max - min) + min);
+
+    var postValue = parseInt(Math.floor((Math.random() * (max - min) + min)));
+
     console.log("INT: " + postValue);
 }
 
