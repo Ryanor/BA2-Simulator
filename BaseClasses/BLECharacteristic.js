@@ -145,6 +145,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
                 default:
             }
         }
+
         if (this.characteristic === 'values') {
             console.log("Get next value:");
 
@@ -153,8 +154,16 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
             console.log(index + ".: " + postValue);
 
-            // send value to client
-            callback(this.RESULT_SUCCESS, new Buffer([postValue]));
+            switch (this.type) {
+                case "int":
+                    var data = new Buffer(2);
+                    data.writeUInt16BE(postValue, 0);
+                    updateValueCallback(data);
+                    break;
+
+                default:
+            }
+
         }
 
         if (this.characteristic === 'range') {
