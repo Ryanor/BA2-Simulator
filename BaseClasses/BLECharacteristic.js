@@ -188,12 +188,14 @@ Characteristic.prototype.toString = function () {
 };
 
 function getNextValue(values) {
+    console.log("Get next value:");
 
     if (index > values.length || index < 0) {
         index = 0;
     }
 
     postValue = values[index];
+    console.log(index + ".: " + postValue);
 }
 
 function createRandomFloatValue(min, max, precision) {
