@@ -18,7 +18,11 @@ var Descriptor = bleno.Descriptor;
 // create the Characteristic class which the battery level characteristic inherits from
 var Characteristic = bleno.Characteristic;
 
+// index counter for the values array
 var index = 0;
+
+// variable for the value which is being sent to the client
+var postValue = 0;
 
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
@@ -36,6 +40,7 @@ var BLECharacteristic = function(params) {
     this.values = params.values;
     this.interval = params.interval;
     this.characteristic = 'random';
+    this.precision = 2;
 };
 
 /**
@@ -46,16 +51,29 @@ var BLECharacteristic = function(params) {
 BLECharacteristic.prototype.onReadRequest = function(offset, callback) {
 
     if(this.characteristic === 'random') {
-        // create random value
-        createRandomValue(0.01, 0.1);
+        switch(this.type) {
+            case "float":
+                // create random value
+                createRandomFloatValue(0.01, 0.1, this.precision);
+                break;
+
+            case "int":
+                // create random value
+                createRandomIntValue(1, 6);
+                break;
+
+                default:
+        }
     }
+
     if(this.characteristic === 'values') {
+
         getNextValue();
         index = index + 1;
     }
 
     // send value to client
-    callback(this.RESULT_SUCCESS, new Buffer(this.value));
+    callback(this.RESULT_SUCCESS, new Buffer(postValue));
 };
 
 /**
@@ -67,15 +85,26 @@ BLECharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCall
     // creates interval function
     this.intervalId = setInterval(function() {
         if(this.characteristic === 'random') {
-            // create random value
-            createRandomValue(0.01, 0.1);
+            switch(this.type) {
+                case "float":
+                    // create random value
+                    createRandomFloatValue(0.01, 0.1, this.precision);
+                    break;
+
+                case "int":
+                    // create random value
+                    createRandomIntValue(1, 6);
+                    break;
+
+                default:
+            }
         }
         if(this.characteristic === 'values') {
             getNextValue();
             index = index + 1;
         }
         // notify client value changed
-        updateValueCallback(new Buffer(this.value));
+        updateValueCallback(new Buffer(postValue));
 
         // wait interval ms
     }, this.interval);
@@ -108,24 +137,38 @@ function getNextValue() {
     if(index > this.values.length || index < 0) {
         index = 0;
     }
-    this.value = this.values[index];
+    postValue = this.values[index];
 }
 
-function createRandomValue(min, max) {
-    console.log("Get randomized value for humidity");
+function createRandomFloatValue(min, max, precision) {
+    console.log("Get randomized FLOAT value");
     // create random value
-    var delta = (Math.random() * (max - min) + min).toFixed(2);
+    var delta = (Math.random() * (max - min) + min).toFixed(precision);
     // check if even
     if( (delta % 2) === 0) {
         // add the value
-        this.value = this.value + delta;
+        postValue = postValue + delta;
     } else {
         // substract the value
-        this.value = this.value - delta;
+        postValue = postValue - delta;
     }
-    console.log("Humidity: " + this.value + " %");
+    console.log("FLOAT: " + postValue);
 }
 
+function createRandomIntValue(min, max) {
+    console.log("Get randomized INT value:");
+    // create random value
+    var delta = (Math.random() * (max - min) + min);
+    // check if even
+    if( (delta % 2) === 0) {
+        // add the value
+        postValue = postValue + delta;
+    } else {
+        // substract the value
+        postValue = postValue - delta;
+    }
+    console.log("INT: " + postValue);
+}
 
 util.inherits(BLECharacteristic, Characteristic);
 
