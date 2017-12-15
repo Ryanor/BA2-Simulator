@@ -111,13 +111,20 @@ http.get('http://192.168.0.3:3000/profile/json1', function (resp) {
                     }
                 }
 
-                //var char = function Characteristic() {
+                var type;
+
+                if( characteristic.values.length > 1) {
+                    type = 'array';
+                } else {
+                    type = 'range';
+                }
                 var bleCharacteristic = new BLECharacteristic({
                     uuid: characteristic.uuid.substr(4, 4).toUpperCase().toString(),
                     properties: characteristic.permission,
                     descriptors: descriptors,
                     type: characteristic.type,
-                    interval: 1000
+                    interval: 1000,
+                    characteristic : type
                 });
 
                 characteristics.push(bleCharacteristic);
