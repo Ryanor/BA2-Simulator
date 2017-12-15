@@ -24,6 +24,8 @@ var index = 0;
 // variable for the value which is being sent to the client
 var postValue = 0;
 
+var array = [];
+
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
  *
@@ -51,7 +53,7 @@ var BLECharacteristic = function (params) {
 
     this.type = params.type;
     // values array
-    this.values = params.values;
+    array = params.values;
     // notification interval time
     this.interval = params.interval;
     // type of the characteristic
@@ -87,9 +89,15 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     if (this.characteristic === 'array') {
+        console.log("Get next value:");
 
-        getNextValue(this.values);
+        postValue = array[index];
         index = index + 1;
+
+        console.log(index + ".: " + postValue);
+
+        // send value to client
+        callback(this.RESULT_SUCCESS, new Buffer([postValue]));
     }
 
     if (this.characteristic === 'range') {
@@ -138,8 +146,15 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
             }
         }
         if (this.characteristic === 'values') {
-            getNextValue(this.values);
+            console.log("Get next value:");
+
+            postValue = array[index];
             index = index + 1;
+
+            console.log(index + ".: " + postValue);
+
+            // send value to client
+            callback(this.RESULT_SUCCESS, new Buffer([postValue]));
         }
 
         if (this.characteristic === 'range') {
@@ -187,16 +202,6 @@ Characteristic.prototype.toString = function () {
     });
 };
 
-function getNextValue(values) {
-    console.log("Get next value:");
-
-    if (index > values.length || index < 0) {
-        index = 0;
-    }
-
-    postValue = values[index];
-    console.log(index + ".: " + postValue);
-}
 
 function createRandomFloatValue(min, max, precision) {
     console.log("Get randomized FLOAT value");
