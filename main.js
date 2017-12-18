@@ -96,7 +96,7 @@ http.get("https://" + address + ":3000/profile/json1", function (resp) {
                 console.log("Char. uuid: " + characteristic.uuid);
                 console.log("Char. value: " + characteristic.value);
                 console.log("Char. values length: " + characteristic.values.length);
-                console.log("Char. properties: " + characteristic.permission);
+                console.log("Char. properties: " + characteristic.properties);
                 console.log("Char. Descr. amount: " + characteristic.descriptors.length);
 
                 if (characteristic.descriptors.length > 0) {
@@ -107,7 +107,7 @@ http.get("https://" + address + ":3000/profile/json1", function (resp) {
                         console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
                         console.log("Descr. value: " + characteristic.descriptors[descr].value);
                         descriptors.push(new BlenoDescriptor({
-                            uuid: characteristic.descriptors[descr].uuid.substr(4, 4).toUpperCase().toString(),
+                            uuid: characteristic.descriptors[descr].uuid, //.substr(4, 4).toUpperCase().toString(),
                             value: characteristic.descriptors[descr].value
                         }));
                     }
@@ -117,15 +117,22 @@ http.get("https://" + address + ":3000/profile/json1", function (resp) {
 
                 if( characteristic.values.length > 1) {
                     type = 'array';
-                } else {
+                } else if( characteristic.base === 0) {
                     type = 'range';
+                } else {
+                    type = 'base';
                 }
                 var bleCharacteristic = new BLECharacteristic({
-                    uuid: characteristic.uuid.substr(4, 4).toUpperCase().toString(),
-                    properties: characteristic.permission,
+                    uuid: characteristic.uuid, //.substr(4, 4).toUpperCase().toString(),
+                    properties: characteristic.properties,
                     descriptors: descriptors,
-                    data: characteristic.type,
-                    interval: 1000,
+                    data: characteristic.data,
+                    precision : characteristic.precision,
+                    interval: characteristic.interval,
+                    values : characteristic.values,
+                    base : characteristic.base,
+                    min : characteristic.min,
+                    max : characteristic.max,
                     characteristic : type
                 });
 
@@ -133,7 +140,7 @@ http.get("https://" + address + ":3000/profile/json1", function (resp) {
             }
         }
 
-        var serviceuuid = profile[0].uuid.substr(4, 4).toUpperCase().toString();
+        var serviceuuid = profile[0].uuid; //.substr(4, 4).toUpperCase().toString();
         console.log("Service UUID: " + serviceuuid);
 
         var bleService = new BLEService({

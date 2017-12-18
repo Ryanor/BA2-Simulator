@@ -74,7 +74,7 @@ var BLECharacteristic = function (params) {
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
-    if (this.characteristic === 'random') {
+    if (this.characteristic === 'base') {
         switch (this.data) {
             case "float":
                 // create random value
@@ -130,7 +130,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
     // creates interval function
     this.intervalId = setInterval(function () {
-        if (this.characteristic === 'random') {
+        if (this.characteristic === 'base') {
             switch (this.data) {
                 case "float":
                     // create random value
@@ -146,7 +146,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
             }
         }
 
-        if (this.characteristic === 'values') {
+        if (this.characteristic === 'array') {
             console.log("Get next value:");
 
             postValue = array[index];
@@ -231,7 +231,7 @@ function createRandomFloatValueInRange(min, max, precision) {
         // add the value
         postValue = postValue + delta;
     } else {
-        // substract the value
+        // subtract the value
         postValue = postValue - delta;
     }
 
@@ -249,7 +249,7 @@ function createRandomIntValueFromBase(min, max) {
         // add the value
         postValue = postValue + delta;
     } else {
-        // substract the value
+        // subtract the value
         postValue = postValue - delta;
     }
 
