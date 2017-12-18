@@ -1,6 +1,7 @@
 /**
- * Class HeartRateMeasurementCharacteristic extends bleno.Characteristic class
- * HeartRateMeasurementCharacteristic shows user information about the sensor location the body.
+ * Class HumidityCharacteristic extends bleno.Characteristic class
+ * HumidityCharacteristic shows user information about the humidity in percent.
+ * Humidity level is calculated from a base level which will increase or decrease its value randomly.
  * Uses SIG defined UUID for the characteristic
  *
  * @author gwu
@@ -23,9 +24,8 @@ var Characteristic = bleno.Characteristic;
 var humidity = 50;
 
 /**
- * Constructor for HeartRateMeasurementCharacteristic calls constructor from the parent class Characteristic
- * Defines the UUID for the characteristic
- * Includes descriptors used
+ * Constructor for HumidityCharacteristic, calls super constructor from the parent class Characteristic
+ * Defines the UUID, value, properties and descriptors of the characteristics
  */
 var HumidityCharacteristic = function() {
     HumidityCharacteristic.super_.call(this, {
@@ -41,20 +41,18 @@ var HumidityCharacteristic = function() {
     });
 };
 
-// define inhertance
+// define inheritance
 util.inherits(HumidityCharacteristic, Characteristic);
 
 /**
  * Override prototype method onReadRequest from class bleno.Characteristic
- * This method is called if the master initiates an onReadRequest on the body sensor location characteristic.
- * Creates a random number between 0 and 7 which are used for the position on the body
+ * This method is called if the master initiates an onReadRequest on the humidity characteristic.
+ * Sends a randomly created value for the humidity to the client
  */
 HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
     console.log("Get random value for humidity");
     // create random value
     createRandomValue(0.01, 0.1);
-    humidity = humidity.toFixed(2);
-    // crete buffer and write value into it
     // return value to master
     callback(this.RESULT_SUCCESS, new Buffer(humidity));
 };
@@ -62,7 +60,7 @@ HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
 /**
  * Override prototype method onSubscribe from class bleno.Characteristic
  * This method is called if the master subscribes to the characteristic so it gets a new value every 2s interval.
- * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
+ * Creates a random number between within a min and max range and subtracts the value from the actual humidity value
  */
 HumidityCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
     // creates interval function
@@ -70,10 +68,6 @@ HumidityCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValu
         console.log("Get random value for humidity");
         // get random value
         createRandomValue(0.01, 0.1);
-        humidity = humidity.toFixed(2);
-        // crete buffer and write value into it
-        //var data = new Buffer(2);
-        //data.writeUInt16BE(humidity, 0);
         // send data to master
         updateValueCallback(new Buffer(humidity));
         // wait 2s
@@ -89,21 +83,26 @@ HumidityCharacteristic.prototype.onUnsubscribe = function() {
     clearInterval(this.intervalId);
 };
 
-
+/**
+ * Function creates a new value with a random value within the range of min and max.
+ * This values is either added or subtracted from the base value of humidity
+ * @param min Minimum range
+ * @param max Maximum range
+ */
 function createRandomValue(min, max) {
     console.log("Get randomized value for humidity");
     // create random value
-    var delta = Math.random() * (max - min) + min;
+    var delta = (Math.random() * (max - min) + min).toFixed(2);
     // check if even
     if( (delta % 2) === 0) {
-        // add the value
+        // add the value to actual bae
         humidity = humidity + delta;
     } else {
-        // substract the value
+        // subtract the value from actual base
         humidity = humidity - delta;
     }
     console.log("Humidity: " + humidity + " %");
 }
 
-// export class as HeartRateMeasurementCharacteristic
+// export class as HumidityCharacteristic
 module.exports = HumidityCharacteristic;

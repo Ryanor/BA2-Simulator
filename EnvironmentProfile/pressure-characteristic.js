@@ -1,6 +1,6 @@
 /**
- * Class HeartRateMeasurementCharacteristic extends bleno.Characteristic class
- * HeartRateMeasurementCharacteristic shows user information about the sensor location the body.
+ * Class PressureCharacteristic extends bleno.Characteristic class
+ * PressureCharacteristic shows user information about the air pressure in Pascals.
  * Uses SIG defined UUID for the characteristic
  *
  * @author gwu
@@ -23,9 +23,8 @@ var Characteristic = bleno.Characteristic;
 var pressure = 975000;
 
 /**
- * Constructor for HeartRateMeasurementCharacteristic calls constructor from the parent class Characteristic
- * Defines the UUID for the characteristic
- * Includes descriptors used
+ * Constructor for PressureCharacteristic calls super constructor from the parent class Characteristic
+ * Defines the UUID, value, properties and descriptors of the characteristics
  */
 var PressureCharacteristic = function() {
     PressureCharacteristic.super_.call(this, {
@@ -35,27 +34,23 @@ var PressureCharacteristic = function() {
         descriptors: [
             new Descriptor({
                 uuid: '2901',
-                value: 'Pressure level in Pa, values between 165 and 108000%'
+                value: 'Pressure level in Pa, values between 165 and 108000 Pa'
             })
         ]
     });
 };
 
-// define inhertance
+// define inheritance
 util.inherits(PressureCharacteristic, Characteristic);
 
 /**
  * Override prototype method onReadRequest from class bleno.Characteristic
- * This method is called if the master initiates an onReadRequest on the body sensor location characteristic.
- * Creates a random number between 0 and 7 which are used for the position on the body
+ * This method is called if the master initiates an onReadRequest for the pressure characteristic.
+ * Sends a randomly created value for the pressure to the client
  */
 PressureCharacteristic.prototype.onReadRequest = function(offset, callback) {
     // create random value
     createRandomValue(0.1, 1);
-    pressure = pressure.toFixed(1);
-    // crete buffer and write value into it
-    //var data = new Buffer(2);
-    //data.writeUInt16BE(humidity, 0);
     // return value to master
     callback(this.RESULT_SUCCESS, new Buffer(pressure));
 };
@@ -63,17 +58,13 @@ PressureCharacteristic.prototype.onReadRequest = function(offset, callback) {
 /**
  * Override prototype method onSubscribe from class bleno.Characteristic
  * This method is called if the master subscribes to the characteristic so it gets a new value every 2s interval.
- * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
+ * Creates a random number between within a min and max range and subtracts the value from the actual pressure value
  */
 PressureCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
     // creates interval function
     this.intervalId = setInterval(function() {
         // get random value
         createRandomValue(0.1, 1);
-        pressure = pressure.toFixed(1);
-        // crete buffer and write value into it
-        //var data = new Buffer(2);
-        //data.writeUInt16BE(humidity, 0);
         // send data to master
         updateValueCallback(new Buffer(pressure));
         // wait 2s
@@ -90,20 +81,26 @@ PressureCharacteristic.prototype.onUnsubscribe = function() {
 };
 
 
+/**
+ * Function creates a new value with a random value within the range of min and max.
+ * This values is either added or subtracted from the base value of pressure
+ * @param min Minimum range
+ * @param max Maximum range
+ */
 function createRandomValue(min, max) {
     console.log("Get randomized value for pressure");
     // create random value
-    var delta = Math.random() * (max - min) + min;
+    var delta = (Math.random() * (max - min) + min).toFixed(1);
     // check if even
     if( (delta % 2) === 0) {
         // add the value
         pressure = pressure + delta;
     } else {
-        // substract the value
+        // subtract the value
         pressure = pressure - delta;
     }
     console.log("Pressure: " + pressure + " Pa");
 }
 
-// export class as HeartRateMeasurementCharacteristic
+// export class as PressureCharacteristic
 module.exports = PressureCharacteristic;

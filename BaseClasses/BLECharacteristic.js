@@ -9,11 +9,8 @@
 // import utility library to build classes
 var util = require('util');
 
-// import bleno module for bluettoth low energy communication
+// import bleno module for bluetooth low energy communication
 var bleno = require('bleno');
-
-// predefine the included descriptors of the service
-var Descriptor = bleno.Descriptor;
 
 // create the Characteristic class which the battery level characteristic inherits from
 var Characteristic = bleno.Characteristic;
@@ -22,9 +19,9 @@ var Characteristic = bleno.Characteristic;
 var index = 0;
 
 // variable for the value which is being sent to the client
-var postValue = 0;
+var postValue;
 
-var array = [];
+var array;
 
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
@@ -34,7 +31,7 @@ var array = [];
  * value ............ Value for value, usually null
  * properties ....... Array of properties: read, write and notify
  * descriptors ...... Array of descriptors for the characteristic
- * type ............. Data type : Integer, Float or String (Buffer)
+ * data ............. Data type : Integer, Float or String (Buffer)
  * values ........... Array containing an amount of values for read or notify
  * interval ......... Notification interval in ms
  * precision ........ Digits after the comma, for float values
@@ -51,17 +48,22 @@ var BLECharacteristic = function (params) {
         descriptors: params.descriptors
     });
 
-    this.type = params.type;
-    // values array
-    array = params.values;
+    // data type
+    this.data = params.data;
     // notification interval time
     this.interval = params.interval;
     // type of the characteristic
     this.characteristic = params.characteristic || 'random';
     // number of digits for float values after the comma
     this.precision = params.precision || 2;
+
+    // values array
+    array = params.values;
+    // base value
     postValue = params.start || 0;
+    // minimum value for step
     this.min = params.min || 1;
+    // maximum value for step
     this.max = params.max || 6;
 };
 
@@ -73,15 +75,15 @@ var BLECharacteristic = function (params) {
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
     if (this.characteristic === 'random') {
-        switch (this.type) {
+        switch (this.data) {
             case "float":
                 // create random value
-                createRandomFloatValue(0.01, 0.1, this.precision);
+                createRandomFloatValueFromBase(this.min, this.max, this.precision);
                 break;
 
             case "int":
                 // create random value
-                createRandomIntValueFromBase(1, 6);
+                createRandomIntValueFromBase(this.min, this.max);
                 break;
 
             default:
@@ -101,10 +103,10 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     if (this.characteristic === 'range') {
-        switch (this.type) {
+        switch (this.data) {
             case "float":
                 // create random value
-                createRandomFloatValue(0.01, 0.1, this.precision);
+                createRandomFloatValueInRange(this.min, this.max, this.precision);
                 break;
 
             case "int":
@@ -129,17 +131,15 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     // creates interval function
     this.intervalId = setInterval(function () {
         if (this.characteristic === 'random') {
-            switch (this.type) {
+            switch (this.data) {
                 case "float":
                     // create random value
-                    createRandomFloatValue(0.01, 0.1, this.precision);
+                    createRandomFloatValueFromBase(this.min, this.max, this.precision);
                     break;
 
                 case "int":
                     // create random value
                     createRandomIntValueFromBase(this.min, this.max);
-
-                    createRandomIntValueInRange(this.min, this.max);
                     break;
 
                 default:
@@ -154,7 +154,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
             console.log(index + ".: " + postValue);
 
-            switch (this.type) {
+            switch (this.data) {
                 case "int":
                     var data = new Buffer(2);
                     data.writeUInt16BE(postValue, 0);
@@ -167,10 +167,10 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         }
 
         if (this.characteristic === 'range') {
-            switch (this.type) {
+            switch (this.data) {
                 case "float":
                     // create random value
-                    createRandomFloatValue(0.01, 0.1, this.precision);
+                    createRandomFloatValueInRange(this.min, this.max, this.precision);
                     break;
 
                 case "int":
@@ -202,7 +202,7 @@ Characteristic.prototype.toString = function () {
     return JSON.stringify({
         uuid: this.uuid,
         properties: this.properties,
-        type: this.type,
+        data: this.data,
         value: this.value,
         values: this.values,
         interval: this.interval,
@@ -212,7 +212,16 @@ Characteristic.prototype.toString = function () {
 };
 
 
-function createRandomFloatValue(min, max, precision) {
+function createRandomFloatValueFromBase(min, max, precision) {
+    console.log("Get randomized FLOAT value");
+    // create random value
+
+    postValue = (Math.random() * (max - min) + min).toFixed(precision);
+
+    console.log("FLOAT: " + postValue);
+}
+
+function createRandomFloatValueInRange(min, max, precision) {
     console.log("Get randomized FLOAT value");
     // create random value
 
@@ -228,6 +237,7 @@ function createRandomFloatValue(min, max, precision) {
 
     console.log("FLOAT: " + postValue);
 }
+
 
 function createRandomIntValueFromBase(min, max) {
     console.log("Get randomized INT value:");
@@ -250,7 +260,7 @@ function createRandomIntValueInRange(min, max) {
     console.log("Get randomized INT value:");
     // create random value
 
-    var postValue = parseInt(Math.floor((Math.random() * (max - min) + min)));
+    postValue = parseInt(Math.floor((Math.random() * (max - min) + min)));
 
     console.log("INT: " + postValue);
 }

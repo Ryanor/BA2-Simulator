@@ -1,0 +1,11 @@
+{
+  "name": "BLESimulator",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "bleno": "^0.4.2"
+  }
+}

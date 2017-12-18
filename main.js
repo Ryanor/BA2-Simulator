@@ -14,6 +14,8 @@ var bleno = require('bleno');
 
 var http = require('http');
 
+var ip = reqiure('ip');
+
 // import the base Service class where every service inherits from
 var BLEService = require('./BaseClasses/BLEService');
 
@@ -60,12 +62,12 @@ var ipaddress = new IPAddressService();
 // creates array of service objects
 var services = [ipaddress]; //, environment];
 
-//var services = [];
 
 var profile;
+var address = ip.address();
 
 // read ble services from webserver
-http.get('http://192.168.0.3:3000/profile/json1', function (resp) {
+http.get("https://" + address + ":3000/profile/json1", function (resp) {
     var data = '';
 
     // A chunk of data has been recieved.
@@ -122,7 +124,7 @@ http.get('http://192.168.0.3:3000/profile/json1', function (resp) {
                     uuid: characteristic.uuid.substr(4, 4).toUpperCase().toString(),
                     properties: characteristic.permission,
                     descriptors: descriptors,
-                    type: characteristic.type,
+                    data: characteristic.type,
                     interval: 1000,
                     characteristic : type
                 });
