@@ -14,10 +14,10 @@ const bleno = require('bleno');
 const Characteristic = bleno.Characteristic;
 
 // helper container for values array
-// let arrayContainer = [];
+let arrayContainer = [];
 
 // index counter for the values array
- let arrayIndex = -1;
+let arrayIndex = -1;
 
 // variable for the value which is being sent to the client
 let postValue;
@@ -59,7 +59,7 @@ const BLECharacteristic = function (params) {
 
     // values array
     this.array = params.values;
-    //arrayContainer = this.array;
+    arrayContainer = this.array;
 
     // base value
     postValue = params.start || 0;
@@ -89,11 +89,11 @@ const BLECharacteristic = function (params) {
     this.getNextValue = function (index) {
         console.log("Get next value:");
 
-        if(index >= this.array.length) {
+        if(index >= arrayContainer.length) {
             index = 0;
             arrayIndex = 0;
         }
-        let value = this.array[index];
+        let value = arrayContainer[index];
 
         console.log(this.index + ". value: " + value);
 
@@ -310,21 +310,6 @@ BLECharacteristic.prototype.toString = function () {
         descriptors: this.descriptors
     });
 };
-
-/*function getNextValue () {
-    console.log("Get next value:");
-
-    let value = arrayContainer[arrayIndex];
-
-    console.log(arrayIndex + ". value: " + value);
-
-    arrayIndex = arrayIndex + 1;
-
-    if(arrayIndex >= arrayContainer.length) {
-        arrayIndex = 0;
-    }
-    return value;
-}*/
 
 util.inherits(BLECharacteristic, Characteristic);
 
