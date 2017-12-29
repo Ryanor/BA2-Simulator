@@ -234,7 +234,11 @@ BLECharacteristic.prototype.toString = function () {
 };
 
 function getNextValue() {
+    console.log("Get next value:");
+
     let value = array[index];
+
+    console.log(index + ". value: " + value);
 
     index = index + 1;
     if (index > array.length) {
