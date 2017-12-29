@@ -159,13 +159,13 @@ const BLECharacteristic = function (params) {
                     case "float":
                         // create random value
                         //this.createRandomFloatValueFromBase();
-                        randomFloatFromBase();
+                        //randomFloatFromBase();
                         break;
 
                     case "int":
                         // create random value
                         //this.createRandomIntValueFromBase();
-                        randomIntFromBase();
+                        //randomIntFromBase();
                         break;
 
                     default:
