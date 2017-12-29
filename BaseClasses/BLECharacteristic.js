@@ -71,16 +71,15 @@ const BLECharacteristic = function (params) {
     this.getNextValueFromArray = function () {
         console.log("Get next value:");
 
-        let value = this.array[index];
+        postValue = this.array[index];
 
-        console.log(index + ". value: " + value);
+        console.log(index + ". value: " + postValue);
 
         index = index + 1;
 
         if(index > this.array.length) {
             index = 0;
         }
-        return value;
     };
 
     this.createRandomIntValueInRange = function () {
@@ -220,7 +219,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         const data = new Buffer(2);
 
         if(charType === 'array') {
-            postValue = this.getNextValueFromArray();
+            this.getNextValueFromArray();
         }
 
         if (charType === 'base') {
