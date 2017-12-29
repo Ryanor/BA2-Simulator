@@ -15,6 +15,7 @@ var bleno = require('bleno');
 // create the Characteristic class which the battery level characteristic inherits from
 var Characteristic = bleno.Characteristic;
 
+// array for values
 var array = [];
 
 // index counter for the values array
@@ -23,6 +24,7 @@ var index = 0;
 // variable for the value which is being sent to the client
 var postValue;
 
+// notification interval time
 var interval;
 
 /**
@@ -101,8 +103,6 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
         readNextValue();
 
-        // send value to client
-        callback(this.RESULT_SUCCESS, new Buffer([postValue]));
     }
 
     if (this.characteristic === 'range') {
@@ -146,7 +146,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     console.log("Log: characteristic type: " + charType);
     console.log("Log: data type: " + dataType);
 
-    if (charType === 'base') {
+  /*  if (charType === 'base') {
         switch (dataType) {
             case "float":
                 // create random value
@@ -176,7 +176,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
             default:
         }
-    }
+    }*/
 
     // create new Buffer for value
     var data = new Buffer(2);
@@ -216,7 +216,7 @@ Characteristic.prototype.toString = function () {
         properties: this.properties,
         data: this.data,
         value: this.value,
-        array: this.array,
+        array: array,
         interval: interval,
         characteristic: this.characteristic,
         descriptors: this.descriptors
