@@ -21,6 +21,8 @@ var Characteristic = bleno.Characteristic;
 // variable for the value which is being sent to the client
 var postValue;
 
+var interval;
+
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
  *
@@ -49,7 +51,7 @@ var BLECharacteristic = function (params) {
     // data type
     this.data = params.data;
     // notification interval time
-    this.interval = params.interval;
+    interval = params.interval;
     // type of the characteristic
     this.characteristic = params.characteristic || 'random';
     // number of digits for float values after the comma
@@ -213,7 +215,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         updateValueCallback(data);
 
         // wait interval ms
-    }, this.interval);
+    }, interval);
 };
 
 /**
@@ -232,7 +234,7 @@ Characteristic.prototype.toString = function () {
         data: this.data,
         value: this.value,
         array: this.array,
-        interval: this.interval,
+        interval: interval,
         characteristic: this.characteristic,
         descriptors: this.descriptors
     });
