@@ -72,6 +72,16 @@ var BLECharacteristic = function (params) {
 
     // index counter for the values array
     this.index = 0;
+
+    this.getNextValue = function() {
+        var value = this.array[this.index];
+        this.index = this.index + 1;
+
+        if((this.index) > this.array.length) {
+            this.index = 0;
+        }
+        return value;
+    }
 };
 
 /**
@@ -103,7 +113,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
     if (this.characteristic === 'array') {
 
-        Characteristic.readNextValue();
+        postValue = this.getNextValue();
     }
 
     if (this.characteristic === 'range') {
@@ -191,11 +201,11 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         // convert value to correct buffer type
         if (dataType === 'int') {
             // convert value to UInt16
-            Characteristic.readNextValue();
+            postValue = this.getNextValue();
             data.writeUInt16BE(postValue, 0);
 
         } else {
-            Characteristic.readNextValue();
+            postValue = this.getNextValue();
             data.writeFloatBE(postValue, 2, false);
         }
         // notify client value changed
@@ -226,19 +236,6 @@ Characteristic.prototype.toString = function () {
         descriptors: this.descriptors
     });
 };
-
-Characteristic.readNextValue = function() {
-    console.log("Get next value:");
-
-    postValue = this.array[this.index];
-    console.log(this.index + ".: " + postValue);
-
-    this.index = this.index + 1;
-
-    if(this.index > this.array.length) {
-        this.index = 0;
-    }
-}
 
 
 function createRandomFloatValueFromBase(min, max, precision) {
