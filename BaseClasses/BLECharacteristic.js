@@ -150,12 +150,15 @@ BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResp
  * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
-    console.log("Notify");
-    console.log("Log: characteristic type: " + this.characteristic);
-    console.log("Log: data type: " + this.data);
+    var dataType = this.data;
+    var charType = this.characteristic;
 
-    if (this.characteristic === 'base') {
-        switch (this.data) {
+    console.log("Notify");
+    console.log("Log: characteristic type: " + charType);
+    console.log("Log: data type: " + dataType);
+
+    if (charType === 'base') {
+        switch (dataType) {
             case "float":
                 // create random value
                 createRandomFloatValueFromBase(this.min, this.max, this.precision);
@@ -186,31 +189,22 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         }
     }
 
-    if (this.characteristic === 'array') {
-        console.log("Get next value:");
-
-        postValue = this.array[this.index];
-        this.index = this.index + 1;
-
-        console.log(this.index + ".: " + postValue);
-
-    }
-
     // create new Buffer for value
     var data = new Buffer(2);
-
-    // convert value to correct buffer type
-    if (this.data === 'int') {
-        // convert value to UInt16
-        data.writeUInt16BE(postValue, 0);
-
-    } else {
-       data.writeFloatBE(postValue, this.precision, false);
-    }
 
     // creates interval function
     this.intervalId = setInterval(function () {
 
+        // convert value to correct buffer type
+        if (dataType === 'int') {
+            // convert value to UInt16
+            readNextValue();
+            data.writeUInt16BE(postValue, 0);
+
+        } else {
+            readNextValue();
+            data.writeFloatBE(postValue, 2, false);
+        }
         // notify client value changed
         updateValueCallback(data);
 
@@ -239,6 +233,19 @@ Characteristic.prototype.toString = function () {
         descriptors: this.descriptors
     });
 };
+
+function readNextValue() {
+    console.log("Get next value:");
+
+    postValue = this.array[this.index];
+    console.log(this.index + ".: " + postValue);
+
+    this.index = this.index + 1;
+
+    if(this.index > this.array.length) {
+        this.index = 0;
+    }
+}
 
 
 function createRandomFloatValueFromBase(min, max, precision) {
