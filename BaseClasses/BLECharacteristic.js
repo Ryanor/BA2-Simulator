@@ -15,8 +15,10 @@ var bleno = require('bleno');
 // create the Characteristic class which the battery level characteristic inherits from
 var Characteristic = bleno.Characteristic;
 
+var array = [];
+
 // index counter for the values array
-// var index = 0;
+var index = 0;
 
 // variable for the value which is being sent to the client
 var postValue;
@@ -48,7 +50,7 @@ var BLECharacteristic = function (params) {
         descriptors: params.descriptors
     });
 
-    // data type
+    // data type of value
     this.data = params.data;
     // notification interval time
     interval = params.interval;
@@ -58,15 +60,13 @@ var BLECharacteristic = function (params) {
     this.precision = params.precision || 2;
 
     // values array
-    this.array = params.values;
+    array = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
     this.min = params.min || 1;
     // maximum value for step
     this.max = params.max || 6;
-    // index counter for the values array
-    this.index = 0;
 };
 
 /**
@@ -99,18 +99,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     if (this.characteristic === 'array') {
         console.log("Get next value:");
 
-        // get value for actual index from array
-        postValue = this.array[this.index];
-
-        // increment index
-        this.index = this.index + 1;
-
-        // reset index if all values were read
-        if (this.index > this.array.length) {
-            this.index = 0;
-        }
-
-        console.log(this.index + ".: " + postValue);
+        readNextValue();
 
         // send value to client
         callback(this.RESULT_SUCCESS, new Buffer([postValue]));
@@ -237,13 +226,13 @@ Characteristic.prototype.toString = function () {
 function readNextValue() {
     console.log("Get next value:");
 
-    postValue = this.array[this.index];
-    console.log(this.index + ".: " + postValue);
+    postValue = array[index];
+    console.log(index + ".: " + postValue);
 
-    this.index = this.index + 1;
+    index = index + 1;
 
-    if(this.index > this.array.length) {
-        this.index = 0;
+    if(index > array.length) {
+        index = 0;
     }
 }
 
