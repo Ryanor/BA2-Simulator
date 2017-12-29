@@ -72,9 +72,9 @@ http.get("http://" + address + ":3000/profile/json1", function (resp) {
                 console.log("Char. properties: " + characteristic.properties);
                 console.log("Char. Descr. amount: " + characteristic.descriptors.length);
 
-                if (characteristic.descriptors.length > 0) {
+                const descriptors = [];
 
-                    const descriptors = [];
+                if (characteristic.descriptors.length > 0) {
 
                     for (let descr in characteristic.descriptors) {
                         console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
