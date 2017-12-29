@@ -72,16 +72,6 @@ var BLECharacteristic = function (params) {
 
     // index counter for the values array
     this.index = 0;
-
-    this.getNextValue = function() {
-        var value = this.array[this.index];
-        this.index = this.index + 1;
-
-        if((this.index) > this.array.length) {
-            this.index = 0;
-        }
-        return value;
-    }
 };
 
 /**
@@ -194,18 +184,26 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     var data = new Buffer(2);
 
     var interval = this.interval;
+    var array = this.array;
+    var index = this.index;
 
-    // creates interval function
+    // creates interval function and updates values inside at specific interval time
     this.intervalId = setInterval(function () {
+
+        getNextValue(array, index);
+        index = index + 1;
+        if(index > array.length) {
+            index = 0;
+        }
 
         // convert value to correct buffer type
         if (dataType === 'int') {
-            // convert value to UInt16
-            postValue = this.getNextValue();
+
+            // convert value to UInt16BigEndian
             data.writeUInt16BE(postValue, 0);
 
         } else {
-            postValue = this.getNextValue();
+            // convert value to FloatBigEndian
             data.writeFloatBE(postValue, 2, false);
         }
         // notify client value changed
@@ -237,6 +235,14 @@ Characteristic.prototype.toString = function () {
     });
 };
 
+function getNextValue(array, index) {
+
+    if(index > array.length) {
+        index = 0;
+    }
+
+    postValue = array[index];
+}
 
 function createRandomFloatValueFromBase(min, max, precision) {
     console.log("Get randomized FLOAT value");
