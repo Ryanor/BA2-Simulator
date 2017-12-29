@@ -11,7 +11,7 @@ const util = require('util');
 const bleno = require('bleno');
 
 // create the Characteristic class which the battery level characteristic inherits from
-//const Characteristic = bleno.Characteristic;
+const Characteristic = bleno.Characteristic;
 
 // array for values
 //let array;
@@ -22,8 +22,6 @@ let index = 0;
 // variable for the value which is being sent to the client
 let postValue;
 
-// notification interval time
-//var interval;
 
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
@@ -70,7 +68,7 @@ const BLECharacteristic = function (params) {
 
 
     // class method to get next value from array at position index
-    this.getNextValue = function() {
+    this.getNextValueFromArray = function () {
         console.log("Get next value:");
 
         let value = this.array[index];
@@ -87,12 +85,52 @@ const BLECharacteristic = function (params) {
 
     this.createRandomIntValueInRange = function () {
         console.log("Get randomized INT value:");
-
         // create random value
         let value =  parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
 
         console.log("INT: " + value);
         return value;
+    };
+
+    this.createRandomIntValueFromBase = function () {
+        console.log("Get randomized INT value:");
+        // create random value
+        const delta = parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
+        // check if even
+        if ((delta % 2) === 0) {
+            // add the value
+            postValue = postValue + delta;
+        } else {
+            // subtract the value
+            postValue = postValue - delta;
+        }
+
+        console.log("INT: " + postValue);
+    };
+
+    this.createRandomFloatValueInRange = function () {
+        console.log("Get randomized FLOAT value");
+        // create random value
+        let value = (Math.random() * (this.max - this.min) + this.min).toFixed(this.precision);
+
+        console.log("FLOAT: " + value);
+        return value;
+    };
+
+    this.createRandomFloatValueFromBase = function () {
+        console.log("Get randomized FLOAT value");
+        // create random value
+        const delta = (Math.random() * (this.max - this.min) + this.min).toFixed(this.precision);
+        // check if even
+        if ((delta % 2) === 0) {
+            // add the value
+            postValue = postValue + delta;
+        } else {
+            // subtract the value
+            postValue = postValue - delta;
+        }
+
+        console.log("FLOAT: " + postValue);
     };
 };
 
@@ -111,12 +149,12 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         switch (this.data) {
             case "float":
                 // create random value
-                createRandomFloatValueFromBase(this.min, this.max, this.precision);
+                this.createRandomFloatValueFromBase();
                 break;
 
             case "int":
                 // create random value
-                createRandomIntValueFromBase(this.min, this.max);
+                this.createRandomIntValueFromBase();
                 break;
 
             default:
@@ -125,14 +163,14 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
     if (this.characteristic === 'array') {
 
-        postValue = this.getNextValue();
+        postValue = this.getNextValueFromArray();
     }
 
     if (this.characteristic === 'range') {
         switch (this.data) {
             case "float":
                 // create random value
-                createRandomFloatValueInRange(this.min, this.max, this.precision);
+                postValue = this.createRandomFloatValueInRange();
                 break;
 
             case "int":
@@ -168,8 +206,6 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
     const dataType = this.data;
     const charType = this.characteristic;
-    const minimum = this.min;
-    const maximum = this.max;
     const precision = this.precision;
 
     console.log("Notify");
@@ -183,16 +219,20 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         // create new Buffer for value
         const data = new Buffer(2);
 
-        /*if (charType === 'base') {
+        if(charType === 'array') {
+            postValue = this.getNextValueFromArray();
+        }
+
+        if (charType === 'base') {
             switch (dataType) {
                 case "float":
                     // create random value
-                    createRandomFloatValueFromBase(minimum, maximum, precision);
+                    this.createRandomFloatValueFromBase();
                     break;
 
                 case "int":
                     // create random value
-                    createRandomIntValueFromBase(minimum, maximum);
+                    this.createRandomIntValueFromBase();
                     break;
 
                 default:
@@ -203,7 +243,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
             switch (dataType) {
                 case "float":
                     // create random value
-                    createRandomFloatValueInRange(minimum, maximum, precision);
+                    postValue = this.createRandomFloatValueInRange();
                     break;
 
                 case "int":
@@ -213,12 +253,10 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
                 default:
             }
-        }*/
-
+        }
 
         // convert value to correct buffer type
         if (dataType === 'int') {
-            postValue = this.getNextValue();
             // convert value to UInt16BigEndian
             data.writeUInt16BE(postValue, precision);
 
@@ -249,57 +287,13 @@ BLECharacteristic.prototype.toString = function () {
         data: this.data,
         value: this.value,
         array: this.array,
-        // interval: interval,
+        interval: this.interval,
         characteristic: this.characteristic,
         descriptors: this.descriptors
     });
 };
 
-function createRandomFloatValueFromBase(min, max, precision) {
-    console.log("Get randomized FLOAT value");
-    // create random value
-
-    postValue = (Math.random() * (max - min) + min).toFixed(precision);
-
-    console.log("FLOAT: " + postValue);
-}
-
-function createRandomFloatValueInRange(min, max, precision) {
-    console.log("Get randomized FLOAT value");
-    // create random value
-
-    const delta = (Math.random() * (max - min) + min).toFixed(precision);
-    // check if even
-    if ((delta % 2) === 0) {
-        // add the value
-        postValue = postValue + delta;
-    } else {
-        // subtract the value
-        postValue = postValue - delta;
-    }
-
-    console.log("FLOAT: " + postValue);
-}
-
-
-function createRandomIntValueFromBase(min, max) {
-    console.log("Get randomized INT value:");
-    // create random value
-
-    const delta = parseInt(Math.floor((Math.random() * (max - min) + min)));
-    // check if even
-    if ((delta % 2) === 0) {
-        // add the value
-        postValue = postValue + delta;
-    } else {
-        // subtract the value
-        postValue = postValue - delta;
-    }
-
-    console.log("INT: " + postValue);
-}
-
-util.inherits(BLECharacteristic, bleno.Characteristic);
+util.inherits(BLECharacteristic, Characteristic);
 
 // export class as BLECharacteristic
 module.exports = BLECharacteristic;
