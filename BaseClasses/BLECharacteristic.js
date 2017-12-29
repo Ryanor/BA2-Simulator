@@ -70,6 +70,29 @@ const BLECharacteristic = function (params) {
 
     // index counter for the values array
     this.index = 0;
+
+
+    // class method to get next value from array at position index
+    this.getNextValue = function() {
+        let value = this.array[this.index];
+
+        this.index = this.index + 1;
+
+        if(this.index > this.array.length) {
+            this.index = 0;
+        }
+        return value;
+    };
+
+    this.createRandomIntValueInRange = function () {
+        console.log("Get randomized INT value:");
+        // create random value
+
+        let value =  parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
+
+        console.log("INT: " + value);
+        return value;
+    };
 };
 
 /**
@@ -101,7 +124,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
     if (this.characteristic === 'array') {
 
-        postValue = getNextValue();
+        postValue = this.getNextValue();
     }
 
     if (this.characteristic === 'range') {
@@ -113,7 +136,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
             case "int":
                 // create random value
-                createRandomIntValueInRange(this.min, this.max);
+                postValue = this.createRandomIntValueInRange();
                 break;
 
             default:
@@ -183,7 +206,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
                 case "int":
                     // create random value
-                    createRandomIntValueInRange(minimum, maximum);
+                    postValue = this.createRandomIntValueInRange();
                     break;
 
                 default:
@@ -191,7 +214,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         }
 
         if (charType === 'array') {
-            this.getNextValue();
+            postValue = this.getNextValue();
         }
 
         // convert value to correct buffer type
@@ -290,14 +313,14 @@ function createRandomIntValueFromBase(min, max) {
     console.log("INT: " + postValue);
 }
 
-function createRandomIntValueInRange(min, max) {
+/*function createRandomIntValueInRange(min, max) {
     console.log("Get randomized INT value:");
     // create random value
 
     postValue = parseInt(Math.floor((Math.random() * (max - min) + min)));
 
     console.log("INT: " + postValue);
-}
+}*/
 
 util.inherits(BLECharacteristic, bleno.Characteristic);
 
