@@ -77,7 +77,7 @@ const BLECharacteristic = function (params) {
 
         index = index + 1;
 
-        if(index > this.array.length) {
+        if(index >= this.array.length) {
             index = 0;
         }
     };
@@ -206,6 +206,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     const dataType = this.data;
     const charType = this.characteristic;
     const precision = this.precision;
+    const nextValue = this.getNextValueFromArray();
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
@@ -219,7 +220,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         const data = new Buffer(2);
 
         if(charType === 'array') {
-            this.getNextValueFromArray();
+            nextValue();
         }
 
         if (charType === 'base') {
