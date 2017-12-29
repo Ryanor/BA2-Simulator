@@ -16,16 +16,16 @@ var bleno = require('bleno');
 var Characteristic = bleno.Characteristic;
 
 // array for values
-var array = [];
+// var array = [];
 
 // index counter for the values array
-var index = 0;
+// var index = 0;
 
 // variable for the value which is being sent to the client
 var postValue;
 
 // notification interval time
-var interval;
+//var interval;
 
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
@@ -55,20 +55,23 @@ var BLECharacteristic = function (params) {
     // data type of value
     this.data = params.data;
     // notification interval time
-    interval = params.interval;
+    this.interval = params.interval;
     // type of the characteristic
     this.characteristic = params.characteristic || 'random';
     // number of digits for float values after the comma
     this.precision = params.precision || 2;
 
     // values array
-    array = params.values;
+    this.array = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
     this.min = params.min || 1;
     // maximum value for step
     this.max = params.max || 6;
+
+    // index counter for the values array
+    this.index = 0;
 };
 
 /**
@@ -143,6 +146,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     var charType = this.characteristic;
 
     console.log("Notify");
+    console.log("Interval:" + this.interval);
     console.log("Log: characteristic type: " + charType);
     console.log("Log: data type: " + dataType);
 
@@ -180,6 +184,8 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
     // create new Buffer for value
     var data = new Buffer(2);
+
+    var interval = this.interval;
 
     // creates interval function
     this.intervalId = setInterval(function () {
@@ -226,13 +232,13 @@ Characteristic.prototype.toString = function () {
 function readNextValue() {
     console.log("Get next value:");
 
-    postValue = array[index];
-    console.log(index + ".: " + postValue);
+    postValue = this.array[this.index];
+    console.log(this.index + ".: " + postValue);
 
-    index = index + 1;
+    this.index = this.index + 1;
 
-    if(index > array.length) {
-        index = 0;
+    if(this.index > this.array.length) {
+        this.index = 0;
     }
 }
 
