@@ -143,13 +143,15 @@ const BLECharacteristic = function (params) {
         setInterval(function () {
             console.log("Get next value:");
 
-            let value = arrayContainer[arrayIndex];
-            console.log(arrayIndex + ". value: " + value);
+            if(charType === 'array') {
+                postValue = arrayContainer[arrayIndex];
+                console.log(arrayIndex + ". value: " + postValue);
 
-            arrayIndex = arrayIndex + 1;
+                arrayIndex = arrayIndex + 1;
 
-            if(arrayIndex >= arrayContainer.length) {
-                arrayIndex = 0;
+                if(arrayIndex >= arrayContainer.length) {
+                    arrayIndex = 0;
+                }
             }
 
             if (charType === 'base') {
@@ -174,12 +176,12 @@ const BLECharacteristic = function (params) {
                 switch (dataType) {
                     case "float":
                         // create random value
-                        postValue = this.createRandomFloatValueInRange();
+                        // postValue = this.createRandomFloatValueInRange();
                         break;
 
                     case "int":
                         // create random value
-                        postValue = this.createRandomIntValueInRange();
+                        // postValue = this.createRandomIntValueInRange();
                         break;
 
                     default:
@@ -187,7 +189,6 @@ const BLECharacteristic = function (params) {
             }
 
             // convert value to correct buffer type
-
             let data = new Buffer(2);
 
             if (dataType === 'int') {
@@ -289,7 +290,6 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
     // creates interval function and updates values inside at specific interval time
     this.intervalId = this.notificationInterval(updateValueCallback);
-    clearInterval(this.intervalId);
 };
 
 /**
