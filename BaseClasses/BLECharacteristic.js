@@ -74,8 +74,12 @@ const BLECharacteristic = function (params) {
 
     // class method to get next value from array at position index
     this.getNextValue = function() {
+        console.log("Get next value:");
+
         let value = this.array[this.index];
 
+        console.log(this.index + ". value: " + value);
+        
         this.index = this.index + 1;
 
         if(this.index > this.array.length) {
@@ -256,19 +260,6 @@ BLECharacteristic.prototype.toString = function () {
     });
 };
 
-BLECharacteristic.prototype.getNextValue = function () {
-    console.log("Get next value:");
-
-    postValue = this.array[this.index];
-
-    console.log(this.index + ". value: " + value);
-
-    this.index = this.index + 1;
-    if (this.index > this.array.length) {
-        this.index = 0;
-    }
-};
-
 function createRandomFloatValueFromBase(min, max, precision) {
     console.log("Get randomized FLOAT value");
     // create random value
@@ -312,15 +303,6 @@ function createRandomIntValueFromBase(min, max) {
 
     console.log("INT: " + postValue);
 }
-
-/*function createRandomIntValueInRange(min, max) {
-    console.log("Get randomized INT value:");
-    // create random value
-
-    postValue = parseInt(Math.floor((Math.random() * (max - min) + min)));
-
-    console.log("INT: " + postValue);
-}*/
 
 util.inherits(BLECharacteristic, bleno.Characteristic);
 
