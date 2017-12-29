@@ -17,7 +17,7 @@ const bleno = require('bleno');
 //let array;
 
 // index counter for the values array
-//let index = 0;
+let index = 0;
 
 // variable for the value which is being sent to the client
 let postValue;
@@ -68,30 +68,27 @@ const BLECharacteristic = function (params) {
     // maximum value for step
     this.max = params.max || 6;
 
-    // index counter for the values array
-    this.index = 0;
-
 
     // class method to get next value from array at position index
     this.getNextValue = function() {
         console.log("Get next value:");
 
-        let value = this.array[this.index];
+        let value = this.array[index];
 
-        console.log(this.index + ". value: " + value);
-        
-        this.index = this.index + 1;
+        console.log(index + ". value: " + value);
 
-        if(this.index > this.array.length) {
-            this.index = 0;
+        index = index + 1;
+
+        if(index > this.array.length) {
+            index = 0;
         }
         return value;
     };
 
     this.createRandomIntValueInRange = function () {
         console.log("Get randomized INT value:");
-        // create random value
 
+        // create random value
         let value =  parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
 
         console.log("INT: " + value);
@@ -165,8 +162,7 @@ BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResp
  * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
-    // create new Buffer for value
-    const data = new Buffer(2);
+
     // set interval time
     const interval = this.interval;
 
@@ -184,8 +180,10 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
     // creates interval function and updates values inside at specific interval time
     this.intervalId = setInterval(function () {
+        // create new Buffer for value
+        const data = new Buffer(2);
 
-        if (charType === 'base') {
+        /*if (charType === 'base') {
             switch (dataType) {
                 case "float":
                     // create random value
@@ -215,15 +213,12 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
                 default:
             }
-        }
+        }*/
 
-        if (charType === 'array') {
-            postValue = this.getNextValue();
-        }
 
         // convert value to correct buffer type
         if (dataType === 'int') {
-
+            postValue = this.getNextValue();
             // convert value to UInt16BigEndian
             data.writeUInt16BE(postValue, precision);
 
