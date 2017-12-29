@@ -229,7 +229,7 @@ Characteristic.prototype.toString = function () {
     });
 };
 
-function readNextValue() {
+Characteristic.prototype.readNextValue = function() {
     console.log("Get next value:");
 
     postValue = this.array[this.index];
