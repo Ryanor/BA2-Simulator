@@ -164,8 +164,8 @@ bleno.on('advertisingStart', function (error) {
    if (!error) {
        bleno.setServices(services, function (error) {
            console.log("Set services:");
-           for (let i = 1; i < services.length; i++) {
-               console.log(i + ". Service set");
+           for (let i = 0; i < services.length; i++) {
+               console.log((i + 1) + ". Service set");
            }
            console.log('setServices: ' + (error ? 'error ' + error : 'success'));
        });

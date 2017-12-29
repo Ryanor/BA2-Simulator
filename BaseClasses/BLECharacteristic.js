@@ -140,7 +140,7 @@ const BLECharacteristic = function (params) {
         const randomFloatFromBase = this.createRandomFloatValueFromBase();
         const randomIntFromBase = this.createRandomIntValueFromBase();
 
-        setInterval(function () {
+        this.intervalId = setInterval(function () {
             console.log("Get next value:");
 
             if(charType === 'array') {
@@ -202,6 +202,7 @@ const BLECharacteristic = function (params) {
 
             updateValueCallback(data);
         }, this.interval);
+        //clearInterval(this.intervalId);
     };
 };
 
