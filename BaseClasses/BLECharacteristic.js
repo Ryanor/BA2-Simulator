@@ -57,7 +57,7 @@ const BLECharacteristic = function (params) {
     this.precision = params.precision || 0;
 
     // values array
-    array.push(params.values);
+    array = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
