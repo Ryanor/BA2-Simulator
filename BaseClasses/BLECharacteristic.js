@@ -202,6 +202,7 @@ const BLECharacteristic = function (params) {
 
             updateValueCallback(data);
         }, this.interval);
+        clearInterval(this.intervalId);
     };
 };
 
@@ -254,7 +255,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         }
     }
 
-    if(this.data === 'int') {
+    if(this.data === 'int' && this.characteristic === 'array') {
         let data = new Buffer(2);
         data.writeInt16BE(postValue, 0);
 
@@ -290,7 +291,6 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
     // creates interval function and updates values inside at specific interval time
     this.notificationInterval(updateValueCallback);
-    clearInterval(this.intervalId);
 };
 
 /**
