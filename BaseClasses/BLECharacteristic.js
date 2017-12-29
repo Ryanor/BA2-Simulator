@@ -289,7 +289,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     console.log("Log: Interval ID: " + this.intervalId);
 
     // creates interval function and updates values inside at specific interval time
-    this.intervalId = this.notificationInterval(updateValueCallback);
+    this.notificationInterval(updateValueCallback);
     clearInterval(this.intervalId);
 };
 
