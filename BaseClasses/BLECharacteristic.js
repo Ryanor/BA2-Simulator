@@ -13,7 +13,7 @@ const bleno = require('bleno');
 // create the Characteristic class which the battery level characteristic inherits from
 const Characteristic = bleno.Characteristic;
 
-let array = [];
+let array;
 
 // index counter for the values array
 let index = 0;
