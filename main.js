@@ -14,7 +14,7 @@ var bleno = require('bleno');
 
 var http = require('http');
 
-var ip = reqiure('ip');
+var ip = require('ip');
 
 // import the base Service class where every service inherits from
 var BLEService = require('./BaseClasses/BLEService');
@@ -41,7 +41,7 @@ var profile;
 var address = ip.address();
 
 // read ble services from webservice using the address variable
-http.get("https://" + address + ":3000/profile/json1", function (resp) {
+http.get("http://" + address + ":3000/profile/json1", function (resp) {
     var data = '';
 
     // A chunk of data has been recieved.
