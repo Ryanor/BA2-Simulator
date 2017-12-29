@@ -205,7 +205,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     const dataType = this.data;
     const charType = this.characteristic;
     const precision = this.precision;
-    const nextValue = this.getNextValueFromArray;
+    const nextValue = this.getNextValueFromArray();
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
@@ -219,7 +219,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         const data = new Buffer(2);
 
         if(charType === 'array') {
-            postValue = nextValue();
+            postValue = nextValue;
         }
 
         if (charType === 'base') {
