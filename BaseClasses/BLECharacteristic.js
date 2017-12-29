@@ -13,8 +13,11 @@ const bleno = require('bleno');
 // create the Characteristic class which the battery level characteristic inherits from
 const Characteristic = bleno.Characteristic;
 
+// helper container for values array
+let arrayContainer;
+
 // index counter for the values array
-// let index = 0;
+ let arrayIndex = 0;
 
 // variable for the value which is being sent to the client
 let postValue;
@@ -55,7 +58,7 @@ const BLECharacteristic = function (params) {
     this.precision = params.precision || 0;
 
     // values array
-    this.array = params.values;
+    arrayContainer = this.array = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
@@ -205,13 +208,11 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     const dataType = this.data;
     const charType = this.characteristic;
     const precision = this.precision;
-    const nextValue = this.getNextValueFromArray();
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
     console.log("Log: characteristic type: " + charType);
     console.log("Log: data type: " + dataType);
-    console.log("Max value size: " + maxValueSize);
 
     // creates interval function and updates values inside at specific interval time
     this.intervalId = setInterval(function () {
@@ -219,7 +220,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         const data = new Buffer(2);
 
         if(charType === 'array') {
-            postValue = nextValue;
+            postValue = getNextValue();
         }
 
         if (charType === 'base') {
@@ -291,6 +292,21 @@ BLECharacteristic.prototype.toString = function () {
         descriptors: this.descriptors
     });
 };
+
+function getNextValue () {
+    console.log("Get next value:");
+
+    let value = arrayContainer[arrayIndex];
+
+    console.log(arrayIndex + ". value: " + value);
+
+    arrayIndex = arrayIndex + 1;
+
+    if(arrayIndex >= arrayContainer.length) {
+        arrayIndex = 0;
+    }
+    return value;
+}
 
 util.inherits(BLECharacteristic, Characteristic);
 
