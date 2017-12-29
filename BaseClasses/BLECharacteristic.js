@@ -13,10 +13,8 @@ const bleno = require('bleno');
 // create the Characteristic class which the battery level characteristic inherits from
 const Characteristic = bleno.Characteristic;
 
-let array = [];
-
 // index counter for the values array
-let index = 0;
+// let index = 0;
 
 // variable for the value which is being sent to the client
 let postValue;
@@ -57,7 +55,7 @@ const BLECharacteristic = function (params) {
     this.precision = params.precision || 0;
 
     // values array
-    array = params.values;
+    this.array = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
@@ -65,19 +63,20 @@ const BLECharacteristic = function (params) {
     // maximum value for step
     this.max = params.max || 6;
 
+    this.index = 0;
 
     // class method to get next value from array at position index
     this.getNextValueFromArray = function () {
         console.log("Get next value:");
 
-        let value = array[index];
+        let value = this.array[this.index];
 
-        console.log(index + ". value: " + value);
+        console.log(this.index + ". value: " + value);
 
-        index = index + 1;
+        this.index = this.index + 1;
 
-        if(index >= array.length) {
-            index = 0;
+        if(this.index >= this.array.length) {
+            this.index = 0;
         }
         return value;
     };
