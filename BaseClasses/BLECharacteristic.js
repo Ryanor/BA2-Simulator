@@ -13,9 +13,6 @@ const bleno = require('bleno');
 // create the Characteristic class which the battery level characteristic inherits from
 const Characteristic = bleno.Characteristic;
 
-// array for values
-//let array;
-
 // index counter for the values array
 let index = 0;
 
@@ -206,7 +203,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     const dataType = this.data;
     const charType = this.characteristic;
     const precision = this.precision;
-    const nextValue = this.getNextValueFromArray();
+    const nextValue = this.getNextValueFromArray;
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
