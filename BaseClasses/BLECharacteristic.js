@@ -123,7 +123,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     // send value to client
-    callback(this.RESULT_SUCCESS, new Buffer(postValue));
+    callback(this.RESULT_SUCCESS, new Buffer([postValue]));
 };
 
 // Accept a new value for the characteristic's value
@@ -186,9 +186,21 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
         switch (this.data) {
             case "int":
-                var data = new Buffer(2);
-                data.writeUInt16BE(postValue, 0);
-                updateValueCallback(data);
+                // create notification interval function
+                this.intervalId = setInterval(function () {
+
+                    // create new Buffer for value
+                    var data = new Buffer(2);
+
+                    // convert value to UInt16
+                    data.writeUInt16BE(postValue, 0);
+
+                    // notify client value changed
+                    updateValueCallback(data);
+
+                    // wait interval ms
+                }, this.interval);
+
                 break;
         }
 
