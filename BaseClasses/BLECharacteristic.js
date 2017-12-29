@@ -14,7 +14,7 @@ const bleno = require('bleno');
 const Characteristic = bleno.Characteristic;
 
 // helper container for values array
-let arrayContainer;
+let arrayContainer = [];
 
 // index counter for the values array
  let arrayIndex = 0;
@@ -58,7 +58,7 @@ const BLECharacteristic = function (params) {
     this.precision = params.precision || 0;
 
     // values array
-    arrayContainer = this.array = params.values;
+    this.array = arrayContainer = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
@@ -184,7 +184,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     // send value to client
-    callback(this.RESULT_SUCCESS, new Buffer([postValue]));
+    callback(this.RESULT_SUCCESS, new Buffer(postValue));
 };
 
 // Accept a new value for the characteristic's value
