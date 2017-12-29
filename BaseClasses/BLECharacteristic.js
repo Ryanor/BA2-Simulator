@@ -102,10 +102,8 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     if (this.characteristic === 'array') {
-        console.log("Get next value:");
 
-        readNextValue();
-
+        Characteristic.readNextValue();
     }
 
     if (this.characteristic === 'range') {
@@ -193,11 +191,11 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         // convert value to correct buffer type
         if (dataType === 'int') {
             // convert value to UInt16
-            readNextValue();
+            Characteristic.readNextValue();
             data.writeUInt16BE(postValue, 0);
 
         } else {
-            readNextValue();
+            Characteristic.readNextValue();
             data.writeFloatBE(postValue, 2, false);
         }
         // notify client value changed
@@ -229,7 +227,7 @@ Characteristic.prototype.toString = function () {
     });
 };
 
-Characteristic.prototype.readNextValue = function() {
+Characteristic.readNextValue = function() {
     console.log("Get next value:");
 
     postValue = this.array[this.index];
