@@ -5,15 +5,13 @@
  * @author gwu
  * @version 0.1
  */
-
-// import utility library to build classes
-var util = require('util');
+const util = require('util');
 
 // import bleno module for bluetooth low energy communication
-var bleno = require('bleno');
+const bleno = require('bleno');
 
 // create the PrimaryService class which the BLEService class inherits from
-var BlenoPrimaryService = bleno.PrimaryService;
+const BlenoPrimaryService = bleno.PrimaryService;
 
 /**
  * Constructor for BatteryService calls constructor from the parent class PrimaryService

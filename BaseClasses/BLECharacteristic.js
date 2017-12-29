@@ -134,21 +134,75 @@ const BLECharacteristic = function (params) {
 
     this.notificationInterval = function (updateValueCallback) {
         let arrayContainer = this.array;
+        let charType = this.characteristic;
+        let dataType = this.data;
+        let precision = this.precision;
+        const randomFloatFromBase = this.createRandomFloatValueFromBase();
+        const randomIntFromBase = this.createRandomIntValueFromBase();
 
         setInterval(function () {
-            let data = new Buffer(2);
+            console.log("Get next value:");
 
             let value = arrayContainer[arrayIndex];
-            data.writeInt16BE(value, 0);
+            console.log(arrayIndex + ". value: " + value);
+
             arrayIndex = arrayIndex + 1;
 
             if(arrayIndex >= arrayContainer.length) {
                 arrayIndex = 0;
             }
 
+            if (charType === 'base') {
+                switch (dataType) {
+                    case "float":
+                        // create random value
+                        //this.createRandomFloatValueFromBase();
+                        randomFloatFromBase();
+                        break;
+
+                    case "int":
+                        // create random value
+                        //this.createRandomIntValueFromBase();
+                        randomIntFromBase();
+                        break;
+
+                    default:
+                }
+            }
+
+            if (charType === 'range') {
+                switch (dataType) {
+                    case "float":
+                        // create random value
+                        postValue = this.createRandomFloatValueInRange();
+                        break;
+
+                    case "int":
+                        // create random value
+                        postValue = this.createRandomIntValueInRange();
+                        break;
+
+                    default:
+                }
+            }
+
+            // convert value to correct buffer type
+
+            let data = new Buffer(2);
+
+            if (dataType === 'int') {
+                // convert value to UInt16BigEndian
+                data.writeUInt16BE(postValue, precision);
+
+            } else {
+                // convert value to FloatBigEndian
+                data.writeFloatBE(postValue, precision, false);
+            }
+
             updateValueCallback(data);
         }, this.interval);
-    }
+        clearInterval(this.intervalId);
+    };
 };
 
 /**
@@ -228,74 +282,14 @@ BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResp
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
 
-    // set interval time
-    const interval = this.interval;
-
-    const dataType = this.data;
-    const charType = this.characteristic;
-    const precision = this.precision;
-
     console.log("Notify");
     console.log("Interval:" + this.interval);
-    console.log("Log: characteristic type: " + charType);
-    console.log("Log: data type: " + dataType);
+    console.log("Log: characteristic type: " + this.characteristic);
+    console.log("Log: data type: " + this.data);
 
     // creates interval function and updates values inside at specific interval time
-    //this.intervalId = setInterval(function () {
-    this.intervalId = this.notificationInterval(updateValueCallback); /*(function () {
-        // create new Buffer for value
-        const data = new Buffer(2);
-
-        if(charType === 'array') {
-            postValue = getNextValue();
-        }
-
-        if (charType === 'base') {
-            switch (dataType) {
-                case "float":
-                    // create random value
-                    this.createRandomFloatValueFromBase();
-                    break;
-
-                case "int":
-                    // create random value
-                    this.createRandomIntValueFromBase();
-                    break;
-
-                default:
-            }
-        }
-
-        if (charType === 'range') {
-            switch (dataType) {
-                case "float":
-                    // create random value
-                    postValue = this.createRandomFloatValueInRange();
-                    break;
-
-                case "int":
-                    // create random value
-                    postValue = this.createRandomIntValueInRange();
-                    break;
-
-                default:
-            }
-        }
-
-        // convert value to correct buffer type
-        if (dataType === 'int') {
-            // convert value to UInt16BigEndian
-            data.writeUInt16BE(postValue, precision);
-
-        } else {
-            // convert value to FloatBigEndian
-            data.writeFloatBE(postValue, precision, false);
-        }
-        // notify client value changed
-        updateValueCallback(data);
-
-        // wait interval ms
-    }, interval);*/
+    this.intervalId = this.notificationInterval(updateValueCallback);
+    clearInterval(this.intervalId);
 };
 
 /**
@@ -319,10 +313,6 @@ BLECharacteristic.prototype.toString = function () {
         descriptors: this.descriptors
     });
 };
-
-function getNextValue () {
-    return BLECharacteristic.this.getNextValueFromArray();
-}
 
 util.inherits(BLECharacteristic, Characteristic);
 
