@@ -202,7 +202,7 @@ const BLECharacteristic = function (params) {
 
             updateValueCallback(data);
         }, this.interval);
-        //clearInterval(this.intervalId);
+        clearInterval(this.intervalId);
     };
 };
 
