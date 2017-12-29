@@ -13,11 +13,8 @@ const bleno = require('bleno');
 // create the Characteristic class which the battery level characteristic inherits from
 const Characteristic = bleno.Characteristic;
 
-// helper container for values array
-let arrayContainer = [];
-
 // index counter for the values array
-let arrayIndex = -1;
+let arrayIndex = 0;
 
 // variable for the value which is being sent to the client
 let postValue;
@@ -134,6 +131,24 @@ const BLECharacteristic = function (params) {
 
         console.log("FLOAT: " + postValue);
     };
+
+    this.notificationInterval = function (updateValueCallback) {
+        let arrayContainer = this.array;
+
+        setInterval(function () {
+            let data = new Buffer(2);
+
+            let value = arrayContainer[arrayIndex];
+            data.writeInt16BE(value, 0);
+            arrayIndex = arrayIndex + 1;
+
+            if(arrayIndex >= arrayContainer.length) {
+                arrayIndex = 0;
+            }
+
+            updateValueCallback(data);
+        }, this.interval);
+    }
 };
 
 /**
@@ -226,7 +241,8 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     console.log("Log: data type: " + dataType);
 
     // creates interval function and updates values inside at specific interval time
-    this.intervalId = setInterval(function () {
+    //this.intervalId = setInterval(function () {
+    this.intervalId = this.notificationInterval(updateValueCallback); /*(function () {
         // create new Buffer for value
         const data = new Buffer(2);
 
@@ -279,7 +295,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         updateValueCallback(data);
 
         // wait interval ms
-    }, interval);
+    }, interval);*/
 };
 
 /**
@@ -305,7 +321,7 @@ BLECharacteristic.prototype.toString = function () {
 };
 
 function getNextValue () {
-    return this.getNextValueFromArray();
+    return BLECharacteristic.this.getNextValueFromArray();
 }
 
 util.inherits(BLECharacteristic, Characteristic);
