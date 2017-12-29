@@ -202,7 +202,6 @@ const BLECharacteristic = function (params) {
 
             updateValueCallback(data);
         }, this.interval);
-        clearInterval(this.intervalId);
     };
 };
 
@@ -287,8 +286,8 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     console.log("Interval:" + this.interval);
     console.log("Log: characteristic type: " + this.characteristic);
     console.log("Log: data type: " + this.data);
-    console.log("Log: Interval ID: " + this.intervalId);
 
+    clearInterval(this.intervalId);
     // creates interval function and updates values inside at specific interval time
     this.notificationInterval(updateValueCallback);
 };
