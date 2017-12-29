@@ -73,8 +73,12 @@ var BLECharacteristic = function (params) {
  * Creates a random number between 0 and 7 which are used for the position on the body
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
+    console.log("Read");
+    console.log("Log: characteristic type: " + this.characteristic);
+    console.log("Log: data type: " + this.data);
 
     if (this.characteristic === 'base') {
+
         switch (this.data) {
             case "float":
                 // create random value
@@ -122,65 +126,76 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     callback(this.RESULT_SUCCESS, new Buffer(postValue));
 };
 
+// Accept a new value for the characteristic's value
+BLECharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
+    this.value = data;
+    console.log('Write request: value = ' + this.value.toString("utf-8"));
+    callback(this.RESULT_SUCCESS);
+};
+
+
 /**
  * Override prototype method onSubscribe from class bleno.Characteristic
  * This method is called if the master subscribes to the characteristic so it gets a new value every 2s interval.
  * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
+    console.log("Notify");
+    console.log("Log: characteristic type: " + this.characteristic);
+    console.log("Log: data type: " + this.data);
+
+    if (this.characteristic === 'base') {
+        switch (this.data) {
+            case "float":
+                // create random value
+                createRandomFloatValueFromBase(this.min, this.max, this.precision);
+                break;
+
+            case "int":
+                // create random value
+                createRandomIntValueFromBase(this.min, this.max);
+                break;
+
+            default:
+        }
+    }
+
+    if (this.characteristic === 'range') {
+        switch (this.data) {
+            case "float":
+                // create random value
+                createRandomFloatValueInRange(this.min, this.max, this.precision);
+                break;
+
+            case "int":
+                // create random value
+                createRandomIntValueInRange(this.min, this.max);
+                break;
+
+            default:
+        }
+    }
+
+    if (this.characteristic === 'array') {
+        console.log("Get next value:");
+
+        postValue = array[index];
+        index = index + 1;
+
+        console.log(index + ".: " + postValue);
+
+        switch (this.data) {
+            case "int":
+                var data = new Buffer(2);
+                data.writeUInt16BE(postValue, 0);
+                updateValueCallback(data);
+                break;
+        }
+
+    }
+
     // creates interval function
     this.intervalId = setInterval(function () {
-        if (this.characteristic === 'base') {
-            switch (this.data) {
-                case "float":
-                    // create random value
-                    createRandomFloatValueFromBase(this.min, this.max, this.precision);
-                    break;
-
-                case "int":
-                    // create random value
-                    createRandomIntValueFromBase(this.min, this.max);
-                    break;
-
-                default:
-            }
-        }
-
-        if (this.characteristic === 'array') {
-            console.log("Get next value:");
-
-            postValue = array[index];
-            index = index + 1;
-
-            console.log(index + ".: " + postValue);
-
-            switch (this.data) {
-                case "int":
-                    var data = new Buffer(2);
-                    data.writeUInt16BE(postValue, 0);
-                    updateValueCallback(data);
-                    break;
-
-                default:
-            }
-
-        }
-
-        if (this.characteristic === 'range') {
-            switch (this.data) {
-                case "float":
-                    // create random value
-                    createRandomFloatValueInRange(this.min, this.max, this.precision);
-                    break;
-
-                case "int":
-                    // create random value
-                    createRandomIntValueInRange(this.min, this.max);
-                    break;
-
-                default:
-            }
-        }
 
         // notify client value changed
         updateValueCallback(new Buffer(postValue));

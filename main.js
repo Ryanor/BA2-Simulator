@@ -22,51 +22,25 @@ var BLEService = require('./BaseClasses/BLEService');
 // import the base Service class where every service inherits from
 var BLECharacteristic = require('./BaseClasses/BLECharacteristic');
 
-// create the Characteristic class which the battery level characteristic inherits from
-//var BlenoCharacteristic = bleno.Characteristic;
-
 // predefine the included descriptors of the service
 var BlenoDescriptor = bleno.Descriptor;
-
-
-// import class BatteryService
-//var BatteryService = require('./BatteryProfile/battery-service');
-
-// import class HeartRateService
-//var HeartRateService = require('./HeartRateProfile/heart-rate-service');
 
 // import class IPAddressService
 var IPAddressService = require('./IPAddressProfile/ip-address-service');
 
-// import class ThermometerService
-//var ThermometerService = require('./ThermometerProfile/thermometer-service.js');
-
-// import class EnvironmentService
-//var EnvironmentService = require('./EnvironmentProfile/environment_service.js');
-
-// creates BatteryService object
-//var battery = new BatteryService();
-
-// creates HeartRateService object
-//var heartRate = new HeartRateService();
-
 // create IPAddressService object
 var ipaddress = new IPAddressService();
-
-// create ThermometerService object
-//var thermometer = new ThermometerService();
-
-// create EnvironmentService object
-//var environment = new EnvironmentService();
 
 // creates array of service objects
 var services = [ipaddress]; //, environment];
 
-
+// variable stores the server response as json objects
 var profile;
+
+// get the actual ip address of the device and use it to connect to the webservice running on same device
 var address = ip.address();
 
-// read ble services from webserver
+// read ble services from webservice using the address variable
 http.get("https://" + address + ":3000/profile/json1", function (resp) {
     var data = '';
 
@@ -77,9 +51,10 @@ http.get("https://" + address + ":3000/profile/json1", function (resp) {
 
     // The whole response has been received. Print out the result.
     resp.on('end', function () {
+        // print response from server to screen
         //console.log(data);
-        // callback to build all services from response message
 
+        // build all services from response message
         profile = JSON.parse(data);
 
         var characteristics = [];
