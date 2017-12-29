@@ -5,24 +5,22 @@
  * @author gwu
  * @version 0.1
  */
-
-// import utility library to build classes
-var util = require('util');
+const util = require('util');
 
 // import bleno module for bluetooth low energy communication
-var bleno = require('bleno');
+const bleno = require('bleno');
 
 // create the Characteristic class which the battery level characteristic inherits from
-var Characteristic = bleno.Characteristic;
+const Characteristic = bleno.Characteristic;
 
 // array for values
-// var array = [];
+let array;
 
 // index counter for the values array
-// var index = 0;
+let index = 0;
 
 // variable for the value which is being sent to the client
-var postValue;
+let postValue;
 
 // notification interval time
 //var interval;
@@ -44,7 +42,7 @@ var postValue;
  *      random values: created from a start value stepping up and down within a range min and max
  *
  */
-var BLECharacteristic = function (params) {
+const BLECharacteristic = function (params) {
     BLECharacteristic.super_.call(this, {
         uuid: params.uuid,
         value: null,
@@ -62,7 +60,7 @@ var BLECharacteristic = function (params) {
     this.precision = params.precision || 2;
 
     // values array
-    this.array = params.values;
+    array = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
@@ -71,7 +69,7 @@ var BLECharacteristic = function (params) {
     this.max = params.max || 6;
 
     // index counter for the values array
-    this.index = 0;
+    //this.index = 0;
 };
 
 /**
@@ -103,7 +101,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
     if (this.characteristic === 'array') {
 
-        postValue = this.getNextValue();
+        postValue = getNextValue();
     }
 
     if (this.characteristic === 'range') {
@@ -140,8 +138,8 @@ BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResp
  * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
-    var dataType = this.data;
-    var charType = this.characteristic;
+    const dataType = this.data;
+    const charType = this.characteristic;
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
@@ -181,20 +179,14 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     }*/
 
     // create new Buffer for value
-    var data = new Buffer(2);
+    const data = new Buffer(2);
 
-    var interval = this.interval;
-    var array = this.array;
-    var index = this.index;
-
+    const interval = this.interval;
+    
     // creates interval function and updates values inside at specific interval time
     this.intervalId = setInterval(function () {
 
-        getNextValue(array, index);
-        index = index + 1;
-        if(index > array.length) {
-            index = 0;
-        }
+        postValue = getNextValue();
 
         // convert value to correct buffer type
         if (dataType === 'int') {
@@ -228,20 +220,22 @@ Characteristic.prototype.toString = function () {
         properties: this.properties,
         data: this.data,
         value: this.value,
-        array: array,
+        array: this.array,
         interval: interval,
         characteristic: this.characteristic,
         descriptors: this.descriptors
     });
 };
 
-function getNextValue(array, index) {
+function getNextValue() {
+    let value = array[index];
 
+    index = index + 1;
     if(index > array.length) {
         index = 0;
     }
 
-    postValue = array[index];
+    return value;
 }
 
 function createRandomFloatValueFromBase(min, max, precision) {
@@ -257,7 +251,7 @@ function createRandomFloatValueInRange(min, max, precision) {
     console.log("Get randomized FLOAT value");
     // create random value
 
-    var delta = (Math.random() * (max - min) + min).toFixed(precision);
+    const delta = (Math.random() * (max - min) + min).toFixed(precision);
     // check if even
     if ((delta % 2) === 0) {
         // add the value
@@ -275,7 +269,7 @@ function createRandomIntValueFromBase(min, max) {
     console.log("Get randomized INT value:");
     // create random value
 
-    var delta = parseInt(Math.floor((Math.random() * (max - min) + min)));
+    const delta = parseInt(Math.floor((Math.random() * (max - min) + min)));
     // check if even
     if ((delta % 2) === 0) {
         // add the value
