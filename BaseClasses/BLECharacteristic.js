@@ -97,8 +97,16 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     if (this.characteristic === 'array') {
         console.log("Get next value:");
 
+        // get value for actual index from array
         postValue = this.array[this.index];
+
+        // increment index
         this.index = this.index + 1;
+
+        // reset index if all values were read
+        if (this.index > this.array.length) {
+            this.index = 0;
+        }
 
         console.log(this.index + ".: " + postValue);
 
@@ -127,7 +135,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 };
 
 // Accept a new value for the characteristic's value
-BLECharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
+BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResponse, callback) {
     this.value = data;
     console.log('Write request: value = ' + this.value.toString("utf-8"));
     callback(this.RESULT_SUCCESS);
@@ -184,33 +192,25 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
         console.log(this.index + ".: " + postValue);
 
-        switch (this.data) {
-            case "int":
-                // create notification interval function
-                this.intervalId = setInterval(function () {
+    }
 
-                    // create new Buffer for value
-                    var data = new Buffer(2);
+    // create new Buffer for value
+    var data = new Buffer(2);
 
-                    // convert value to UInt16
-                    data.writeUInt16BE(postValue, 0);
+    // convert value to correct buffer type
+    if (this.data === 'int') {
+        // convert value to UInt16
+        data.writeUInt16BE(postValue, 0);
 
-                    // notify client value changed
-                    updateValueCallback(data);
-
-                    // wait interval ms
-                }, this.interval);
-
-                break;
-        }
-
+    } else {
+       data.writeFloatBE(postValue, this.precision, false);
     }
 
     // creates interval function
     this.intervalId = setInterval(function () {
 
         // notify client value changed
-        updateValueCallback(new Buffer(postValue));
+        updateValueCallback(data);
 
         // wait interval ms
     }, this.interval);
