@@ -16,12 +16,10 @@ var bleno = require('bleno');
 var Characteristic = bleno.Characteristic;
 
 // index counter for the values array
-var index = 0;
+// var index = 0;
 
 // variable for the value which is being sent to the client
 var postValue;
-
-var array;
 
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
@@ -58,13 +56,15 @@ var BLECharacteristic = function (params) {
     this.precision = params.precision || 2;
 
     // values array
-    array = params.values;
+    this.array = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
     this.min = params.min || 1;
     // maximum value for step
     this.max = params.max || 6;
+    // index counter for the values array
+    this.index = 0;
 };
 
 /**
@@ -97,10 +97,10 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     if (this.characteristic === 'array') {
         console.log("Get next value:");
 
-        postValue = array[index];
-        index = index + 1;
+        postValue = this.array[this.index];
+        this.index = this.index + 1;
 
-        console.log(index + ".: " + postValue);
+        console.log(this.index + ".: " + postValue);
 
         // send value to client
         callback(this.RESULT_SUCCESS, new Buffer([postValue]));
@@ -179,10 +179,10 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     if (this.characteristic === 'array') {
         console.log("Get next value:");
 
-        postValue = array[index];
-        index = index + 1;
+        postValue = this.array[this.index];
+        this.index = this.index + 1;
 
-        console.log(index + ".: " + postValue);
+        console.log(this.index + ".: " + postValue);
 
         switch (this.data) {
             case "int":
@@ -231,7 +231,7 @@ Characteristic.prototype.toString = function () {
         properties: this.properties,
         data: this.data,
         value: this.value,
-        values: this.values,
+        array: this.array,
         interval: this.interval,
         characteristic: this.characteristic,
         descriptors: this.descriptors
