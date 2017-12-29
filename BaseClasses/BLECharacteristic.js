@@ -14,10 +14,10 @@ const bleno = require('bleno');
 const Characteristic = bleno.Characteristic;
 
 // helper container for values array
-let arrayContainer = [];
+// let arrayContainer = [];
 
 // index counter for the values array
- let arrayIndex = 0;
+ let arrayIndex = -1;
 
 // variable for the value which is being sent to the client
 let postValue;
@@ -58,7 +58,9 @@ const BLECharacteristic = function (params) {
     this.precision = params.precision || 0;
 
     // values array
-    this.array = arrayContainer = params.values;
+    this.array = params.values;
+    //arrayContainer = this.array;
+
     // base value
     postValue = params.start || 0;
     // minimum value for step
@@ -81,6 +83,20 @@ const BLECharacteristic = function (params) {
         if(this.index >= this.array.length) {
             this.index = 0;
         }
+        return value;
+    };
+
+    this.getNextValue = function (index) {
+        console.log("Get next value:");
+
+        if(index >= this.array.length) {
+            index = 0;
+            arrayIndex = 0;
+        }
+        let value = this.array[index];
+
+        console.log(this.index + ". value: " + value);
+
         return value;
     };
 
@@ -208,6 +224,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     const dataType = this.data;
     const charType = this.characteristic;
     const precision = this.precision;
+    const nextValue = this.getNextValue;
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
@@ -220,7 +237,8 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         const data = new Buffer(2);
 
         if(charType === 'array') {
-            postValue = getNextValue();
+            postValue = nextValue(arrayIndex + 1);
+
         }
 
         if (charType === 'base') {
@@ -293,7 +311,7 @@ BLECharacteristic.prototype.toString = function () {
     });
 };
 
-function getNextValue () {
+/*function getNextValue () {
     console.log("Get next value:");
 
     let value = arrayContainer[arrayIndex];
@@ -306,7 +324,7 @@ function getNextValue () {
         arrayIndex = 0;
     }
     return value;
-}
+}*/
 
 util.inherits(BLECharacteristic, Characteristic);
 
