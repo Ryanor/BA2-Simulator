@@ -14,10 +14,10 @@ const bleno = require('bleno');
 //const Characteristic = bleno.Characteristic;
 
 // array for values
-let array;
+//let array;
 
 // index counter for the values array
-let index = 0;
+//let index = 0;
 
 // variable for the value which is being sent to the client
 let postValue;
@@ -60,7 +60,7 @@ const BLECharacteristic = function (params) {
     this.precision = params.precision || 0;
 
     // values array
-    array = params.values;
+    this.array = params.values;
     // base value
     postValue = params.start || 0;
     // minimum value for step
@@ -69,7 +69,7 @@ const BLECharacteristic = function (params) {
     this.max = params.max || 6;
 
     // index counter for the values array
-    //this.index = 0;
+    this.index = 0;
 };
 
 /**
@@ -191,7 +191,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         }
 
         if (charType === 'array') {
-            postValue = getNextValue();
+            this.getNextValue();
         }
 
         // convert value to correct buffer type
@@ -233,20 +233,18 @@ BLECharacteristic.prototype.toString = function () {
     });
 };
 
-function getNextValue() {
+BLECharacteristic.prototype.getNextValue = function () {
     console.log("Get next value:");
 
-    let value = array[index];
+    postValue = this.array[this.index];
 
-    console.log(index + ". value: " + value);
+    console.log(this.index + ". value: " + value);
 
-    index = index + 1;
-    if (index > array.length) {
-        index = 0;
+    this.index = this.index + 1;
+    if (this.index > this.array.length) {
+        this.index = 0;
     }
-
-    return value;
-}
+};
 
 function createRandomFloatValueFromBase(min, max, precision) {
     console.log("Get randomized FLOAT value");
