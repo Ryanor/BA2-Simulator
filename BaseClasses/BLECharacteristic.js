@@ -86,20 +86,6 @@ const BLECharacteristic = function (params) {
         return value;
     };
 
-    this.getNextValue = function (index) {
-        console.log("Get next value:");
-
-        if(index >= arrayContainer.length) {
-            index = 0;
-            arrayIndex = 0;
-        }
-        let value = arrayContainer[index];
-
-        console.log(this.index + ". value: " + value);
-
-        return value;
-    };
-
     this.createRandomIntValueInRange = function () {
         console.log("Get randomized INT value:");
         // create random value
@@ -199,8 +185,17 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         }
     }
 
-    // send value to client
-    callback(this.RESULT_SUCCESS, new Buffer(postValue));
+    if(this.data === 'int') {
+        let data = new Buffer(2);
+        data.writeInt16BE(postValue, 0);
+
+        // send value to client
+        callback(this.RESULT_SUCCESS, data);
+    } else {
+
+        // send value to client
+        callback(this.RESULT_SUCCESS, new Buffer([postValue]));
+    }
 };
 
 // Accept a new value for the characteristic's value
@@ -224,7 +219,6 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     const dataType = this.data;
     const charType = this.characteristic;
     const precision = this.precision;
-    const nextValue = this.getNextValue;
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
@@ -237,8 +231,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
         const data = new Buffer(2);
 
         if(charType === 'array') {
-            postValue = nextValue(arrayIndex + 1);
-
+            postValue = getNextValue();
         }
 
         if (charType === 'base') {
@@ -310,6 +303,19 @@ BLECharacteristic.prototype.toString = function () {
         descriptors: this.descriptors
     });
 };
+
+function getNextValue () {
+    console.log("Get next value:");
+
+    if(arrayIndex >= arrayContainer.length) {
+        arrayIndex = 0;
+    }
+    let value = arrayContainer[arrayIndex];
+
+    console.log(this.index + ". value: " + value);
+
+    return value;
+}
 
 util.inherits(BLECharacteristic, Characteristic);
 
