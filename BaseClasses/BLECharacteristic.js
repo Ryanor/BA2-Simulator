@@ -137,8 +137,8 @@ const BLECharacteristic = function (params) {
         let charType = this.characteristic;
         let dataType = this.data;
         let precision = this.precision;
-        const randomFloatFromBase = this.createRandomFloatValueFromBase();
-        const randomIntFromBase = this.createRandomIntValueFromBase();
+       // const randomFloatFromBase = this.createRandomFloatValueFromBase();
+       // const randomIntFromBase = this.createRandomIntValueFromBase();
 
         this.intervalId = setInterval(function () {
             console.log("Get next value:");
