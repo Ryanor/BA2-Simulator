@@ -59,7 +59,6 @@ const BLECharacteristic = function (params) {
 
     // values array
     this.array = params.values;
-    arrayContainer = this.array;
 
     // base value
     postValue = params.start || 0;
@@ -146,6 +145,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     console.log("Read");
     console.log("Log: characteristic type: " + this.characteristic);
     console.log("Log: data type: " + this.data);
+    console.log("Log: offset: " + offset);
 
     if (this.characteristic === 'base') {
 
@@ -305,16 +305,7 @@ BLECharacteristic.prototype.toString = function () {
 };
 
 function getNextValue () {
-    console.log("Get next value:");
-
-    if(arrayIndex >= arrayContainer.length) {
-        arrayIndex = 0;
-    }
-    let value = arrayContainer[arrayIndex];
-
-    console.log(this.index + ". value: " + value);
-
-    return value;
+    return this.getNextValueFromArray();
 }
 
 util.inherits(BLECharacteristic, Characteristic);
