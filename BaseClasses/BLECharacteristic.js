@@ -250,17 +250,14 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     if (this.data === 'int' && this.characteristic === 'array') {
-        let data = new Buffer(4);
+        let data = new Buffer(2);
         data.writeInt16BE(postValue, 0);
 
         // send value to client
         callback(this.RESULT_SUCCESS, data);
     } else {
-        let value = parseInt((postValue * 100), 10);
-        let data = new Buffer(4);
-        data.writeUInt16BE(value, 0);
         // send value to client
-        callback(this.RESULT_SUCCESS, data);
+        callback(this.RESULT_SUCCESS, new Buffer(postValue));
     }
 };
 
