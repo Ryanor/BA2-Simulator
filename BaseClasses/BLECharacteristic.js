@@ -137,8 +137,7 @@ const BLECharacteristic = function (params) {
         let charType = this.characteristic;
         let dataType = this.data;
         let precision = this.precision;
-       // const randomFloatFromBase = this.createRandomFloatValueFromBase();
-       // const randomIntFromBase = this.createRandomIntValueFromBase();
+        const self = this;
 
         this.intervalId = setInterval(function () {
             console.log("Get next value:");
@@ -158,14 +157,12 @@ const BLECharacteristic = function (params) {
                 switch (dataType) {
                     case "float":
                         // create random value
-                        //this.createRandomFloatValueFromBase();
-                        //randomFloatFromBase();
+                        self.createRandomFloatValueFromBase();
                         break;
 
                     case "int":
                         // create random value
-                        //this.createRandomIntValueFromBase();
-                        //randomIntFromBase();
+                        self.createRandomIntValueFromBase();
                         break;
 
                     default:
@@ -176,12 +173,12 @@ const BLECharacteristic = function (params) {
                 switch (dataType) {
                     case "float":
                         // create random value
-                        // postValue = this.createRandomFloatValueInRange();
+                        postValue = self.createRandomFloatValueInRange();
                         break;
 
                     case "int":
                         // create random value
-                        // postValue = this.createRandomIntValueInRange();
+                        postValue = self.createRandomIntValueInRange();
                         break;
 
                     default:
@@ -196,9 +193,8 @@ const BLECharacteristic = function (params) {
                 data.writeUInt16BE(postValue, 0);
                 updateValueCallback(data);
             } else {
-                let value = 4400; //parseInt((postValue * 100) , 10);
-                //data.writeInt16BE(value, 0, true);
-                updateValueCallback( new Buffer(value));
+                let value = parseInt((postValue * 100) , 10);
+                updateValueCallback( new Buffer([value]));
             }
 
 
