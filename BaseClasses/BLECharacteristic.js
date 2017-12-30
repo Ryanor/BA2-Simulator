@@ -197,7 +197,7 @@ const BLECharacteristic = function (params) {
 
             } else {
                 //let value = parseInt((postValue * 100) , 10);
-                data.writeUInt16LE(postValue, 2, false);
+                data.writeUInt16LE(postValue, 2, true);
             }
 
             updateValueCallback(data);
