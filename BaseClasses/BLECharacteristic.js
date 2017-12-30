@@ -58,7 +58,7 @@ const BLECharacteristic = function (params) {
     this.array = params.values;
 
     // base value
-    this.base = params.start || 0;
+    this.base = params.base || 0;
     // minimum value for step
     this.min = params.min || 1;
     // maximum value for step
@@ -76,7 +76,7 @@ const BLECharacteristic = function (params) {
 
         this.index = this.index + 1;
 
-        if(this.index >= this.array.length) {
+        if (this.index >= this.array.length) {
             this.index = 0;
         }
         return value;
@@ -85,7 +85,7 @@ const BLECharacteristic = function (params) {
     this.createRandomIntValueInRange = function () {
         console.log("Get randomized INT value:");
         // create random value
-        let value =  parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
+        let value = parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
 
         console.log("INT: " + value);
         return value;
@@ -144,13 +144,13 @@ const BLECharacteristic = function (params) {
         this.intervalId = setInterval(function () {
             console.log("Get next value:");
 
-            if(charType === 'array') {
+            if (charType === 'array') {
                 postValue = arrayContainer[arrayIndex];
                 console.log(arrayIndex + ". value: " + postValue);
 
                 arrayIndex = arrayIndex + 1;
 
-                if(arrayIndex >= arrayContainer.length) {
+                if (arrayIndex >= arrayContainer.length) {
                     arrayIndex = 0;
                 }
             }
@@ -194,7 +194,7 @@ const BLECharacteristic = function (params) {
                 // convert value to UInt16BigEndian
                 data.writeUInt16BE(postValue, 0);
             } else {
-                let value = parseInt((postValue * 100) , 10);
+                let value = parseInt((postValue * 100), 10);
                 data = new Buffer(4);
                 data.writeUInt32BE(value, 0);
             }
@@ -220,15 +220,13 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         switch (this.data) {
             case "float":
                 // create random value
-                this.createRandomFloatValueFromBase();
+                postValue = this.createRandomFloatValueFromBase();
                 break;
 
             case "int":
                 // create random value
-                this.createRandomIntValueFromBase();
+                postValue = this.createRandomIntValueFromBase();
                 break;
-
-            default:
         }
     }
 
@@ -248,12 +246,10 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
                 // create random value
                 postValue = this.createRandomIntValueInRange();
                 break;
-
-            default:
         }
     }
 
-    if(this.data === 'int' && this.characteristic === 'array') {
+    if (this.data === 'int' && this.characteristic === 'array') {
         let data = new Buffer(4);
         data.writeInt16BE(postValue, 0);
 

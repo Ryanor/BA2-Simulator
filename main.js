@@ -92,10 +92,13 @@ http.get("http://" + address + ":3000/profile/json1", function (resp) {
 
                     if (characteristic.values.length > 1) {
                         type = 'array';
+                        console.log("Characteristic type = array");
                     } else if (characteristic.base === 0) {
                         type = 'range';
+                        console.log("Characteristic type = range");
                     } else {
                         type = 'base';
+                        console.log("Characteristic type = base");
                     }
                     const bleCharacteristic = new BLECharacteristic({
                         uuid: characteristic.uuid, //.substr(4, 4).toUpperCase().toString(),
