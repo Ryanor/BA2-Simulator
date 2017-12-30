@@ -186,18 +186,18 @@ const BLECharacteristic = function (params) {
             }
 
             // convert value to correct buffer type
-            let data = new Buffer(2);
+            let data = new Buffer(postValue);
 
             if (dataType === 'int') {
                 // convert value to UInt16BigEndian
                 data.writeUInt16BE(postValue, 0);
-                updateValueCallback(data);
             } else {
                 let value = parseInt((postValue * 100) , 10);
-                updateValueCallback( new Buffer([value]));
+                data = new Buffer(value);
+                data.writeUInt32BE(value, 0);
             }
 
-
+            updateValueCallback(data);
         }, this.interval);
     };
 };
@@ -252,15 +252,17 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     if(this.data === 'int' && this.characteristic === 'array') {
-        let data = new Buffer(2);
+        let data = new Buffer(postValue);
         data.writeInt16BE(postValue, 0);
 
         // send value to client
         callback(this.RESULT_SUCCESS, data);
     } else {
-
+        let value = parseInt((postValue * 100), 10);
+        let data = new Buffer(value);
+        data.writeUInt32BE(value, 0);
         // send value to client
-        callback(this.RESULT_SUCCESS, new Buffer([postValue]));
+        callback(this.RESULT_SUCCESS, data);
     }
 };
 
