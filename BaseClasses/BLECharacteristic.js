@@ -193,10 +193,10 @@ const BLECharacteristic = function (params) {
 
             if (dataType === 'int') {
                 // convert value to UInt16BigEndian
-                data.writeUInt16BE(postValue, precision);
+                data.writeUInt16BE(postValue, 0);
 
             } else {
-                data.writeUInt16BE((postValue * 100), 0);
+                data.writeUInt16LE((postValue * 100), 0);
             }
 
             updateValueCallback(data);
