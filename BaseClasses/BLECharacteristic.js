@@ -194,12 +194,12 @@ const BLECharacteristic = function (params) {
             if (dataType === 'int') {
                 // convert value to UInt16BigEndian
                 data.writeUInt16BE(postValue, 0);
-
+                updateValueCallback(data);
             } else {
-                data.writeUInt16LE((postValue * 100), 0);
+                updateValueCallback(new Buffer(postValue));
             }
 
-            updateValueCallback(data);
+
         }, this.interval);
     };
 };
