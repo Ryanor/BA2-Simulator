@@ -197,7 +197,7 @@ const BLECharacteristic = function (params) {
 
             } else {
                 // convert value to FloatBigEndian
-                data.writeUInt16BE(postValue, precision, false);
+                data.writeUInt16BE((postValue * 100), 0);
             }
 
             updateValueCallback(data);
