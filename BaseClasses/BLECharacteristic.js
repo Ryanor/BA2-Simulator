@@ -188,7 +188,7 @@ const BLECharacteristic = function (params) {
             }
 
             // convert value to correct buffer type
-            let data = new Buffer.alloc(2);
+            let data = new Buffer.alloc(4);
 
             if (dataType === 'int') {
                 // convert value to UInt16BigEndian
