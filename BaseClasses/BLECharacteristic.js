@@ -58,7 +58,7 @@ const BLECharacteristic = function (params) {
     this.array = params.values;
 
     // base value
-    postValue = params.start || 0;
+    this.base = params.start || 0;
     // minimum value for step
     this.min = params.min || 1;
     // maximum value for step
@@ -98,13 +98,14 @@ const BLECharacteristic = function (params) {
         // check if even
         if ((delta % 2) === 0) {
             // add the value
-            postValue = postValue + delta;
+            this.base = this.base + delta;
         } else {
             // subtract the value
-            postValue = postValue - delta;
+            this.base = this.base - delta;
         }
 
-        console.log("INT: " + postValue);
+        console.log("INT: " + this.base);
+        return this.base;
     };
 
     this.createRandomFloatValueInRange = function () {
@@ -123,13 +124,14 @@ const BLECharacteristic = function (params) {
         // check if even
         if ((delta % 2) === 0) {
             // add the value
-            postValue = postValue + delta;
+            this.base = this.base + delta;
         } else {
             // subtract the value
-            postValue = postValue - delta;
+            this.base = this.base - delta;
         }
 
-        console.log("FLOAT: " + postValue);
+        console.log("FLOAT: " + this.base);
+        return this.base;
     };
 
     this.notificationInterval = function (updateValueCallback) {
@@ -157,12 +159,12 @@ const BLECharacteristic = function (params) {
                 switch (dataType) {
                     case "float":
                         // create random value
-                        self.createRandomFloatValueFromBase();
+                        postValue = self.createRandomFloatValueFromBase().toFixed(precision);
                         break;
 
                     case "int":
                         // create random value
-                        self.createRandomIntValueFromBase();
+                        postValue = self.createRandomIntValueFromBase().toFixed(precision);
                         break;
 
                     default:
@@ -173,12 +175,12 @@ const BLECharacteristic = function (params) {
                 switch (dataType) {
                     case "float":
                         // create random value
-                        postValue = self.createRandomFloatValueInRange();
+                        postValue = self.createRandomFloatValueInRange().toFixed(precision);
                         break;
 
                     case "int":
                         // create random value
-                        postValue = self.createRandomIntValueInRange();
+                        postValue = self.createRandomIntValueInRange().toFixed(precision);
                         break;
 
                     default:
@@ -186,14 +188,14 @@ const BLECharacteristic = function (params) {
             }
 
             // convert value to correct buffer type
-            let data = new Buffer(postValue);
+            let data = new Buffer(4);
 
             if (dataType === 'int') {
                 // convert value to UInt16BigEndian
                 data.writeUInt16BE(postValue, 0);
             } else {
                 let value = parseInt((postValue * 100) , 10);
-                data = new Buffer(value);
+                data = new Buffer(4);
                 data.writeUInt32BE(value, 0);
             }
 
@@ -252,15 +254,15 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     if(this.data === 'int' && this.characteristic === 'array') {
-        let data = new Buffer(postValue);
+        let data = new Buffer(4);
         data.writeInt16BE(postValue, 0);
 
         // send value to client
         callback(this.RESULT_SUCCESS, data);
     } else {
         let value = parseInt((postValue * 100), 10);
-        let data = new Buffer(value);
-        data.writeUInt32BE(value, 0);
+        let data = new Buffer(4);
+        data.writeUInt16BE(value, 0);
         // send value to client
         callback(this.RESULT_SUCCESS, data);
     }
