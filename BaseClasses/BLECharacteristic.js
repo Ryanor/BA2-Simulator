@@ -188,15 +188,15 @@ const BLECharacteristic = function (params) {
             }
 
             // convert value to correct buffer type
-            let data = new Buffer.alloc(4);
+            let data;
 
             if (dataType === 'int') {
                 // convert value to UInt16BigEndian
+                data = new Buffer.alloc(2);
                 data.writeUInt16BE(postValue, 0);
             } else {
-                let value = parseInt((postValue *100), 10);
-                console.log("Value:" + value);
-                data.writeUInt32BE(value, 0); //.writeFloatBE(postValue, 0);
+                data = new Buffer(8);
+                data.writeFloatBE(postValue, 0);
             }
 
             updateValueCallback(data);
