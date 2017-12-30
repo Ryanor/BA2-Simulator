@@ -197,7 +197,6 @@ const BLECharacteristic = function (params) {
             } else {
                 data = new Buffer(8);
                 data.write('' + postValue, 0);
-                // data.writeFloatBE(postValue, 0);
             }
 
             updateValueCallback(data);
@@ -251,16 +250,17 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         }
     }
 
-    if (this.data === 'int' && this.characteristic === 'array') {
-        let data = new Buffer.alloc(2);
-        data.writeInt16BE(postValue, 0);
+    let data;
 
-        // send value to client
-        callback(this.RESULT_SUCCESS, data);
+    if (this.data === 'int') {
+        data = new Buffer.alloc(2);
+        data.writeInt16BE(postValue, 0);
     } else {
-        // send value to client
-        callback(this.RESULT_SUCCESS, new Buffer([postValue]));
+        data = new Buffer(8);
+        data.write('' + postValue, 0);
     }
+    // send value to client
+    callback(this.RESULT_SUCCESS, data);
 };
 
 // Accept a new value for the characteristic's value
