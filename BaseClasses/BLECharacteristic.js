@@ -194,8 +194,8 @@ const BLECharacteristic = function (params) {
                 // convert value to UInt16BigEndian
                 data.writeUInt16BE(postValue, 0);
             } else {
-                let value = 440; //parseInt((postValue *100), 10);
-                data.writeUInt16BE(value, 0); //.writeFloatBE(postValue, 0);
+                let value = 4400; //parseInt((postValue *100), 10);
+                data.writeInt16BE(value, 0); //.writeFloatBE(postValue, 0);
             }
 
             updateValueCallback(data);
