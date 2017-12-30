@@ -193,13 +193,12 @@ const BLECharacteristic = function (params) {
             if (dataType === 'int') {
                 // convert value to UInt16BigEndian
                 data.writeUInt16BE(postValue, 0);
+                updateValueCallback(data);
             } else {
-                let value = parseInt((postValue * 100), 10);
-                data = new Buffer(4);
-                data.writeUInt32BE(value, 0);
+                updateValueCallback(new Buffer([postValue]));
             }
 
-            updateValueCallback(data);
+
         }, this.interval);
     };
 };
@@ -257,7 +256,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         callback(this.RESULT_SUCCESS, data);
     } else {
         // send value to client
-        callback(this.RESULT_SUCCESS, new Buffer(postValue));
+        callback(this.RESULT_SUCCESS, new Buffer([postValue]));
     }
 };
 
