@@ -195,8 +195,8 @@ const BLECharacteristic = function (params) {
                 data = new Buffer.alloc(2);
                 data.writeUInt16BE(postValue, 0);
             } else {
-                data = new Buffer(4);
-                data.write('0x' + (postValue * 100), 0);
+                data = new Buffer(8);
+                data.write('' + postValue, 0);
                 // data.writeFloatBE(postValue, 0);
             }
 
