@@ -196,8 +196,7 @@ const BLECharacteristic = function (params) {
                 data.writeUInt16BE(postValue, precision);
 
             } else {
-
-                data = new Buffer(postValue);
+                data.writeUInt16BE((postValue * 100), 0);
             }
 
             updateValueCallback(data);
