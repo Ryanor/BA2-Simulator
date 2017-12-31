@@ -14,7 +14,7 @@ const bleno = require('bleno');
 const Characteristic = bleno.Characteristic;
 
 // index counter for the values array
-let index = 0;
+let arrayIndex = 0;
 
 // variable for the value which is being sent to the client
 let postValue;
@@ -56,33 +56,36 @@ const BLECharacteristic = function (params) {
 
     // values array
     this.array = params.values;
+
     // base value
-    postValue = params.start || 0;
+    this.base = params.base || 0;
     // minimum value for step
     this.min = params.min || 1;
     // maximum value for step
     this.max = params.max || 6;
 
+    this.index = 0;
 
     // class method to get next value from array at position index
     this.getNextValueFromArray = function () {
         console.log("Get next value:");
 
-        postValue = this.array[index];
+        let value = this.array[this.index];
 
-        console.log(index + ". value: " + postValue);
+        console.log(this.index + ". value: " + value);
 
-        index = index + 1;
+        this.index = this.index + 1;
 
-        if(index >= this.array.length) {
-            index = 0;
+        if (this.index >= this.array.length) {
+            this.index = 0;
         }
+        return value;
     };
 
     this.createRandomIntValueInRange = function () {
         console.log("Get randomized INT value:");
         // create random value
-        let value =  parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
+        let value = parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
 
         console.log("INT: " + value);
         return value;
@@ -95,13 +98,14 @@ const BLECharacteristic = function (params) {
         // check if even
         if ((delta % 2) === 0) {
             // add the value
-            postValue = postValue + delta;
+            this.base = this.base + delta;
         } else {
             // subtract the value
-            postValue = postValue - delta;
+            this.base = this.base - delta;
         }
 
-        console.log("INT: " + postValue);
+        console.log("INT: " + this.base);
+        return this.base;
     };
 
     this.createRandomFloatValueInRange = function () {
@@ -120,13 +124,84 @@ const BLECharacteristic = function (params) {
         // check if even
         if ((delta % 2) === 0) {
             // add the value
-            postValue = postValue + delta;
+            this.base = this.base + delta;
         } else {
             // subtract the value
-            postValue = postValue - delta;
+            this.base = this.base - delta;
         }
 
-        console.log("FLOAT: " + postValue);
+        console.log("FLOAT: " + this.base);
+        return this.base;
+    };
+
+    this.notificationInterval = function (updateValueCallback) {
+        let arrayContainer = this.array;
+        let charType = this.characteristic;
+        let dataType = this.data;
+        let precision = this.precision;
+        const self = this;
+
+        this.intervalId = setInterval(function () {
+            console.log("Get next value:");
+
+            if (charType === 'array') {
+                postValue = arrayContainer[arrayIndex];
+                console.log(arrayIndex + ". value: " + postValue);
+
+                arrayIndex = arrayIndex + 1;
+
+                if (arrayIndex >= arrayContainer.length) {
+                    arrayIndex = 0;
+                }
+            }
+
+            if (charType === 'base') {
+                switch (dataType) {
+                    case "float":
+                        // create random value
+                        postValue = self.createRandomFloatValueFromBase().toFixed(precision);
+                        break;
+
+                    case "int":
+                        // create random value
+                        postValue = self.createRandomIntValueFromBase().toFixed(precision);
+                        break;
+
+                    default:
+                }
+            }
+
+            if (charType === 'range') {
+                switch (dataType) {
+                    case "float":
+                        // create random value
+                        postValue = self.createRandomFloatValueInRange().toFixed(precision);
+                        break;
+
+                    case "int":
+                        // create random value
+                        postValue = self.createRandomIntValueInRange().toFixed(precision);
+                        break;
+
+                    default:
+                }
+            }
+
+            // convert value to correct buffer type
+            let data;
+
+            if (dataType === 'int') {
+                // convert value to UInt16BigEndian
+                data = new Buffer.alloc(2);
+                data.writeUInt16BE(postValue, 0);
+            } else {
+                data = new Buffer(8);
+                data.write('' + postValue, 0);
+            }
+
+            updateValueCallback(data);
+
+        }, this.interval);
     };
 };
 
@@ -139,21 +214,20 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     console.log("Read");
     console.log("Log: characteristic type: " + this.characteristic);
     console.log("Log: data type: " + this.data);
+    console.log("Log: offset: " + offset);
 
     if (this.characteristic === 'base') {
 
         switch (this.data) {
             case "float":
                 // create random value
-                this.createRandomFloatValueFromBase();
+                postValue = this.createRandomFloatValueFromBase();
                 break;
 
             case "int":
                 // create random value
-                this.createRandomIntValueFromBase();
+                postValue = this.createRandomIntValueFromBase();
                 break;
-
-            default:
         }
     }
 
@@ -173,13 +247,20 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
                 // create random value
                 postValue = this.createRandomIntValueInRange();
                 break;
-
-            default:
         }
     }
 
+    let data;
+
+    if (this.data === 'int') {
+        data = new Buffer.alloc(2);
+        data.writeInt16BE(postValue, 0);
+    } else {
+        data = new Buffer(8);
+        data.write('' + postValue, 0);
+    }
     // send value to client
-    callback(this.RESULT_SUCCESS, new Buffer([postValue]));
+    callback(this.RESULT_SUCCESS, data);
 };
 
 // Accept a new value for the characteristic's value
@@ -197,75 +278,14 @@ BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResp
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
 
-    // set interval time
-    const interval = this.interval;
-
-    const dataType = this.data;
-    const charType = this.characteristic;
-    const precision = this.precision;
-    const nextValue = this.getNextValueFromArray;
-
     console.log("Notify");
     console.log("Interval:" + this.interval);
-    console.log("Log: characteristic type: " + charType);
-    console.log("Log: data type: " + dataType);
-    console.log("Max value size: " + maxValueSize);
+    console.log("Log: characteristic type: " + this.characteristic);
+    console.log("Log: data type: " + this.data);
 
+    clearInterval(this.intervalId);
     // creates interval function and updates values inside at specific interval time
-    this.intervalId = setInterval(function () {
-        // create new Buffer for value
-        const data = new Buffer(2);
-
-        if(charType === 'array') {
-            nextValue();
-        }
-
-        if (charType === 'base') {
-            switch (dataType) {
-                case "float":
-                    // create random value
-                    this.createRandomFloatValueFromBase();
-                    break;
-
-                case "int":
-                    // create random value
-                    this.createRandomIntValueFromBase();
-                    break;
-
-                default:
-            }
-        }
-
-        if (charType === 'range') {
-            switch (dataType) {
-                case "float":
-                    // create random value
-                    postValue = this.createRandomFloatValueInRange();
-                    break;
-
-                case "int":
-                    // create random value
-                    postValue = this.createRandomIntValueInRange();
-                    break;
-
-                default:
-            }
-        }
-
-        // convert value to correct buffer type
-        if (dataType === 'int') {
-            // convert value to UInt16BigEndian
-            data.writeUInt16BE(postValue, precision);
-
-        } else {
-            // convert value to FloatBigEndian
-            data.writeFloatBE(postValue, precision, false);
-        }
-        // notify client value changed
-        updateValueCallback(data);
-
-        // wait interval ms
-    }, interval);
+    this.notificationInterval(updateValueCallback);
 };
 
 /**

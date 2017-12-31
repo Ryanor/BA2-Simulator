@@ -8,41 +8,39 @@
  * @author gwu
  * @version 1.0
  */
+const bleno = require('bleno');
 
-// import bleno module for bluettoth low energy communication
-var bleno = require('bleno');
+const http = require('http');
 
-var http = require('http');
-
-var ip = require('ip');
+const ip = require('ip');
 
 // import the base Service class where every service inherits from
-var BLEService = require('./BaseClasses/BLEService');
+const BLEService = require('./BaseClasses/BLEService');
 
 // import the base Service class where every service inherits from
-var BLECharacteristic = require('./BaseClasses/BLECharacteristic');
+const BLECharacteristic = require('./BaseClasses/BLECharacteristic');
 
 // predefine the included descriptors of the service
-var BlenoDescriptor = bleno.Descriptor;
+const BlenoDescriptor = bleno.Descriptor;
 
 // import class IPAddressService
-var IPAddressService = require('./IPAddressProfile/ip-address-service');
+const IPAddressService = require('./IPAddressProfile/ip-address-service');
 
 // create IPAddressService object
-var ipaddress = new IPAddressService();
+const ipaddress = new IPAddressService();
 
 // creates array of service objects
-var services = [ipaddress]; //, environment];
+let services = [ipaddress]; //, environment];
 
 // variable stores the server response as json objects
-var profile;
+let profile;
 
 // get the actual ip address of the device and use it to connect to the webservice running on same device
-var address = ip.address();
+const address = ip.address();
 
 // read ble services from webservice using the address variable
 http.get("http://" + address + ":3000/profile/json1", function (resp) {
-    var data = '';
+    let data = '';
 
     // A chunk of data has been recieved.
     resp.on('data', function (chunk) {
@@ -52,81 +50,90 @@ http.get("http://" + address + ":3000/profile/json1", function (resp) {
     // The whole response has been received. Print out the result.
     resp.on('end', function () {
         // print response from server to screen
-        //console.log(data);
+        console.log(data);
 
-        // build all services from response message
+        // parse server response data to profile
         profile = JSON.parse(data);
 
-        var characteristics = [];
-        var characteristicContainer = profile[0].characteristics;
-        console.log("Amount of characteristics: " + characteristicContainer.length);
+        // build all services from response message
+        for(var i in profile) {
+            const characteristics = [];
+            const characteristicContainer = profile[i].characteristics;
+            console.log("Amount of characteristics: " + characteristicContainer.length);
 
-        // check if characteristics are available
-        if (characteristicContainer.length > 0) {
+            // check if characteristics are available
+            if (characteristicContainer.length > 0) {
 
-            // get characteristic data
-            for (var char in characteristicContainer) {
-                var characteristic = characteristicContainer[char];
+                // get characteristic data
+                for (let char in characteristicContainer) {
+                    const characteristic = characteristicContainer[char];
 
-                console.log("Char. uuid: " + characteristic.uuid);
-                console.log("Char. value: " + characteristic.value);
-                console.log("Char. values length: " + characteristic.values.length);
-                console.log("Char. properties: " + characteristic.properties);
-                console.log("Char. Descr. amount: " + characteristic.descriptors.length);
+                    console.log("Char. uuid: " + characteristic.uuid);
+                    console.log("Char. value: " + characteristic.value);
+                    console.log("Char. values length: " + characteristic.values.length);
+                    console.log("Char. properties: " + characteristic.properties);
+                    console.log("Char. Descr. amount: " + characteristic.descriptors.length);
 
-                if (characteristic.descriptors.length > 0) {
+                    const descriptors = [];
 
-                    var descriptors = [];
+                    if (characteristic.descriptors.length > 0) {
 
-                    for (var descr in characteristic.descriptors) {
-                        console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
-                        console.log("Descr. value: " + characteristic.descriptors[descr].value);
-                        descriptors.push(new BlenoDescriptor({
-                            uuid: characteristic.descriptors[descr].uuid, //.substr(4, 4).toUpperCase().toString(),
-                            value: characteristic.descriptors[descr].value
-                        }));
+                        for (let descr in characteristic.descriptors) {
+                            console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
+                            console.log("Descr. value: " + characteristic.descriptors[descr].value);
+                            descriptors.push(new BlenoDescriptor({
+                                uuid: characteristic.descriptors[descr].uuid, //.substr(4, 4).toUpperCase().toString(),
+                                value: characteristic.descriptors[descr].value
+                            }));
+                        }
                     }
+
+                    let type;
+
+                    if (characteristic.values.length > 1) {
+                        type = 'array';
+                        console.log("Characteristic type = array");
+                    } else if (characteristic.base === 0) {
+                        type = 'range';
+                        console.log("Characteristic type = range");
+                    } else {
+                        type = 'base';
+                        console.log("Characteristic type = base");
+                    }
+                    const bleCharacteristic = new BLECharacteristic({
+                        uuid: characteristic.uuid, //.substr(4, 4).toUpperCase().toString(),
+                        properties: characteristic.properties,
+                        descriptors: descriptors,
+                        data: characteristic.data,
+                        precision: characteristic.precision,
+                        interval: characteristic.interval,
+                        values: characteristic.values,
+                        base: characteristic.base,
+                        min: characteristic.min,
+                        max: characteristic.max,
+                        characteristic: type
+                    });
+
+                    characteristics.push(bleCharacteristic);
                 }
-
-                var type;
-
-                if( characteristic.values.length > 1) {
-                    type = 'array';
-                } else if( characteristic.base === 0) {
-                    type = 'range';
-                } else {
-                    type = 'base';
-                }
-                var bleCharacteristic = new BLECharacteristic({
-                    uuid: characteristic.uuid, //.substr(4, 4).toUpperCase().toString(),
-                    properties: characteristic.properties,
-                    descriptors: descriptors,
-                    data: characteristic.data,
-                    precision : characteristic.precision,
-                    interval: characteristic.interval,
-                    values : characteristic.values,
-                    base : characteristic.base,
-                    min : characteristic.min,
-                    max : characteristic.max,
-                    characteristic : type
-                });
-
-                characteristics.push(bleCharacteristic);
             }
-        }
 
-        var serviceuuid = profile[0].uuid; //.substr(4, 4).toUpperCase().toString();
-        console.log("Service UUID: " + serviceuuid);
+            const serviceuuid = profile[i].uuid; //.substr(4, 4).toUpperCase().toString();
+            console.log("Service UUID: " + serviceuuid);
 
-        var bleService = new BLEService({
-            uuid: serviceuuid,
-            characteristics: characteristics
-        });
+            // create service from base class
+            const bleService = new BLEService({
+                uuid: serviceuuid,
+                characteristics: characteristics
+            });
 
-        services.push(bleService);
+            // add service to services array
+            services.push(bleService);
+        } // end get all services from profile
 
+        // print all services to screen
         /*for (var i in services) {
-            console.log(services[i].toString());
+                console.log(services[i].toString());
         }*/
     });
 
@@ -165,10 +172,9 @@ bleno.on('advertisingStart', function (error) {
 
    if (!error) {
        bleno.setServices(services, function (error) {
-           // outprint user information
            console.log("Set services:");
-           for (var service in services) {
-               console.log(service + ". Service set");
+           for (let i = 0; i < services.length; i++) {
+               console.log((i + 1) + ". Service set");
            }
            console.log('setServices: ' + (error ? 'error ' + error : 'success'));
        });
