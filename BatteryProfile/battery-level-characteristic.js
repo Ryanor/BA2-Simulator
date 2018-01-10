@@ -37,7 +37,7 @@ var BatteryLevelCharacteristic = function () {
             }),
             new Descriptor({
                 uuid: '2904',
-                // uint16, exponent -2, unit uuid 0x27AD for percent, namespace, organization
+                // uint8, exponent -2, unit uuid 0x27AD for percent, namespace, organization
                 value: new Buffer([0x04, 0x00, 0x27, 0xAD, 0x01, 0x00, 0x00])
             })
         ]
