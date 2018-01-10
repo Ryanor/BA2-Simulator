@@ -66,7 +66,7 @@ HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
     humidity = humidity.toFixed(2);
     console.log("Humidity: " + humidity + " %");
     var data = new Buffer(2);
-    data.writeInt16BE(parseInt((humidity * 100), 10), 0);
+    data.writeUInt16BE(parseInt((humidity * 100), 10), 0);
     // crete buffer and write value into it
     // return value to master
     callback(this.RESULT_SUCCESS, data); //new Buffer(humidity));
