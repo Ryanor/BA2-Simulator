@@ -12,20 +12,9 @@
 // import bleno module for bluettoth low energy communication
 var bleno = require('bleno');
 
-var http = require('http');
-
-// create the PrimaryService class which the battery class inherits from
-//var BlenoPrimaryService = bleno.PrimaryService;
-
-// create the Characteristic class which the battery level characteristic inherits from
-//var Characteristic = bleno.Characteristic;
-
-// predefine the included descriptors of the service
-//var Descriptor = bleno.Descriptor;
-
 
 // import class BatteryService
-//var BatteryService = require('./BatteryProfile/battery-service');
+var BatteryService = require('./BatteryProfile/battery-service');
 
 // import class HeartRateService
 //var HeartRateService = require('./HeartRateProfile/heart-rate-service');
@@ -40,7 +29,7 @@ var IPAddressService = require('./IPAddressProfile/ip-address-service');
 var EnvironmentService = require('./EnvironmentProfile/environment_service.js');
 
 // creates BatteryService object
-//var battery = new BatteryService();
+var battery = new BatteryService();
 
 // creates HeartRateService object
 //var heartRate = new HeartRateService();
@@ -55,58 +44,7 @@ var ipaddress = new IPAddressService();
 var environment = new EnvironmentService();
 
 // creates array of service objects
-var services = [ipaddress, environment];
-
-//var services = [];
-/*
-var profile;
-
-// read ble services from webserver
-http.get('http://192.168.0.10:3000/profile/json1', function (resp) {
-    var data = '';
-
-    // A chunk of data has been recieved.
-    resp.on('data', function (chunk) {
-        data += chunk;
-    });
-
-    // The whole response has been received. Print out the result.
-    resp.on('end', function () {
-        console.log(data);
-        // callback to build all services from response message
-
-        profile = JSON.parse(data);
-        console.log(profile[0].uuid);
-
-        var characteristics = profile[0].characteristics;
-        console.log(characteristics.length);
-        for(var char in characteristics) {
-            var characteristic = characteristics[char];
-
-            console.log("Char. uuid: " + characteristic.uuid);
-            console.log("Char. value: " + characteristic.value);
-            console.log("Char. values length: " + characteristic.values.length);
-            console.log("Char. Descr. amount: " + characteristic.descriptors.length);
-            for(var descr in characteristic.descriptors) {
-                var descriptor = characteristic.descriptors[descr];
-                console.log("Descr. uuid: " + descriptor.uuid);
-                console.log("Descr. value: " + descriptor.value);
-            }
-        }
-
-        function Service() {
-            Services.super_.call(this, {
-                uuid: profile[0].uuid,
-                characteristics: []
-            });
-        }
-        //services.push(Service);
-    });
-
-
-}).on("error", function (err) {
-    console.log("Error: " + err.message);
-}); */
+var services = [ipaddress, battery, environment];
 
 
 /*

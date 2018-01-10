@@ -40,7 +40,7 @@ var HumidityCharacteristic = function() {
             new Descriptor({
                 uuid: '2904',
                 // uint16, exponent -2, unit uuid 0x27AD for percent, namespace, organization
-                value : new Buffer([0x06, 0x82, 0xAD, 0x27, 0x01, 0x00, 0x00])
+                value : new Buffer([0x06, 0x00, 0x27, 0xAD, 0x01, 0x00, 0x00])
             })
         ]
     });
