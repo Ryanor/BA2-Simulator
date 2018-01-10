@@ -36,6 +36,10 @@ var HumidityCharacteristic = function() {
             new Descriptor({
                 uuid: '2901',
                 value: 'Humidity level in %, values between 0 and 100%'
+            }),
+            new Descriptor({
+                uuid: '2904',
+                value : [0x06, -2, 0x27AD, 0x01, 0x0000]
             })
         ]
     });
