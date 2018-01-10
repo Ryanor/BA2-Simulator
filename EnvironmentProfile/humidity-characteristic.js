@@ -39,7 +39,8 @@ var HumidityCharacteristic = function() {
             }),
             new Descriptor({
                 uuid: '2904',
-                value : [0x06, -2, 0x27AD, 0x01, 0x0000]
+                // uint16, exponent -2, uuid 0x27AD, namespace, organization
+                value : new Buffer([0x06, 0xfe, 0x27, 0xAD, 0x01, 0x00, 0x00])
             })
         ]
     });
@@ -57,10 +58,12 @@ HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
     console.log("Get random value for humidity");
     // create random value
     createRandomValue(0.01, 0.1);
-    humidity = humidity.toFixed(2);
+    humidity = parseInt((humidity.toFixed(2) * 100), 10);
+    var data = new Buffer(4);
+    data.writeInt16BE(humidity, 0);
     // crete buffer and write value into it
     // return value to master
-    callback(this.RESULT_SUCCESS, new Buffer(humidity));
+    callback(this.RESULT_SUCCESS, data); //new Buffer(humidity));
 };
 
 /**
@@ -74,12 +77,12 @@ HumidityCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValu
         console.log("Get random value for humidity");
         // get random value
         createRandomValue(0.01, 0.1);
-        humidity = humidity.toFixed(2);
+        humidity = parseInt((humidity.toFixed(2) * 100), 10);
         // crete buffer and write value into it
-        //var data = new Buffer(2);
-        //data.writeUInt16BE(humidity, 0);
+        var data = new Buffer(4);
+        data.writeUInt16BE(humidity, 0);
         // send data to master
-        updateValueCallback(new Buffer(humidity));
+        updateValueCallback(data); //new Buffer(humidity));
         // wait 2s
     }, 2000);
 };
