@@ -37,7 +37,7 @@ var BatteryLevelCharacteristic = function () {
             }),
             new Descriptor({
                 uuid: '2904',
-                // uint8, exponent -2, unit uuid 0x27AD for percent, namespace, organization
+                // uint8, no exponent, unit uuid 0x27AD for percent, namespace, organization
                 value: new Buffer([0x04, 0x00, 0x27, 0xAD, 0x01, 0x00, 0x00])
             })
         ]
@@ -58,7 +58,9 @@ BatteryLevelCharacteristic.prototype.onReadRequest = function (offset, callback)
     var battery = parseInt(Math.floor(Math.random() * 99) + 1);
     console.log("Battery level: " + battery + " %");
     // return value to master
-    callback(this.RESULT_SUCCESS, new Buffer([battery]));
+    var data = new Buffer(2);
+    data.writeUInt8(battery, 0);
+    callback(this.RESULT_SUCCESS, data); //new Buffer([battery]));
 };
 
 // export class as BatteryLevelCharacteristic
