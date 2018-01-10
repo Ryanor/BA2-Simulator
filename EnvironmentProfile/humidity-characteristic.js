@@ -40,13 +40,8 @@ var HumidityCharacteristic = function() {
             new Descriptor({
                 uuid: '2904',
                 // uint16, exponent -2, unit uuid 0x27AD for percent, namespace, organization
-                value : new Buffer([0x06, 0x82, 0x27, 0xAD, 0x01, 0x00, 0x00])
-            }),
-            new Descriptor({
-                uuid: '290B',
-                value : 'This definition is shown in the Environmental Sensing Service'
+                value : new Buffer([0x06, 0x82, 0xAD, 0x27, 0x01, 0x00, 0x00])
             })
-
         ]
     });
 };
@@ -66,7 +61,7 @@ HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
     humidity = humidity.toFixed(2);
     console.log("Humidity: " + humidity + " %");
     var data = new Buffer(2);
-    data.writeUInt16BE(parseInt((humidity * 100), 10), 0);
+    data.writeUInt16LE(parseInt((humidity * 100), 10), 0);
     // crete buffer and write value into it
     // return value to master
     callback(this.RESULT_SUCCESS, data); //new Buffer(humidity));
@@ -87,7 +82,7 @@ HumidityCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValu
         console.log("Humidity: " + humidity + " %");
         // crete buffer and write value into it
         var data = new Buffer(2);
-        data.writeUInt16BE(parseInt((humidity * 100), 10), 0);
+        data.writeUInt16LE(parseInt((humidity * 100), 10), 0);
         // send data to master
         updateValueCallback(data); //new Buffer(humidity));
         // wait 2s
