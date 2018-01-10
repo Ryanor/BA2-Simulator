@@ -4,6 +4,10 @@
     {
         // Service UUID either 4 values or complete UUID
         "uuid": "XXXX" or "0000XXXX-0000-1000-8000-00805F9B34FB",
+
+        // Name of Service
+        "name": "Service name",
+
         // Array of characteristics
         "characteristics": [
             {
@@ -24,8 +28,14 @@
                         // Descriptor UUID
                         "uuid" : "XXXX",
 
-                        // value contain a message or informations, some are predefined like 2902, 2901
-                        "value" : "Message in human readable form"
+                        // value string or byte array
+                        "value" : "Message in human readable form",
+
+                        // Format of value either string or bytes
+                        "data" : "string" // or "bytes",
+
+                        // Name of Descriptor
+                        "name": "Service name",
                     }
                 ],
 
@@ -41,7 +51,7 @@
                  *      - min value of range
                  *      - max value of range
                  *
-                 * 3. Random:
+                 * 3. Base:
                  *      - base value to start randomizing steps from
                  *      - min value of step
                  *      - max value of step
@@ -52,9 +62,14 @@
                  *  - notification interval
                 */
 
-                // data type of values
-                "data" : "int", // "float"
+                // Name of Characteristic
+                "name": "Characteristic name",
 
+                // Datentypen UINT8 - UINT32, SINT8 - SINT32, FLOAT
+                // data type of values
+                "data" : "uint16", // "float"
+
+                // Wert weglassen: User ist für die Daten und die Interpretation verantwortlich
                 // precision means: digits after the comma
                 "precision" : 2,
 
