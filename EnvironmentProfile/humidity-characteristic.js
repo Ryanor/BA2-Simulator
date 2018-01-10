@@ -40,7 +40,7 @@ var HumidityCharacteristic = function() {
             new Descriptor({
                 uuid: '2904',
                 // uint16, exponent -2, uuid 0x27AD, namespace, organization
-                value : new Buffer([0x06, 0xfe, 0x27, 0xAD, 0x01, 0x00, 0x00])
+                value : new Buffer([0x06, 0x02, 0x27, 0xAD, 0x01, 0x00, 0x00])
             })
         ]
     });
@@ -59,6 +59,7 @@ HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
     // create random value
     createRandomValue(0.01, 0.1);
     humidity = parseInt((humidity.toFixed(2) * 100), 10);
+    console.log("Humidity: " + humidity + " %");
     var data = new Buffer(4);
     data.writeInt16BE(humidity, 0);
     // crete buffer and write value into it
@@ -78,6 +79,7 @@ HumidityCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValu
         // get random value
         createRandomValue(0.01, 0.1);
         humidity = parseInt((humidity.toFixed(2) * 100), 10);
+        console.log("Humidity: " + humidity + " %");
         // crete buffer and write value into it
         var data = new Buffer(4);
         data.writeUInt16BE(humidity, 0);
@@ -109,7 +111,7 @@ function createRandomValue(min, max) {
         // substract the value
         humidity = humidity - delta;
     }
-    console.log("Humidity: " + humidity + " %");
+    //console.log("Humidity: " + humidity + " %");
 }
 
 // export class as HeartRateMeasurementCharacteristic
