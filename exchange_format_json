@@ -35,7 +35,7 @@
                         "data" : "string" // or "bytes",
 
                         // Name of Descriptor
-                        "name": "Service name",
+                        "name": "Descriptor name",
                     }
                 ],
 
