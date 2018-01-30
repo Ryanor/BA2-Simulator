@@ -30,7 +30,7 @@ const IPAddressService = require('./IPAddressProfile/ip-address-service');
 const ipaddress = new IPAddressService();
 
 // creates array of service objects
-let services = [ipaddress]; //, environment];
+let services = [ipaddress];
 
 // variable stores the server response as json objects
 let profile;
@@ -39,7 +39,7 @@ let profile;
 const address = ip.address();
 
 // read ble services from webservice using the address variable
-http.get("http://" + address + ":3000/profile/json1", function (resp) {
+http.get("http://" + address + ":3000/startProfile/json", function (resp) {
     let data = '';
 
     // A chunk of data has been recieved.
