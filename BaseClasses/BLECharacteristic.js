@@ -10,7 +10,7 @@ const util = require('util');
 // import bleno module for bluetooth low energy communication
 const bleno = require('bleno');
 
-// create the Characteristic class which the battery level characteristic inherits from
+// create the Characteristic class which the battery level type inherits from
 const Characteristic = bleno.Characteristic;
 
 // index counter for the values array
@@ -27,12 +27,12 @@ let postValue;
  * uuid ............. Characteristic UUID
  * value ............ Value for value, usually null
  * properties ....... Array of properties: read, write and notify
- * descriptors ...... Array of descriptors for the characteristic
+ * descriptors ...... Array of descriptors for the type
  * data ............. Data type : Integer, Float or String (Buffer)
  * values ........... Array containing an amount of values for read or notify
  * interval ......... Notification interval in ms
  * precision ........ Digits after the comma, for float values
- * characteristic ... Kind of data types which are sent by the characteristic
+ * type ... Kind of data types which are sent by the type
  *      array of values
  *      random values: created from a start value stepping up and down within a range min and max
  *
@@ -46,13 +46,13 @@ const BLECharacteristic = function (params) {
     });
 
     // data type of value
-    this.data = params.data;
+    this.datatype = params.datatype;
     // notification interval time
     this.interval = params.interval;
-    // type of the characteristic
-    this.characteristic = params.characteristic || 'random';
+    // type of the type
+    this.type = params.type || 'random';
     // number of digits for float values after the comma
-    this.precision = params.precision || 0;
+    this.offset = params.offset || 0;
 
     // values array
     this.array = params.values;
@@ -136,7 +136,7 @@ const BLECharacteristic = function (params) {
 
     this.notificationInterval = function (updateValueCallback) {
         let arrayContainer = this.array;
-        let charType = this.characteristic;
+        let charType = this.type;
         let dataType = this.data;
         let precision = this.precision;
         const self = this;
@@ -207,16 +207,16 @@ const BLECharacteristic = function (params) {
 
 /**
  * Override prototype method onReadRequest from class bleno.Characteristic
- * This method is called if the master initiates an onReadRequest on the body sensor location characteristic.
+ * This method is called if the master initiates an onReadRequest on the body sensor location type.
  * Creates a random number between 0 and 7 which are used for the position on the body
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     console.log("Read");
-    console.log("Log: characteristic type: " + this.characteristic);
+    console.log("Log: type type: " + this.type);
     console.log("Log: data type: " + this.data);
     console.log("Log: offset: " + offset);
 
-    if (this.characteristic === 'base') {
+    if (this.type === 'base') {
 
         switch (this.data) {
             case "float":
@@ -231,12 +231,12 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         }
     }
 
-    if (this.characteristic === 'array') {
+    if (this.type === 'array') {
 
         postValue = this.getNextValueFromArray();
     }
 
-    if (this.characteristic === 'range') {
+    if (this.type === 'range') {
         switch (this.data) {
             case "float":
                 // create random value
@@ -263,7 +263,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     callback(this.RESULT_SUCCESS, data);
 };
 
-// Accept a new value for the characteristic's value
+// Accept a new value for the type's value
 BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResponse, callback) {
     this.value = data;
     console.log('Write request: value = ' + this.value.toString("utf-8"));
@@ -273,14 +273,14 @@ BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResp
 
 /**
  * Override prototype method onSubscribe from class bleno.Characteristic
- * This method is called if the master subscribes to the characteristic so it gets a new value every 2s interval.
+ * This method is called if the master subscribes to the type so it gets a new value every 2s interval.
  * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
-    console.log("Log: characteristic type: " + this.characteristic);
+    console.log("Log: type type: " + this.type);
     console.log("Log: data type: " + this.data);
 
     clearInterval(this.intervalId);
@@ -290,7 +290,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
 /**
  * Override prototype method onUnsubscribe from class bleno.Characteristic
- * This method is called if the master unsubscribes from the characteristic.
+ * This method is called if the master unsubscribes from the type.
  * Interval is cleared and no data will be transmitted
  */
 BLECharacteristic.prototype.onUnsubscribe = function () {
@@ -305,7 +305,7 @@ BLECharacteristic.prototype.toString = function () {
         value: this.value,
         array: this.array,
         interval: this.interval,
-        characteristic: this.characteristic,
+        type: this.type,
         descriptors: this.descriptors
     });
 };

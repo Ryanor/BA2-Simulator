@@ -330,9 +330,9 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
-    "nodejs/batteryprofile/battery-level-characteristic.js",
-    "file/NodeJS/BatteryProfile/battery-level-characteristic.js.html",
-    "NodeJS/BatteryProfile/battery-level-characteristic.js",
+    "nodejs/batteryprofile/battery-level-type.js",
+    "file/NodeJS/BatteryProfile/battery-level-type.js.html",
+    "NodeJS/BatteryProfile/battery-level-type.js",
     "file"
   ],
   [
@@ -342,15 +342,15 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "nodejs/heartrateprofile/body-sensor-location-characteristic.js",
-    "file/NodeJS/HeartRateProfile/body-sensor-location-characteristic.js.html",
-    "NodeJS/HeartRateProfile/body-sensor-location-characteristic.js",
+    "nodejs/heartrateprofile/body-sensor-location-type.js",
+    "file/NodeJS/HeartRateProfile/body-sensor-location-type.js.html",
+    "NodeJS/HeartRateProfile/body-sensor-location-type.js",
     "file"
   ],
   [
-    "nodejs/heartrateprofile/heart-rate-measurement-characteristic.js",
-    "file/NodeJS/HeartRateProfile/heart-rate-measurement-characteristic.js.html",
-    "NodeJS/HeartRateProfile/heart-rate-measurement-characteristic.js",
+    "nodejs/heartrateprofile/heart-rate-measurement-type.js",
+    "file/NodeJS/HeartRateProfile/heart-rate-measurement-type.js.html",
+    "NodeJS/HeartRateProfile/heart-rate-measurement-type.js",
     "file"
   ],
   [
@@ -360,9 +360,9 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "nodejs/ipaddressprofile/ip-address-characteristic.js",
-    "file/NodeJS/IPAddressProfile/ip-address-characteristic.js.html",
-    "NodeJS/IPAddressProfile/ip-address-characteristic.js",
+    "nodejs/ipaddressprofile/ip-address-type.js",
+    "file/NodeJS/IPAddressProfile/ip-address-type.js.html",
+    "NodeJS/IPAddressProfile/ip-address-type.js",
     "file"
   ],
   [
@@ -372,9 +372,9 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "nodejs/thermometerprofile/temperature-measurement-characteristic.js",
-    "file/NodeJS/ThermometerProfile/temperature-measurement-characteristic.js.html",
-    "NodeJS/ThermometerProfile/temperature-measurement-characteristic.js",
+    "nodejs/thermometerprofile/temperature-measurement-type.js",
+    "file/NodeJS/ThermometerProfile/temperature-measurement-type.js.html",
+    "NodeJS/ThermometerProfile/temperature-measurement-type.js",
     "file"
   ],
   [

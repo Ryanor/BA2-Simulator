@@ -8,35 +8,35 @@
  * @author gwu
  * @version 1.0
  */
-//const bleno = require('bleno');
+const bleno = require('bleno');
 
 const http = require('http');
 
-//const ip = require('ip');
+const ip = require('ip');
 
 // import the base Service class where every service inherits from
-//const BLEService = require('./BaseClasses/BLEService');
+const BLEService = require('./BaseClasses/BLEService');
 
 // import the base Service class where every service inherits from
-//const BLECharacteristic = require('./BaseClasses/BLECharacteristic');
+const BLECharacteristic = require('./BaseClasses/BLECharacteristic');
 
 // predefine the included descriptors of the service
-//const BlenoDescriptor = bleno.Descriptor;
+const BlenoDescriptor = bleno.Descriptor;
 
 // import class IPAddressService
-//const IPAddressService = require('./IPAddressProfile/ip-address-service');
+const IPAddressService = require('./IPAddressProfile/ip-address-service');
 
 // create IPAddressService object
-//const ipaddress = new IPAddressService();
+const ipaddress = new IPAddressService();
 
 // creates array of service objects
-//let services = []; //[ipaddress];
+let services = [ipaddress];
 
 // variable stores the server response as json objects
 let profile;
 
 // get the actual ip address of the device and use it to connect to the webservice running on same device
-//const address = ip.address();
+const address = ip.address();
 
 // read ble services from webservice using the address variable
 http.get("http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (resp) { //"http://" + address + ":3000/startProfile/json", function (resp) { 5a70da6e653cbc02231a3d20
@@ -71,7 +71,7 @@ http.get("http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (r
                 // check if characteristics are available
                 if (characteristicContainer.length > 0) {
 
-                    // get characteristic data
+                    // get type data
                     for (let char in characteristicContainer) {
                         const characteristic = characteristicContainer[char];
                         console.log("Char. name: " + characteristic.name);
@@ -90,84 +90,77 @@ http.get("http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (r
                                 console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
                                 console.log("Descr. datatype: " + characteristic.descriptors[descr].datatype);
 
-                                var value;
-                                if(characteristic.descriptors[descr].datatype === "bytes") {
-                                    value = new Buffer (hexStringToBytes(characteristic.descriptors[descr].value), "hex");
+                                let value;
+                                if (characteristic.descriptors[descr].datatype === "bytes") {
+                                    value = new Buffer(hexStringToBytes(characteristic.descriptors[descr].value), "hex");
                                 } else {
                                     value = characteristic.descriptors[descr].value;
                                 }
                                 console.log("Descr. value: ");
                                 console.log(value);
-                                /* descriptors.push(new BlenoDescriptor({
-                                     uuid: characteristic.descriptors[descr].uuid,
-                                     value: value
-                                 })); */
-                                /*        }
-                                    }
-
-                                    let type;
-
-                                    if (characteristic.values.length > 1) {
-                                        type = 'array';
-                                        console.log("Characteristic type = array");
-                                    } else if (characteristic.base === 0) {
-                                        type = 'range';
-                                        console.log("Characteristic type = range");
-                                    } else {
-                                        type = 'base';
-                                        console.log("Characteristic type = base");
-                                    }
-                                   /* const bleCharacteristic = new BLECharacteristic({
-                                        uuid: characteristic.uuid, //.substr(4, 4).toUpperCase().toString(),
-                                        properties: characteristic.properties,
-                                        descriptors: descriptors,
-                                        data: characteristic.data,
-                                        precision: characteristic.precision,
-                                        interval: characteristic.interval,
-                                        values: characteristic.values,
-                                        base: characteristic.base,
-                                        min: characteristic.min,
-                                        max: characteristic.max,
-                                        characteristic: type
-                                    });
-
-                                    characteristics.push(bleCharacteristic); */
-                                /*    }
-                                }
-                    */
-                                // create service from base class
-                                /*  const bleService = new BLEService({
-                                      uuid: singleService.uuid,
-                                      characteristics: characteristics
-                                  });
-
-                                  // add service to services array
-                                  services.push(bleService);
-                                  */
+                                descriptors.push(new BlenoDescriptor({
+                                    uuid: characteristic.descriptors[descr].uuid,
+                                    value: value
+                                }));
                             }
                         }
+
+                        let type;
+
+                        if (characteristic.values.length > 1) {
+                            type = 'array';
+                            console.log("Characteristic type = array");
+                        } else if (characteristic.base === 0) {
+                            type = 'range';
+                            console.log("Characteristic type = range");
+                        } else {
+                            type = 'base';
+                            console.log("Characteristic type = base");
+                        }
+                        const bleCharacteristic = new BLECharacteristic({
+                            uuid: characteristic.uuid,
+                            properties: characteristic.properties,
+                            descriptors: descriptors,
+                            datatype: characteristic.datatype,
+                            offset: characteristic.offset,
+                            interval: characteristic.interval,
+                            values: characteristic.values,
+                            base: characteristic.base,
+                            min: characteristic.min,
+                            max: characteristic.max,
+                            type: type
+                        });
+
+                        characteristics.push(bleCharacteristic);
                     }
                 }
+
+                // create service from base class
+                const bleService = new BLEService({
+                    uuid: singleService.uuid,
+                    characteristics: characteristics
+                });
+                // add service to services array
+                services.push(bleService);
             }
         }
+
         // print all services to screen
-        /* for (var i in services) {
-                 console.log(services[i].toString());
-         }  */
-
+        for (var i in services) {
+            console.log(services[i].toString());
+        }
     });
-
 }).on("error", function (err) {
     console.log("Error: " + err.message);
 });
 
 
-/*
-* If bleno could connection to the interface and the USB-dongle is pluged in
+/**
+* If bleno could connect to the interface and the USB-dongle is plugged in
 * the state changes to power on, and the simulator starts advertising its services
 *
 */
-/*bleno.on('stateChange', function (state) {
+bleno.on('stateChange', function (state) {
     console.log("Programm started");
     delay(2000);
     console.log('on -> stateChange: ' + state);
@@ -181,14 +174,13 @@ http.get("http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (r
         console.log('Stopping program');
         process.exit(11);
     }
-}); */
+});
 
-/*
+/**
 * If advertising starts all services, characteristics and descriptors are built
 *
 */
-
-/*bleno.on('advertisingStart', function (error) {
+bleno.on('advertisingStart', function (error) {
    console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
 
    if (!error) {
@@ -200,14 +192,24 @@ http.get("http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (r
            console.log('setServices: ' + (error ? 'error ' + error : 'success'));
        });
    }
-}); */
+});
 
+/**
+ * This delay is necessary to make sure all data from the HTTP response is read
+ * @param ms Time in milliseconds
+ */
 function delay(ms) {
     ms += new Date().getTime();
     while (new Date() < ms) {
     }
 }
 
+/**
+ * Function removes all characters from a hexadecimal string to get
+ * a pure string that contains values to build a Buffer from it.
+ * @param hexstring Hexadecimal string in form of "0x00, 0x23"
+ * @returns hexstring Cleared string for building a Buffer like "0023"
+ */
 function hexStringToBytes(hexstring) {
     hexstring = hexstring.replace(/, /g, "");
     hexstring = hexstring.replace(/0x/g, "");
