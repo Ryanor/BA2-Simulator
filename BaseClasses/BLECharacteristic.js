@@ -2,15 +2,16 @@
  * Class BLECharacteristic is the base class for all Characteristics and extends bleno.Characteristic class
  * BLECharacteristic provides functions to propagate the value to the client device.
  *
+ * @class BLECharacteristic
  * @author gwu
  * @version 0.1
  */
+
+// include module dependencies
+const bleno = require('bleno');
 const util = require('util');
 
-// import bleno module for bluetooth low energy communication
-const bleno = require('bleno');
-
-// create the Characteristic class which the battery level type inherits from
+// import basic characteristic from module bleno
 const Characteristic = bleno.Characteristic;
 
 // index counter for the values array
@@ -31,11 +32,11 @@ let postValue;
  * data ............. Data type : Integer, Float or String (Buffer)
  * values ........... Array containing an amount of values for read or notify
  * interval ......... Notification interval in ms
- * precision ........ Digits after the comma, for float values
- * type ... Kind of data types which are sent by the type
+ * offset ........... Offset used for some data types
+ * type ... Kinds of characteristic types which are sent by the type
  *      array of values
- *      random values: created from a start value stepping up and down within a range min and max
- *
+ *      random values: random values within a range min and max
+ *      base values: created from a start value stepping up and down within a range min and max
  */
 const BLECharacteristic = function (params) {
     BLECharacteristic.super_.call(this, {

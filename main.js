@@ -5,41 +5,45 @@
  * If a master connects to a service it can send onRead- onWriteRequest
  * and subscribe and unsubscribe to notifications
  *
+ * @class main
  * @author gwu
  * @version 1.0
  */
+// include module dependencies
 const bleno = require('bleno');
 
 const http = require('http');
 
 const ip = require('ip');
 
-// import the base Service class where every service inherits from
+// import the base service class where every service inherits from
 const BLEService = require('./BaseClasses/BLEService');
-
-// import the base Service class where every service inherits from
+// import the base characteristic class where every characteristic inherits from
 const BLECharacteristic = require('./BaseClasses/BLECharacteristic');
-
-// predefine the included descriptors of the service
+// import basic descriptor from the modul bleno
 const BlenoDescriptor = bleno.Descriptor;
 
 // import class IPAddressService
 const IPAddressService = require('./IPAddressProfile/ip-address-service');
-
 // create IPAddressService object
 const ipaddress = new IPAddressService();
 
 // creates array of service objects
 let services = [ipaddress];
 
-// variable stores the server response as json objects
+// create variable to store the server response as json objects
 let profile;
 
 // get the actual ip address of the device and use it to connect to the webservice running on same device
 const address = ip.address();
 
-// read ble services from webservice using the address variable
-http.get("http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (resp) { //"http://" + address + ":3000/startProfile/json", function (resp) { 5a70da6e653cbc02231a3d20
+/**
+ * Connect to the webservice and get the actual profile as json array
+ * @param address Address of the webservice
+ * @param resp Response form the webservice either a json
+ * @result services[] Add services included in the profile data to the services array
+ */
+http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (resp) { //"http://" + address + ":3000/startProfile/json", function (resp) { //5a70da6e653cbc02231a3d20
     let data = '';
 
     // A chunk of data has been recieved.
@@ -150,16 +154,26 @@ http.get("http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (r
             console.log(services[i].toString());
         }
     });
-}).on("error", function (err) {
+
+    resp.on('error', function(err) {
+        console.log("Respnonse error: " + err);
+    });
+
+});
+
+
+/**
+ * If connection to the server results in an error, print error message to console
+ */
+http.on("error", function (err) {
     console.log("Error: " + err.message);
 });
 
 
 /**
-* If bleno could connect to the interface and the USB-dongle is plugged in
-* the state changes to power on, and the simulator starts advertising its services
-*
-*/
+ * If bleno could connect to the interface and the USB-dongle is plugged in
+ * the state changes to power on, and the simulator starts advertising its services
+ */
 bleno.on('stateChange', function (state) {
     console.log("Programm started");
     delay(2000);
@@ -177,21 +191,21 @@ bleno.on('stateChange', function (state) {
 });
 
 /**
-* If advertising starts all services, characteristics and descriptors are built
-*
-*/
+ * If state changes to advertising start,
+ * all services and including characteristics and descriptors are set
+ */
 bleno.on('advertisingStart', function (error) {
-   console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
+    console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
 
-   if (!error) {
-       bleno.setServices(services, function (error) {
-           console.log("Set services:");
-           for (let i = 0; i < services.length; i++) {
-               console.log((i + 1) + ". Service set");
-           }
-           console.log('setServices: ' + (error ? 'error ' + error : 'success'));
-       });
-   }
+    if (!error) {
+        bleno.setServices(services, function (error) {
+            console.log("Set services:");
+            for (let i = 0; i < services.length; i++) {
+                console.log((i + 1) + ". Service set");
+            }
+            console.log('setServices: ' + (error ? 'error ' + error : 'success'));
+        });
+    }
 });
 
 /**
