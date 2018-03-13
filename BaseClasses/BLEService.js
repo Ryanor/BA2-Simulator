@@ -2,21 +2,29 @@
  * Class BLESerice extends bleno.PrimaryService class
  * It is the main class for all created services.
  *
+ * @class BLEService
+ * @extends bleno
+ *
+ * @constructor BLEService
+ * @param {Object} params Object params contains service uuid and characteristics array
+ *
  * @author gwu
  * @version 0.1
  */
+
+/**
+ * Module dependencies
+ *
+ */
+const bleno = require('bleno');
 const util = require('util');
 
-// import bleno module for bluetooth low energy communication
-const bleno = require('bleno');
-
-// create the PrimaryService class which the BLEService class inherits from
+// define a variable from the bleno modul base class to inherit from
 const BlenoPrimaryService = bleno.PrimaryService;
 
 /**
- * Constructor for BatteryService calls constructor from the parent class PrimaryService
- * Defines the UUID for the service
- * Includes characteristics used
+ * Constructor for BLEService calls constructor from the bleno base class PrimaryService
+ *
  */
 function BLEService(params) {
     BLEService.super_.call(this, {
@@ -25,6 +33,12 @@ function BLEService(params) {
     });
 }
 
+/**
+ * Function toString returns a textual representation of a service and its containing characteristics.
+ *
+ * @method toString
+ * @return {String} string
+ */
 BLEService.prototype.toString = function() {
     return JSON.stringify({
         uuid: this.uuid,

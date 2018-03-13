@@ -3,15 +3,22 @@
  * BLECharacteristic provides functions to propagate the value to the client device.
  *
  * @class BLECharacteristic
+ * @extends bleno
+ * @constructor
+ * @params {Object} Object params contains characteristic data and descriptors array
+ *
  * @author gwu
  * @version 0.1
  */
 
-// include module dependencies
+/**
+ * Module dependencies
+ *
+ */
 const bleno = require('bleno');
 const util = require('util');
 
-// import basic characteristic from module bleno
+// define a variable from the bleno modul base class to inherit from
 const Characteristic = bleno.Characteristic;
 
 // index counter for the values array
@@ -24,7 +31,7 @@ let postValue;
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
  *
- * @param params      Object of parameters including
+ * params             Object of parameters including
  * uuid ............. Characteristic UUID
  * value ............ Value for value, usually null
  * properties ....... Array of properties: read, write and notify
@@ -298,6 +305,12 @@ BLECharacteristic.prototype.onUnsubscribe = function () {
     clearInterval(this.intervalId);
 };
 
+/**
+ * Function toString returns a textual representation of a characteristic and its containing descriptors.
+ *
+ * @method toString
+ * @return {String} string
+ */
 BLECharacteristic.prototype.toString = function () {
     return JSON.stringify({
         uuid: this.uuid,

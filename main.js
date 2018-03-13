@@ -6,14 +6,20 @@
  * and subscribe and unsubscribe to notifications
  *
  * @class main
+ * @uses bleno
+ * @uses http
+ * @uses ip
+ * @uses BLEClasses
+ *
  * @author gwu
  * @version 1.0
  */
-// include module dependencies
+
+/**
+ * Required modules
+ */
 const bleno = require('bleno');
-
 const http = require('http');
-
 const ip = require('ip');
 
 // import the base service class where every service inherits from
@@ -39,6 +45,8 @@ const address = ip.address();
 
 /**
  * Connect to the webservice and get the actual profile as json array
+ *
+ * @method http.on
  * @param address Address of the webservice
  * @param resp Response form the webservice either a json
  * @result services[] Add services included in the profile data to the services array
@@ -161,7 +169,6 @@ http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"h
 
 });
 
-
 /**
  * If connection to the server results in an error, print error message to console
  */
@@ -169,13 +176,12 @@ http.on("error", function (err) {
     console.log("Error: " + err.message);
 });
 
-
 /**
  * If bleno could connect to the interface and the USB-dongle is plugged in
  * the state changes to power on, and the simulator starts advertising its services
  */
 bleno.on('stateChange', function (state) {
-    console.log("Programm started");
+    console.log("Program started");
     delay(2000);
     console.log('on -> stateChange: ' + state);
 
@@ -210,7 +216,10 @@ bleno.on('advertisingStart', function (error) {
 
 /**
  * This delay is necessary to make sure all data from the HTTP response is read
- * @param ms Time in milliseconds
+ *
+ * @method delay
+ * @param {Number} ms Time in milliseconds
+ * @for main
  */
 function delay(ms) {
     ms += new Date().getTime();
@@ -221,8 +230,11 @@ function delay(ms) {
 /**
  * Function removes all characters from a hexadecimal string to get
  * a pure string that contains values to build a Buffer from it.
- * @param hexstring Hexadecimal string in form of "0x00, 0x23"
- * @returns hexstring Cleared string for building a Buffer like "0023"
+ *
+ * @method hexStringToBytes
+ * @param {String} hexstring Hexadecimal string in form of "0x00, 0x23"
+ * @return {String} hexstring Cleared string for building a Buffer like "0023"
+ * @for main
  */
 function hexStringToBytes(hexstring) {
     hexstring = hexstring.replace(/, /g, "");
