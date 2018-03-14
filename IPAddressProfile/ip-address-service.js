@@ -9,16 +9,16 @@
 */
 
 // import utility library to build classes
-var util = require('util');
+const util = require('util');
 
 // import bleno module for bluettoth low energy communication
-var bleno = require('bleno');
+const bleno = require('bleno');
 
 // create the PrimaryService class which the battery class inherits from
-var BlenoPrimaryService = bleno.PrimaryService;
+const BlenoPrimaryService = bleno.PrimaryService;
 
 // predefine the included characteristics of the service
-var IPAddressCharacteristic = require('./ip-address-characteristic');
+const IPAddressCharacteristic = require('./ip-address-characteristic');
 
 /**
 * Constructor for IPAddressService calls constructor from the parent class PrimaryService

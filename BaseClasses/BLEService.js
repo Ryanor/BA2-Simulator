@@ -9,7 +9,7 @@
  * @param {Object} params Object params contains service uuid and characteristics array
  *
  * @author gwu
- * @version 0.1
+ * @version 1.0
  */
 
 /**
@@ -19,16 +19,24 @@
 const bleno = require('bleno');
 const util = require('util');
 
-// define a variable from the bleno modul base class to inherit from
+// define a variable for the bleno modul base class
 const BlenoPrimaryService = bleno.PrimaryService;
 
 /**
- * Constructor for BLEService calls constructor from the bleno base class PrimaryService
+ * Constructor for BLEService calls super constructor from the bleno base class PrimaryService
  *
  */
 function BLEService(params) {
     BLEService.super_.call(this, {
+        /**
+         * @property uuid
+         * @type String
+         */
         uuid: params.uuid,
+        /**
+         * @property characteristics
+         * @type Array
+         */
         characteristics: params.characteristics
     });
 }
@@ -38,6 +46,7 @@ function BLEService(params) {
  *
  * @method toString
  * @return {String} string
+ * @for BLEService
  */
 BLEService.prototype.toString = function() {
     return JSON.stringify({

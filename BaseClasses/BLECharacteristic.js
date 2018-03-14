@@ -5,10 +5,23 @@
  * @class BLECharacteristic
  * @extends bleno
  * @constructor
- * @params {Object} Object params contains characteristic data and descriptors array
+ * @param {Object} params Object params contains characteristic data and descriptors array
+ * params             Object of parameters including
+ * uuid ............. Characteristic UUID
+ * value ............ Value for value, usually null
+ * properties ....... Array of properties: read, write and notify
+ * descriptors ...... Array of descriptors for the type
+ * data ............. Data type : Integer, Float or String (Buffer)
+ * values ........... Array containing an amount of values for read or notify
+ * interval ......... Notification interval in ms
+ * offset ........... Offset used for some data types
+ * type ... Kinds of characteristic types which are sent by the type
+ *      array of values
+ *      random values: random values within a range min and max
+ *      base values: created from a start value stepping up and down within a range min and max
  *
  * @author gwu
- * @version 0.1
+ * @version 1.0
  */
 
 /**
@@ -18,7 +31,7 @@
 const bleno = require('bleno');
 const util = require('util');
 
-// define a variable from the bleno modul base class to inherit from
+// define a variable for the bleno modul base class
 const Characteristic = bleno.Characteristic;
 
 // index counter for the values array
@@ -47,31 +60,83 @@ let postValue;
  */
 const BLECharacteristic = function (params) {
     BLECharacteristic.super_.call(this, {
+        /**
+         * @property uuid
+         * @type String
+         */
         uuid: params.uuid,
+        /**
+         * @property value
+         * @type String|Number
+         * @default null
+         */
         value: null,
+        /**
+         * @property properties
+         * @type Array
+         */
         properties: params.properties,
+        /**
+         * @property descriptors
+         * @type Array
+         */
         descriptors: params.descriptors
     });
 
-    // data type of value
+    /**
+     * @property datatype
+     * @type String
+     */
     this.datatype = params.datatype;
-    // notification interval time
+
+    /**
+     * @property interval
+     * @type number
+     * @default 1000
+     */
     this.interval = params.interval;
-    // type of the type
-    this.type = params.type || 'random';
-    // number of digits for float values after the comma
+
+    /**
+     * @property characteristicType
+     * @type String
+     */
+    this.characteristicType = params.characteristicType || 'random';
+
+    /**
+     * @property offset
+     * @type Number
+     */
     this.offset = params.offset || 0;
 
-    // values array
+    /**
+     * @property values
+     * @type Array
+     */
     this.array = params.values;
 
-    // base value
+    /**
+     * @property base
+     * @type Number
+     */
     this.base = params.base || 0;
-    // minimum value for step
+
+    /**
+     * @property min
+     * @type Number
+     */
     this.min = params.min || 1;
-    // maximum value for step
+
+    /**
+     * @property max
+     * @type Number
+     */
     this.max = params.max || 6;
 
+    /**
+     * @property index
+     * @type Number
+     * @default 0
+     */
     this.index = 0;
 
     // class method to get next value from array at position index

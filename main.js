@@ -1,15 +1,18 @@
 /**
  * Main class for the BLE-Simulator
- * includes module bleno for the BLE communication
- * Creates service objects which will be advertised to master devices
- * If a master connects to a service it can send onRead- onWriteRequest
- * and subscribe and unsubscribe to notifications
+ * includes module bleno for the BLE communication.
+ * Loads data from a webservice and parses it to services, characteristics and descriptors.
+ * Creates a device out of these services, characteristics and descriptors.
+ * Advertises this device to surrounding master devices, which can connect to the device to
+ * share data using onRead- onWriteRequest and subscribe and unsubscribe to notifications.
  *
  * @class main
+ * @main
  * @uses bleno
  * @uses http
  * @uses ip
- * @uses BLEClasses
+ * @uses BLEService
+ * @uses BLECharacteristic
  *
  * @author gwu
  * @version 1.0
@@ -22,22 +25,22 @@ const bleno = require('bleno');
 const http = require('http');
 const ip = require('ip');
 
-// import the base service class where every service inherits from
+// variable for the extended service class
 const BLEService = require('./BaseClasses/BLEService');
-// import the base characteristic class where every characteristic inherits from
+// variable for the extended characteristic class
 const BLECharacteristic = require('./BaseClasses/BLECharacteristic');
-// import basic descriptor from the modul bleno
+// // define a variable for a descriptor from the bleno modul base class
 const BlenoDescriptor = bleno.Descriptor;
 
 // import class IPAddressService
 const IPAddressService = require('./IPAddressProfile/ip-address-service');
-// create IPAddressService object
+// create IPAddressService
 const ipaddress = new IPAddressService();
 
-// creates array of service objects
+// create array of service objects and add ipaddress service
 let services = [ipaddress];
 
-// create variable to store the server response as json objects
+// create variable to store the parsed server response as json array
 let profile;
 
 // get the actual ip address of the device and use it to connect to the webservice running on same device
@@ -46,20 +49,35 @@ const address = ip.address();
 /**
  * Connect to the webservice and get the actual profile as json array
  *
- * @method http.on
+ * @method http.get
  * @param address Address of the webservice
- * @param resp Response form the webservice either a json
- * @result services[] Add services included in the profile data to the services array
+ * @param function(resp) Response from the webservice
+ * @result services[] Add services, which are built out of the response json data, to the services array
+ * @for main
  */
 http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (resp) { //"http://" + address + ":3000/startProfile/json", function (resp) { //5a70da6e653cbc02231a3d20
     let data = '';
 
-    // A chunk of data has been recieved.
+    /**
+     * As long as data is received from the connected webservice,
+     * data is added to a container.
+     *
+     * @method resp.on('data')
+     * @param {Event} event Data event
+     * @return {Object}data Container of data
+     * @for main
+     */
     resp.on('data', function (chunk) {
         data += chunk;
     });
 
-    // The whole response has been received. Print out the result.
+    /**
+     * After all data is received, parse data to JSON.
+     *
+     * @method resp.on('end')
+     * @param {Event} event End of data event
+     * @for main
+     */
     resp.on('end', function () {
         // parse server response data to profile
         profile = JSON.parse(data);
@@ -117,16 +135,16 @@ http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"h
                             }
                         }
 
-                        let type;
+                        let characteristicType;
 
                         if (characteristic.values.length > 1) {
-                            type = 'array';
+                            characteristicType = 'array';
                             console.log("Characteristic type = array");
                         } else if (characteristic.base === 0) {
-                            type = 'range';
+                            characteristicType = 'range';
                             console.log("Characteristic type = range");
                         } else {
-                            type = 'base';
+                            characteristicType = 'base';
                             console.log("Characteristic type = base");
                         }
                         const bleCharacteristic = new BLECharacteristic({
@@ -140,7 +158,7 @@ http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"h
                             base: characteristic.base,
                             min: characteristic.min,
                             max: characteristic.max,
-                            type: type
+                            characteristicType: characteristicType
                         });
 
                         characteristics.push(bleCharacteristic);
@@ -163,6 +181,14 @@ http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"h
         }
     });
 
+    /**
+     * Function is listening to errors while data is received
+     * Log error to console.
+     *
+     * @method resp.on('error')
+     * @param {Event} event Error event
+     * @for main
+     */
     resp.on('error', function(err) {
         console.log("Respnonse error: " + err);
     });
@@ -170,15 +196,25 @@ http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"h
 });
 
 /**
- * If connection to the server results in an error, print error message to console
+ * Function is listening to errors while connection is established
+ * Log error to console.
+ *
+ * @method http.on('error')
+ * @param {Event} event Error event
+ * @for main
  */
 http.on("error", function (err) {
     console.log("Error: " + err.message);
 });
 
 /**
- * If bleno could connect to the interface and the USB-dongle is plugged in
- * the state changes to power on, and the simulator starts advertising its services
+ * Functions listens to stateChange events.
+ * If the state changes to poweredOn the advertising event is triggered.
+ * Otherwise the program exits with exit code 11.
+ *
+ * @method bleno.on('stateChange')
+ * @param {Event} event State changed event
+ * @for main
  */
 bleno.on('stateChange', function (state) {
     console.log("Program started");
@@ -197,8 +233,13 @@ bleno.on('stateChange', function (state) {
 });
 
 /**
- * If state changes to advertising start,
- * all services and including characteristics and descriptors are set
+ * Functions listens to advertisingStart event.
+ * If state changes to advertising start, the GAP service including the device name and uuid
+ * along with all profile services, including characteristics and descriptors are set up.
+ *
+ * @method bleno.on('advertistinStart')
+ * @param {Event} event Advertising start event
+ * @for main
  */
 bleno.on('advertisingStart', function (error) {
     console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
@@ -215,7 +256,8 @@ bleno.on('advertisingStart', function (error) {
 });
 
 /**
- * This delay is necessary to make sure all data from the HTTP response is read
+ * This delay function is necessary to make sure all data from the HTTP response
+ * is completely read and parsed into a profile.
  *
  * @method delay
  * @param {Number} ms Time in milliseconds
