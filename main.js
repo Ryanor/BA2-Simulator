@@ -193,17 +193,7 @@ http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"h
         console.log("Respnonse error: " + err);
     });
 
-});
-
-/**
- * Function is listening to errors while connection is established
- * Log error to console.
- *
- * @method http.on('error')
- * @param {Event} event Error event
- * @for main
- */
-http.on("error", function (err) {
+}).on("error", function (err) {
     console.log("Error: " + err.message);
 });
 
