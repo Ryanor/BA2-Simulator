@@ -114,7 +114,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                         if (characteristic.descriptors.length > 0) {
 
                             for (let descr in characteristic.descriptors) {
-                                if(characteristic.descriptors[descr].uuid !== '2902') {
+                                if(characteristic.descriptors[descr].uuid.indexOf('2902') === -1) {
                                     let value;
                                     if (characteristic.descriptors[descr].datatype === "bytes") {
                                         value = new Buffer(hexStringToBytes(characteristic.descriptors[descr].value), "hex");
@@ -162,7 +162,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                             datatype: characteristic.datatype,
                             offset: characteristic.offset,
                             interval: characteristic.interval,
-                            values: characteristic.values,
+                            array: characteristic.values,
                             base: characteristic.base,
                             min: characteristic.min,
                             max: characteristic.max,
