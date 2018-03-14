@@ -31,11 +31,11 @@ const IPAddressCharacteristic = function() {
   IPAddressCharacteristic.super_.call(this, {
     uuid: '34XY',
     value: address,
-    properties: ['read','write'],
+    properties: ['read'],
     descriptors: [
       new Descriptor({
         uuid: '2901',
-        value: 'Actual IP-Address of the slave'
+        value: 'Actual IP-Address of the server'
       })
     ]
   });
@@ -51,13 +51,6 @@ util.inherits(IPAddressCharacteristic, Characteristic);
 */
 IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
   callback(this.RESULT_SUCCESS, new Buffer(this.value));
-};
-
-// Accept a new value for the characteristic's value
-IPAddressCharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
-  this.value = data;
-  console.log('Write request: value = ' + this.value.toString("utf-8"));
-  callback(this.RESULT_SUCCESS);
 };
 
 // export class as IPAddressCharacteristic
