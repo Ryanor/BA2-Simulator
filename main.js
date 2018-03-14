@@ -104,12 +104,9 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                     // get characteristic data
                     for (let char in characteristicContainer) {
                         const characteristic = characteristicContainer[char];
-                        console.log("Char. name: " + characteristic.name);
-                        console.log("Char. uuid: " + characteristic.uuid);
                         console.log("Char. properties: " + characteristic.properties);
                         console.log("Char. value: " + characteristic.value);
                         console.log("Char. datatype: " + characteristic.datatype);
-                        console.log("Char. values length: " + characteristic.values.length);
                         console.log("Char. type: " + characteristic.characteristicType);
 
                         const descriptors = [];
@@ -118,10 +115,6 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
 
                             for (let descr in characteristic.descriptors) {
                                 if(characteristic.descriptors[descr].uuid !== '2902') {
-                                    console.log("Descr. name: " + characteristic.descriptors[descr].name);
-                                    console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
-                                    console.log("Descr. datatype: " + characteristic.descriptors[descr].datatype);
-
                                     let value;
                                     if (characteristic.descriptors[descr].datatype === "bytes") {
                                         value = new Buffer(hexStringToBytes(characteristic.descriptors[descr].value), "hex");
@@ -134,14 +127,12 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                                         uuid: characteristic.descriptors[descr].uuid,
                                         value: value
                                     }));
-                                } else {
-                                    console.log("Descriptor 2902 found");
                                 }
                             }
                         }
 
                         // if value and more properties are set: change them to a read only characteristic
-                        if(characteristic.value !== null || characteristic.value !== 'undefined') {
+                        if(characteristic.value !== null) {
                             characteristic.properties = ['read'];
                             characteristic.characteristicType = 'single';
                         }
@@ -161,6 +152,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                                 characteristic.max = 100;
                             }
                         }
+                        console.log("Char. type: " + characteristic.characteristicType);
 
                         const bleCharacteristic = new BLECharacteristic({
                             uuid: characteristic.uuid,
