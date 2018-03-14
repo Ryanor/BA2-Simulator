@@ -117,22 +117,26 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                         if (characteristic.descriptors.length > 0) {
 
                             for (let descr in characteristic.descriptors) {
-                                console.log("Descr. name: " + characteristic.descriptors[descr].name);
-                                console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
-                                console.log("Descr. datatype: " + characteristic.descriptors[descr].datatype);
+                                if(characteristic.descriptors[descr].uuid !== '2902') {
+                                    console.log("Descr. name: " + characteristic.descriptors[descr].name);
+                                    console.log("Descr. uuid: " + characteristic.descriptors[descr].uuid);
+                                    console.log("Descr. datatype: " + characteristic.descriptors[descr].datatype);
 
-                                let value;
-                                if (characteristic.descriptors[descr].datatype === "bytes") {
-                                    value = new Buffer(hexStringToBytes(characteristic.descriptors[descr].value), "hex");
+                                    let value;
+                                    if (characteristic.descriptors[descr].datatype === "bytes") {
+                                        value = new Buffer(hexStringToBytes(characteristic.descriptors[descr].value), "hex");
+                                    } else {
+                                        value = characteristic.descriptors[descr].value;
+                                    }
+                                    console.log("Descr. value: ");
+                                    console.log(value);
+                                    descriptors.push(new BlenoDescriptor({
+                                        uuid: characteristic.descriptors[descr].uuid,
+                                        value: value
+                                    }));
                                 } else {
-                                    value = characteristic.descriptors[descr].value;
+                                    console.log("Descriptor 2902 found");
                                 }
-                                console.log("Descr. value: ");
-                                console.log(value);
-                                descriptors.push(new BlenoDescriptor({
-                                    uuid: characteristic.descriptors[descr].uuid,
-                                    value: value
-                                }));
                             }
                         }
 
@@ -157,7 +161,6 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                                 characteristic.max = 100;
                             }
                         }
-
 
                         const bleCharacteristic = new BLECharacteristic({
                             uuid: characteristic.uuid,

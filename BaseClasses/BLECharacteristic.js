@@ -210,7 +210,7 @@ const BLECharacteristic = function (params) {
     this.notificationInterval = function (updateValueCallback) {
         let arrayContainer = this.array;
         let charType = this.characteristicType;
-        let dataType = this.data;
+        let dataType = this.datatype;
         let precision = this.precision;
         const self = this;
 
@@ -235,7 +235,7 @@ const BLECharacteristic = function (params) {
                         postValue = self.createRandomFloatValueFromBase().toFixed(precision);
                         break;
 
-                    case "int":
+                    case "uint16":
                         // create random value
                         postValue = self.createRandomIntValueFromBase().toFixed(precision);
                         break;
@@ -251,7 +251,7 @@ const BLECharacteristic = function (params) {
                         postValue = self.createRandomFloatValueInRange().toFixed(precision);
                         break;
 
-                    case "int":
+                    case "uint16":
                         // create random value
                         postValue = self.createRandomIntValueInRange().toFixed(precision);
                         break;
@@ -263,7 +263,7 @@ const BLECharacteristic = function (params) {
             // convert value to correct buffer type
             let data;
 
-            if (dataType === 'int') {
+            if (dataType === 'uint16') {
                 // convert value to UInt16BigEndian
                 data = new Buffer.alloc(2);
                 data.writeUInt16BE(postValue, 0);
@@ -298,7 +298,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
                 postValue = this.createRandomFloatValueFromBase();
                 break;
 
-            case "int":
+            case "uint16":
                 // create random value
                 postValue = this.createRandomIntValueFromBase();
                 break;
@@ -317,7 +317,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
                 postValue = this.createRandomFloatValueInRange();
                 break;
 
-            case "int":
+            case "uint16":
                 // create random value
                 postValue = this.createRandomIntValueInRange();
                 break;
@@ -338,7 +338,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         callback(this.RESULT_SUCCESS, data);
     }
 
-    if (this.data === 'int') {
+    if (this.data === 'uint16') {
         data = new Buffer.alloc(2);
         data.writeInt16BE(postValue, 0);
     } else {
@@ -367,7 +367,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
     console.log("Notify");
     console.log("Interval:" + this.interval);
     console.log("Log: type type: " + this.characteristicType);
-    console.log("Log: data type: " + this.data);
+    console.log("Log: data type: " + this.datatype);
 
     clearInterval(this.intervalId);
     // creates interval function and updates values inside at specific interval time
@@ -393,7 +393,7 @@ BLECharacteristic.prototype.toString = function () {
     return JSON.stringify({
         uuid: this.uuid,
         properties: this.properties,
-        data: this.data,
+        datatype: this.datatype,
         value: this.value,
         array: this.array,
         interval: this.interval,
