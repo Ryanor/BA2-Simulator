@@ -286,28 +286,13 @@ const BLECharacteristic = function (params) {
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     console.log("Read");
     console.log("Log: type type: " + this.characteristicType);
-    console.log("Log: data type: " + this.data);
+    console.log("Log: data type: " + this.datatype);
     console.log("Log: offset: " + offset);
-
-    if(this.characteristicType === 'single') {
-        let data = new Buffer.alloc(2);
-
-        switch(this.data) {
-            case 'uint8':
-                data = new Buffer([this.value]); //.writeUInt8(this.value, 0);
-
-                break;
-            case 'uint16':
-                data.writeUInt16LE(this.value, 0);
-        }
-        console.log(this.value);
-        console.log(data);
-        callback(this.RESULT_SUCCESS, data);
-    }
+    console.log("Log: value: " + this.value);
 
     if (this.characteristicType === 'base') {
 
-        switch (this.data) {
+        switch (this.datatype) {
             case "float":
                 // create random value
                 postValue = this.createRandomFloatValueFromBase();
@@ -326,7 +311,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     if (this.characteristicType === 'range') {
-        switch (this.data) {
+        switch (this.datatype) {
             case "float":
                 // create random value
                 postValue = this.createRandomFloatValueInRange();
@@ -340,6 +325,18 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     let data;
+
+    if(this.characteristicType === 'single') {
+        switch(this.datatype) {
+            case 'uint8':
+                data = new Buffer([this.value]); //.writeUInt8(this.value, 0);
+
+                break;
+            case 'uint16':
+                data.writeUInt16LE(this.value, 0);
+        }
+        callback(this.RESULT_SUCCESS, data);
+    }
 
     if (this.data === 'int') {
         data = new Buffer.alloc(2);
