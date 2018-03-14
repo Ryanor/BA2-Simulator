@@ -138,10 +138,8 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
 
                         // if value is set characteristic is set to read only
                         if(characteristic.value !== null || characteristic.value !== 'undefined') {
-                            if(characteristic.properties.length > 1) {
-                                characteristic.properties = ['read'];
-                            }
-
+                            characteristic.properties = ['read'];
+                            characteristic.characteristicType = 'single';
                         }
 
 

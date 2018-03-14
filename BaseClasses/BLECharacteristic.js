@@ -70,7 +70,7 @@ const BLECharacteristic = function (params) {
          * @type String|Number
          * @default null
          */
-        value: null,
+        value: params.value,
         /**
          * @property properties
          * @type Array
@@ -100,7 +100,7 @@ const BLECharacteristic = function (params) {
      * @property characteristicType
      * @type String
      */
-    this.characteristicType = params.characteristicType || 'random';
+    this.characteristicType = params.characteristicType;
 
     /**
      * @property offset
@@ -124,13 +124,13 @@ const BLECharacteristic = function (params) {
      * @property min
      * @type Number
      */
-    this.min = params.min || 1;
+    this.min = params.min || 0;
 
     /**
      * @property max
      * @type Number
      */
-    this.max = params.max || 6;
+    this.max = params.max || 0;
 
     /**
      * @property index
@@ -209,7 +209,7 @@ const BLECharacteristic = function (params) {
 
     this.notificationInterval = function (updateValueCallback) {
         let arrayContainer = this.array;
-        let charType = this.type;
+        let charType = this.characteristicType;
         let dataType = this.data;
         let precision = this.precision;
         const self = this;
@@ -285,11 +285,24 @@ const BLECharacteristic = function (params) {
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     console.log("Read");
-    console.log("Log: type type: " + this.type);
+    console.log("Log: type type: " + this.characteristicType);
     console.log("Log: data type: " + this.data);
     console.log("Log: offset: " + offset);
 
-    if (this.type === 'base') {
+    if(this.characteristicType === 'single') {
+        let data = new Buffer.alloc(2);
+
+        switch(this.data) {
+            case 'uint8':
+                data.writeInt16BE(this.value, 1);
+                break;
+            case 'uint16':
+                data.writeInt16BE(this.value,0);
+        }
+        callback(this.RESULT_SUCCESS, data);
+    }
+
+    if (this.characteristicType === 'base') {
 
         switch (this.data) {
             case "float":
@@ -304,12 +317,12 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         }
     }
 
-    if (this.type === 'array') {
+    if (this.characteristicType === 'array') {
 
         postValue = this.getNextValueFromArray();
     }
 
-    if (this.type === 'range') {
+    if (this.characteristicType === 'range') {
         switch (this.data) {
             case "float":
                 // create random value
@@ -353,7 +366,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
-    console.log("Log: type type: " + this.type);
+    console.log("Log: type type: " + this.characteristicType);
     console.log("Log: data type: " + this.data);
 
     clearInterval(this.intervalId);
@@ -384,7 +397,7 @@ BLECharacteristic.prototype.toString = function () {
         value: this.value,
         array: this.array,
         interval: this.interval,
-        type: this.type,
+        characteristicType: this.characteristicType,
         descriptors: this.descriptors
     });
 };
