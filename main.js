@@ -137,7 +137,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                         }
 
                         // fallback to set the actual characteristic type, if old data is used
-                        if(characteristic.characteristicType === 'undefined') {
+                        if(characteristic.characteristicType === undefined) {
                             // values array has data
                             if(characteristic.values.length > 0) {
                                 characteristic.characteristicType = 'array';
