@@ -110,7 +110,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                         console.log("Char. value: " + characteristic.value);
                         console.log("Char. datatype: " + characteristic.datatype);
                         console.log("Char. values length: " + characteristic.values.length);
-                        console.log("Char. type" + characteristic.characteristicType);
+                        console.log("Char. type: " + characteristic.characteristicType);
 
                         const descriptors = [];
 
@@ -136,10 +136,26 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                             }
                         }
 
-                        // if value is set characteristic is set to read only
+                        // if value and more properties are set: change them to a read only characteristic
                         if(characteristic.value !== null || characteristic.value !== 'undefined') {
                             characteristic.properties = ['read'];
                             characteristic.characteristicType = 'single';
+                        }
+
+                        // fallback to set the actual characteristic type, if old data is used
+                        if(characteristic.characteristicType === 'undefined') {
+                            // values array has data
+                            if(characteristic.values.length > 0) {
+                                characteristic.characteristicType = 'array';
+                                // base value is set
+                            } else if(characteristic.base !== 0) {
+                                characteristic.characteristicType = 'base';
+                            } else {
+                                // make a random characteristic with fallback values
+                                characteristic.characteristicType = 'random';
+                                characteristic.min = 1;
+                                characteristic.max = 100;
+                            }
                         }
 
 

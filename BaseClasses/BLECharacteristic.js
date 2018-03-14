@@ -294,10 +294,10 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
         switch(this.data) {
             case 'uint8':
-                data.writeInt16BE(this.value, 1);
+                data.writeUInt8(this.value, 0);
                 break;
             case 'uint16':
-                data.writeInt16BE(this.value,0);
+                data.writeUInt16LE(this.value, 0);
         }
         callback(this.RESULT_SUCCESS, data);
     }
