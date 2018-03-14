@@ -107,6 +107,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                         console.log("Char. properties: " + characteristic.properties);
                         console.log("Char. value: " + characteristic.value);
                         console.log("Char. datatype: " + characteristic.datatype);
+                        console.log("Char. array: " + characteristic.values);
                         console.log("Char. type: " + characteristic.characteristicType);
 
                         const descriptors = [];
@@ -121,8 +122,6 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                                     } else {
                                         value = characteristic.descriptors[descr].value;
                                     }
-                                    console.log("Descr. value: ");
-                                    console.log(value);
                                     descriptors.push(new BlenoDescriptor({
                                         uuid: characteristic.descriptors[descr].uuid,
                                         value: value
@@ -162,7 +161,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                             datatype: characteristic.datatype,
                             offset: characteristic.offset,
                             interval: characteristic.interval,
-                            array: characteristic.values,
+                            values: characteristic.values,
                             base: characteristic.base,
                             min: characteristic.min,
                             max: characteristic.max,
