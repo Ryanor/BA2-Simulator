@@ -89,8 +89,8 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
             console.log("Profile has property services");
 
             // get a single service from the array
-            for (var i in profile["services"]) {
-                var singleService = profile["services"][i];
+            for (let i in profile["services"]) {
+                let singleService = profile["services"][i];
                 console.log("Service name: " + singleService.name);
                 console.log("Service UUID: " + singleService.uuid);
 
@@ -101,7 +101,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                 // check if characteristics are available
                 if (characteristicContainer.length > 0) {
 
-                    // get type data
+                    // get characteristic data
                     for (let char in characteristicContainer) {
                         const characteristic = characteristicContainer[char];
                         console.log("Char. name: " + characteristic.name);
@@ -110,6 +110,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                         console.log("Char. value: " + characteristic.value);
                         console.log("Char. datatype: " + characteristic.datatype);
                         console.log("Char. values length: " + characteristic.values.length);
+                        console.log("Char. type" + characteristic.characteristicType);
 
                         const descriptors = [];
 
@@ -135,21 +136,19 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                             }
                         }
 
-                        let characteristicType;
+                        // if value is set characteristic is set to read only
+                        if(characteristic.value !== null || characteristic.value !== 'undefined') {
+                            if(characteristic.properties.length > 1) {
+                                characteristic.properties = ['read'];
+                            }
 
-                        if (characteristic.values.length > 1) {
-                            characteristicType = 'array';
-                            console.log("Characteristic type = array");
-                        } else if (characteristic.base === 0) {
-                            characteristicType = 'range';
-                            console.log("Characteristic type = range");
-                        } else {
-                            characteristicType = 'base';
-                            console.log("Characteristic type = base");
                         }
+
+
                         const bleCharacteristic = new BLECharacteristic({
                             uuid: characteristic.uuid,
                             properties: characteristic.properties,
+                            value: characteristic.value,
                             descriptors: descriptors,
                             datatype: characteristic.datatype,
                             offset: characteristic.offset,
@@ -158,7 +157,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
                             base: characteristic.base,
                             min: characteristic.min,
                             max: characteristic.max,
-                            characteristicType: characteristicType
+                            characteristicType: characteristic.characteristicType
                         });
 
                         characteristics.push(bleCharacteristic);
@@ -176,7 +175,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
         }
 
         // print all services to screen
-        for (var i in services) {
+        for (let i in services) {
             console.log(services[i].toString());
         }
     });
