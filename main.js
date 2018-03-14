@@ -55,7 +55,7 @@ const address = ip.address();
  * @result services[] Add services, which are built out of the response json data, to the services array
  * @for main
  */
-http.get("http://" + address + ":3000/startProfile/json", function (resp) { //"http://192.168.0.5:3000/profile/5a70b649653cbc02231a3d07", function (resp) { //"http://" + address + ":3000/startProfile/json", function (resp) { //5a70da6e653cbc02231a3d20
+http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
     let data = '';
 
     /**
