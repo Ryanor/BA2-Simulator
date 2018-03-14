@@ -17,7 +17,7 @@ var bleno = require('bleno');
 // predefine the included descriptors of the service
 var Descriptor = bleno.Descriptor;
 
-// create the Characteristic class which the battery level characteristic inherits from
+// create the Characteristic class which the battery level type inherits from
 var Characteristic = bleno.Characteristic;
 
 // initial value for the heart rate randomization
@@ -46,7 +46,7 @@ util.inherits(HumidityCharacteristic, Characteristic);
 
 /**
  * Override prototype method onReadRequest from class bleno.Characteristic
- * This method is called if the master initiates an onReadRequest on the humidity characteristic.
+ * This method is called if the master initiates an onReadRequest on the humidity type.
  * Sends a randomly created value for the humidity to the client
  */
 HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
@@ -59,7 +59,7 @@ HumidityCharacteristic.prototype.onReadRequest = function(offset, callback) {
 
 /**
  * Override prototype method onSubscribe from class bleno.Characteristic
- * This method is called if the master subscribes to the characteristic so it gets a new value every 2s interval.
+ * This method is called if the master subscribes to the type so it gets a new value every 2s interval.
  * Creates a random number between within a min and max range and subtracts the value from the actual humidity value
  */
 HumidityCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
@@ -76,7 +76,7 @@ HumidityCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValu
 
 /**
  * Override prototype method onUnsubscribe from class bleno.Characteristic
- * This method is called if the master unsubscribes from the characteristic.
+ * This method is called if the master unsubscribes from the type.
  * Interval is cleared and no data will be transmitted
  */
 HumidityCharacteristic.prototype.onUnsubscribe = function() {

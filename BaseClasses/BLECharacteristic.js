@@ -2,15 +2,36 @@
  * Class BLECharacteristic is the base class for all Characteristics and extends bleno.Characteristic class
  * BLECharacteristic provides functions to propagate the value to the client device.
  *
+ * @class BLECharacteristic
+ * @extends bleno
+ * @constructor
+ * @param {Object} params Object params contains characteristic data and descriptors array
+ * params             Object of parameters including
+ * uuid ............. Characteristic UUID
+ * value ............ Value for value, usually null
+ * properties ....... Array of properties: read, write and notify
+ * descriptors ...... Array of descriptors for the type
+ * data ............. Data type : Integer, Float or String (Buffer)
+ * values ........... Array containing an amount of values for read or notify
+ * interval ......... Notification interval in ms
+ * offset ........... Offset used for some data types
+ * type ... Kinds of characteristic types which are sent by the type
+ *      array of values
+ *      random values: random values within a range min and max
+ *      base values: created from a start value stepping up and down within a range min and max
+ *
  * @author gwu
- * @version 0.1
+ * @version 1.0
  */
+
+/**
+ * Module dependencies
+ *
+ */
+const bleno = require('bleno');
 const util = require('util');
 
-// import bleno module for bluetooth low energy communication
-const bleno = require('bleno');
-
-// create the Characteristic class which the battery level characteristic inherits from
+// define a variable for the bleno modul base class
 const Characteristic = bleno.Characteristic;
 
 // index counter for the values array
@@ -23,47 +44,99 @@ let postValue;
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
  *
- * @param params      Object of parameters including
+ * params             Object of parameters including
  * uuid ............. Characteristic UUID
  * value ............ Value for value, usually null
  * properties ....... Array of properties: read, write and notify
- * descriptors ...... Array of descriptors for the characteristic
+ * descriptors ...... Array of descriptors for the type
  * data ............. Data type : Integer, Float or String (Buffer)
  * values ........... Array containing an amount of values for read or notify
  * interval ......... Notification interval in ms
- * precision ........ Digits after the comma, for float values
- * characteristic ... Kind of data types which are sent by the characteristic
+ * offset ........... Offset used for some data types
+ * type ... Kinds of characteristic types which are sent by the type
  *      array of values
- *      random values: created from a start value stepping up and down within a range min and max
- *
+ *      random values: random values within a range min and max
+ *      base values: created from a start value stepping up and down within a range min and max
  */
 const BLECharacteristic = function (params) {
     BLECharacteristic.super_.call(this, {
+        /**
+         * @property uuid
+         * @type String
+         */
         uuid: params.uuid,
-        value: null,
+        /**
+         * @property value
+         * @type String|Number
+         * @default null
+         */
+        value: params.value,
+        /**
+         * @property properties
+         * @type Array
+         */
         properties: params.properties,
+        /**
+         * @property descriptors
+         * @type Array
+         */
         descriptors: params.descriptors
     });
 
-    // data type of value
-    this.data = params.data;
-    // notification interval time
-    this.interval = params.interval;
-    // type of the characteristic
-    this.characteristic = params.characteristic || 'random';
-    // number of digits for float values after the comma
-    this.precision = params.precision || 0;
+    /**
+     * @property datatype
+     * @type String
+     */
+    this.datatype = params.datatype;
 
-    // values array
+    /**
+     * @property interval
+     * @type number
+     * @default 1000
+     */
+    this.interval = params.interval;
+
+    /**
+     * @property characteristicType
+     * @type String
+     */
+    this.characteristicType = params.characteristicType;
+
+    /**
+     * @property offset
+     * @type Number
+     */
+    this.offset = params.offset || 0;
+
+    /**
+     * @property values
+     * @type Array
+     */
     this.array = params.values;
 
-    // base value
+    /**
+     * @property base
+     * @type Number
+     */
     this.base = params.base || 0;
-    // minimum value for step
-    this.min = params.min || 1;
-    // maximum value for step
-    this.max = params.max || 6;
 
+    /**
+     * @property min
+     * @type Number
+     */
+    this.min = params.min || 0;
+
+    /**
+     * @property max
+     * @type Number
+     */
+    this.max = params.max || 0;
+
+    /**
+     * @property index
+     * @type Number
+     * @default 0
+     */
     this.index = 0;
 
     // class method to get next value from array at position index
@@ -136,8 +209,8 @@ const BLECharacteristic = function (params) {
 
     this.notificationInterval = function (updateValueCallback) {
         let arrayContainer = this.array;
-        let charType = this.characteristic;
-        let dataType = this.data;
+        let charType = this.characteristicType;
+        let dataType = this.datatype;
         let precision = this.precision;
         const self = this;
 
@@ -162,7 +235,7 @@ const BLECharacteristic = function (params) {
                         postValue = self.createRandomFloatValueFromBase().toFixed(precision);
                         break;
 
-                    case "int":
+                    case "uint16":
                         // create random value
                         postValue = self.createRandomIntValueFromBase().toFixed(precision);
                         break;
@@ -178,7 +251,7 @@ const BLECharacteristic = function (params) {
                         postValue = self.createRandomFloatValueInRange().toFixed(precision);
                         break;
 
-                    case "int":
+                    case "uint16":
                         // create random value
                         postValue = self.createRandomIntValueInRange().toFixed(precision);
                         break;
@@ -190,7 +263,7 @@ const BLECharacteristic = function (params) {
             // convert value to correct buffer type
             let data;
 
-            if (dataType === 'int') {
+            if (dataType === 'uint16') {
                 // convert value to UInt16BigEndian
                 data = new Buffer.alloc(2);
                 data.writeUInt16BE(postValue, 0);
@@ -207,43 +280,44 @@ const BLECharacteristic = function (params) {
 
 /**
  * Override prototype method onReadRequest from class bleno.Characteristic
- * This method is called if the master initiates an onReadRequest on the body sensor location characteristic.
+ * This method is called if the master initiates an onReadRequest on the body sensor location type.
  * Creates a random number between 0 and 7 which are used for the position on the body
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     console.log("Read");
-    console.log("Log: characteristic type: " + this.characteristic);
-    console.log("Log: data type: " + this.data);
+    console.log("Log: type type: " + this.characteristicType);
+    console.log("Log: data type: " + this.datatype);
     console.log("Log: offset: " + offset);
+    console.log("Log: value: " + this.value);
 
-    if (this.characteristic === 'base') {
+    if (this.characteristicType === 'base') {
 
-        switch (this.data) {
+        switch (this.datatype) {
             case "float":
                 // create random value
                 postValue = this.createRandomFloatValueFromBase();
                 break;
 
-            case "int":
+            case "uint16":
                 // create random value
                 postValue = this.createRandomIntValueFromBase();
                 break;
         }
     }
 
-    if (this.characteristic === 'array') {
+    if (this.characteristicType === 'array') {
 
         postValue = this.getNextValueFromArray();
     }
 
-    if (this.characteristic === 'range') {
-        switch (this.data) {
+    if (this.characteristicType === 'range') {
+        switch (this.datatype) {
             case "float":
                 // create random value
                 postValue = this.createRandomFloatValueInRange();
                 break;
 
-            case "int":
+            case "uint16":
                 // create random value
                 postValue = this.createRandomIntValueInRange();
                 break;
@@ -252,7 +326,19 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
     let data;
 
-    if (this.data === 'int') {
+    if(this.characteristicType === 'single') {
+        switch(this.datatype) {
+            case 'uint8':
+                data = new Buffer([this.value]); //.writeUInt8(this.value, 0);
+
+                break;
+            case 'uint16':
+                data.writeUInt16LE(this.value, 0);
+        }
+        callback(this.RESULT_SUCCESS, data);
+    }
+
+    if (this.data === 'uint16') {
         data = new Buffer.alloc(2);
         data.writeInt16BE(postValue, 0);
     } else {
@@ -263,7 +349,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     callback(this.RESULT_SUCCESS, data);
 };
 
-// Accept a new value for the characteristic's value
+// Accept a new value for the type's value
 BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResponse, callback) {
     this.value = data;
     console.log('Write request: value = ' + this.value.toString("utf-8"));
@@ -273,15 +359,15 @@ BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResp
 
 /**
  * Override prototype method onSubscribe from class bleno.Characteristic
- * This method is called if the master subscribes to the characteristic so it gets a new value every 2s interval.
+ * This method is called if the master subscribes to the type so it gets a new value every 2s interval.
  * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
-    console.log("Log: characteristic type: " + this.characteristic);
-    console.log("Log: data type: " + this.data);
+    console.log("Log: type type: " + this.characteristicType);
+    console.log("Log: data type: " + this.datatype);
 
     clearInterval(this.intervalId);
     // creates interval function and updates values inside at specific interval time
@@ -290,22 +376,28 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
 /**
  * Override prototype method onUnsubscribe from class bleno.Characteristic
- * This method is called if the master unsubscribes from the characteristic.
+ * This method is called if the master unsubscribes from the type.
  * Interval is cleared and no data will be transmitted
  */
 BLECharacteristic.prototype.onUnsubscribe = function () {
     clearInterval(this.intervalId);
 };
 
+/**
+ * Function toString returns a textual representation of a characteristic and its containing descriptors.
+ *
+ * @method toString
+ * @return {String} string
+ */
 BLECharacteristic.prototype.toString = function () {
     return JSON.stringify({
         uuid: this.uuid,
         properties: this.properties,
-        data: this.data,
+        datatype: this.datatype,
         value: this.value,
         array: this.array,
         interval: this.interval,
-        characteristic: this.characteristic,
+        characteristicType: this.characteristicType,
         descriptors: this.descriptors
     });
 };
