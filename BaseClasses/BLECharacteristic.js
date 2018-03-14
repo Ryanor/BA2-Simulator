@@ -294,7 +294,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
         switch(this.data) {
             case 'uint8':
-                data.writeUInt8(this.value, 0);
+                data = new Buffer([this.value]); //.writeUInt8(this.value, 0);
                 break;
             case 'uint16':
                 data.writeUInt16LE(this.value, 0);

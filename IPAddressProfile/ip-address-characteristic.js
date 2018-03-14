@@ -3,29 +3,39 @@
  * IPAddressCharacteristic include child process calls to get actual ip address
  * IPAddressCharacteristic is a self defined test characteristic
  *
+ * @class ip-address-characteristic
+ * @uses bleno
+ * @uses utils
+ * @extends bleno
+ *
+ * @constructor IPAddressCharacteristic
+ * @param {Object} characteristic Object containing all characteristic data
+ *
  * @author gwu
  * @version 1.0
  */
+/**
+ * Module dependencies
+ */
+const bleno = require('bleno');
 const util = require('util');
-
-// import ip library to get ip address
 const ip = require('ip');
+
 // get actual ip address
 const address = ip.address();
 
-// import bleno module for bluettoth low energy communication
-const bleno = require('bleno');
-
-// predefine the included descriptors of the service
+// create descriptor from the modul bleno base class
 const Descriptor = bleno.Descriptor;
 
-// create the Characteristic class which the battery level characteristic inherits from
+// create characteristic from the modul bleno base class
 const Characteristic = bleno.Characteristic;
 
 /**
-* Constructor for IPAddressCharacteristic calls constructor from the parent class Characteristic
-* Defines the UUID for the characteristic
-* Includes descriptors used
+ * Constructor for IPAddressCharacteristic calls constructor from the parent class Characteristic
+ * Defines the UUID for the characteristic
+ * Includes descriptors
+ *
+ *
 */
 const IPAddressCharacteristic = function() {
   IPAddressCharacteristic.super_.call(this, {
@@ -45,10 +55,14 @@ const IPAddressCharacteristic = function() {
 util.inherits(IPAddressCharacteristic, Characteristic);
 
 /**
-* Override prototype method onReadRequest from class bleno.Characteristic 
-* This method is called if the master initiates an onReadRequest on the battery level characteristic.
-* We check the os if the application runs on linux, and if so, return the actual battery level
-*/
+ * Override prototype method onReadRequest from class bleno.Characteristic
+ * This method is called if the master initiates an onReadRequest on the ip address characteristic.
+ *
+ * @method onReadRequest
+ * @param {Number} offset Offset for writing data to the buffer
+ * @param {Object} callback Callback function
+ * @for ip-address-characteristic
+ */
 IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
   callback(this.RESULT_SUCCESS, new Buffer(this.value));
 };
