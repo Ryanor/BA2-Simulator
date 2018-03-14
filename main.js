@@ -81,22 +81,15 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
     resp.on('end', function () {
         // parse server response data to profile
         profile = JSON.parse(data);
-        console.log("Profile:");
-        console.log(profile);
 
         // build all services from response message
         if (profile.hasOwnProperty("services")) {
-            console.log("Profile has property services");
 
             // get a single service from the array
             for (let i in profile["services"]) {
                 let singleService = profile["services"][i];
-                console.log("Service name: " + singleService.name);
-                console.log("Service UUID: " + singleService.uuid);
 
-                const characteristics = [];
                 const characteristicContainer = singleService.characteristics;
-                console.log("Amount of characteristics: " + characteristicContainer.length);
 
                 // check if characteristics are available
                 if (characteristicContainer.length > 0) {
@@ -243,10 +236,6 @@ bleno.on('advertisingStart', function (error) {
 
     if (!error) {
         bleno.setServices(services, function (error) {
-            console.log("Set services:");
-            for (let i = 0; i < services.length; i++) {
-                console.log((i + 1) + ". Service set");
-            }
             console.log('setServices: ' + (error ? 'error ' + error : 'success'));
         });
     }
