@@ -346,13 +346,14 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
         }
     }
 
+    if(this.characteristicType === 'single') {
+        postValue = this.value;
+    }
+
     let data;
 
-    if(this.characteristicType === 'single') {
-        data = Utilities.writeBuffer(this.value, this.datatype);
-    } else {
-        data = Utilities.writeBuffer(postValue, this.datatype);
-    }
+    data = Utilities.writeBuffer(postValue, this.datatype);
+
 
     // send value to client
     callback(this.RESULT_SUCCESS, data);
