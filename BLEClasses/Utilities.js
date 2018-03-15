@@ -16,28 +16,22 @@ Utilities.writeBuffer = function (value, datatype) {
     console.log("Utilities class called");
     switch (datatype) {
         case 'uint8' :
+        case 'uint16' :
             data = new Buffer(2);
             data.writeUInt16BE(value, 0);
             break;
-        case 'uint16' :
-            data = new Buffer(2);
-            data.writeUInt16LE(value, 0);
-            break;
         case 'uint32' :
             data = new Buffer(4);
-            data.writeUInt32LE(value, 0);
+            data.writeUInt32BE(value, 0);
             break;
         case 'sint8' :
-            data = new Buffer(2);
-            data.writeInt8(value, 0);
-            break;
         case 'sint16' :
             data = new Buffer(2);
-            data.writeInt16LE(value, 0);
+            data.writeInt16BE(value, 0);
             break;
         case 'sint32' :
             data = new Buffer(4);
-            data.writeInt32LE(value, 0);
+            data.writeInt32BE(value, 0);
             break;
 
         default :
