@@ -305,15 +305,16 @@ const BLECharacteristic = function (params) {
             // convert value to correct buffer type
             let data;
 
-            if (dataType === 'uint16') {
+            /*if (dataType === 'uint16') {
                 // convert value to UInt16BigEndian
                 data = new Buffer.alloc(2);
                 data.writeUInt16BE(postValue, 0);
             } else {
                 data = new Buffer(8);
                 data.write('' + postValue, 0);
-            }
+            }*/
 
+            data = Utilities.writeBuffer(postValue, self.datatype);
             updateValueCallback(data);
 
         }, this.interval);
