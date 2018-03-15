@@ -26,9 +26,9 @@ const http = require('http');
 const ip = require('ip');
 
 // variable for the extended service class
-const BLEService = require('./BaseClasses/BLEService');
+const BLEService = require('./BLEClasses/BLEService');
 // variable for the extended characteristic class
-const BLECharacteristic = require('./BaseClasses/BLECharacteristic');
+const BLECharacteristic = require('./BLEClasses/BLECharacteristic');
 // // define a variable for a descriptor from the bleno modul base class
 const BlenoDescriptor = bleno.Descriptor;
 
