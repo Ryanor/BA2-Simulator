@@ -17,7 +17,7 @@ Utilities.writeBuffer = function (value, datatype) {
     switch (datatype) {
         case 'uint8' :
             data = new Buffer(2);
-            data.writeUInt16LE(value, 1);
+            data.writeUInt16BE(value, 0);
             break;
         case 'uint16' :
             data = new Buffer(2);
