@@ -51,3 +51,5 @@ Utilities.writeBuffer = function (value, datatype) {
     console.log(data);
     return data;
 };
+
+module.exports = Utilities;
