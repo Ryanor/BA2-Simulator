@@ -88,6 +88,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
             // get a single service from the array
             for (let i in profile["services"]) {
                 let singleService = profile["services"][i];
+                const characteristics = [];
 
                 const characteristicContainer = singleService.characteristics;
 
