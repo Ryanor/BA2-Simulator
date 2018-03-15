@@ -277,12 +277,9 @@ const BLECharacteristic = function (params) {
                         postValue = self.createRandomFloatValueFromBase().toFixed(precision);
                         break;
 
-                    case "uint16":
+                    default:
                         // create random value
                         postValue = self.createRandomIntValueFromBase().toFixed(precision);
-                        break;
-
-                    default:
                 }
             }
 
@@ -293,26 +290,14 @@ const BLECharacteristic = function (params) {
                         postValue = self.createRandomFloatValueInRange().toFixed(precision);
                         break;
 
-                    case "uint16":
+                    default:
                         // create random value
                         postValue = self.createRandomIntValueInRange().toFixed(precision);
-                        break;
-
-                    default:
                 }
             }
 
             // convert value to correct buffer type
             let data;
-
-            /*if (dataType === 'uint16') {
-                // convert value to UInt16BigEndian
-                data = new Buffer.alloc(2);
-                data.writeUInt16BE(postValue, 0);
-            } else {
-                data = new Buffer(8);
-                data.write('' + postValue, 0);
-            }*/
 
             data = Utilities.writeBuffer(postValue, self.datatype);
             updateValueCallback(data);
@@ -328,10 +313,6 @@ const BLECharacteristic = function (params) {
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     console.log("Read");
-    console.log("Log: type type: " + this.characteristicType);
-    console.log("Log: data type: " + this.datatype);
-    console.log("Log: offset: " + offset);
-    console.log("Log: value: " + this.value);
 
     if (this.characteristicType === 'base') {
 
@@ -341,10 +322,9 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
                 postValue = this.createRandomFloatValueFromBase();
                 break;
 
-            case "uint16":
+            default:
                 // create random value
                 postValue = this.createRandomIntValueFromBase();
-                break;
         }
     }
 
@@ -360,10 +340,9 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
                 postValue = this.createRandomFloatValueInRange();
                 break;
 
-            case "uint16":
+            default:
                 // create random value
                 postValue = this.createRandomIntValueInRange();
-                break;
         }
     }
 
@@ -371,25 +350,10 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
     if(this.characteristicType === 'single') {
         data = Utilities.writeBuffer(this.value, this.datatype);
-        console.log(data);
-        /*switch(this.datatype) {
-            case 'uint8':
-                 //new Buffer([this.value]); //.writeUInt8(this.value, 0);
-
-                break;
-            case 'uint16':
-                data.writeUInt16LE(this.value, 0);
-        }
-        callback(this.RESULT_SUCCESS, data);*/
+    } else {
+        data = Utilities.writeBuffer(postValue, this.datatype);
     }
 
-    /*if (this.data === 'uint16') {
-        data = new Buffer.alloc(2);
-        data.writeInt16BE(postValue, 0);
-    } else {
-        data = new Buffer(8);
-        data.write('' + postValue, 0);
-    }*/
     // send value to client
     callback(this.RESULT_SUCCESS, data);
 };
