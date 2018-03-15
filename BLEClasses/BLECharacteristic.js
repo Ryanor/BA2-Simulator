@@ -30,7 +30,7 @@
  */
 const bleno = require('bleno');
 const util = require('util');
-const Utilities = require('Utilities');
+const Utilities = require('./Utilities');
 
 // define a variable for the bleno modul base class
 const Characteristic = bleno.Characteristic;
