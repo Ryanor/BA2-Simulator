@@ -50,8 +50,7 @@ Utilities.writeBuffer = function (value, datatype) {
 
         default :
             if (typeof value === 'string') {
-                data = Buffer.allocUnsafe(value.length);
-                data =  data.write(value,0);
+                data = new Buffer(value);
             } else {
                 data = Buffer.from([value]);
             }
