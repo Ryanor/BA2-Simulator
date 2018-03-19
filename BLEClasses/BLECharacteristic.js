@@ -169,7 +169,7 @@ const BLECharacteristic = function (params) {
      * @return {number} value Random value
      */
     this.createRandomIntValueInRange = function () {
-        console.log("Get randomized INT value:");
+        console.log("Get randomized range INT value:");
         // create random value
         let value = parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
 
@@ -185,7 +185,7 @@ const BLECharacteristic = function (params) {
      * @return {number} this.base New base value
      */
     this.createRandomIntValueFromBase = function () {
-        console.log("Get randomized INT value:");
+        console.log("Get randomized base INT value:");
         // create random value
         const delta = parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
         // check if even
@@ -208,7 +208,7 @@ const BLECharacteristic = function (params) {
      * @return {number} value Random value
      */
     this.createRandomFloatValueInRange = function () {
-        console.log("Get randomized FLOAT value");
+        console.log("Get randomized range FLOAT value");
         // create random value
         let value = (Math.random() * (this.max - this.min) + this.min).toFixed(2);
 
@@ -224,7 +224,7 @@ const BLECharacteristic = function (params) {
      * @return {number} this.base New base value
      */
     this.createRandomFloatValueFromBase = function () {
-        console.log("Get randomized FLOAT value");
+        console.log("Get randomized base FLOAT value");
         // create random value
         const delta = (Math.random() * (this.max - this.min) + this.min).toFixed(2);
         // check if even
@@ -310,8 +310,7 @@ const BLECharacteristic = function (params) {
  * @param callback Callback function
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
-    console.log("Read");
-
+    
     switch (this.characteristicType) {
         case 'single':
             console.log("Single type access...");
