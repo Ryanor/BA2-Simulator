@@ -141,11 +141,11 @@ const BLECharacteristic = function (params) {
     this.index = 0;
 
     /**
-     * Function returns next value from the array of values.
+     * Function returns next value at current index position from the array of values.
      * If last position is reached the index starts from position 0 again.
      *
      * @method getNextValueFromArray
-     * @return {*} value Actual value
+     * @return {*} value Actual value at index position
      */
     this.getNextValueFromArray = function () {
         console.log("Get next value:");
@@ -182,7 +182,7 @@ const BLECharacteristic = function (params) {
      * and steps up and down at the range of the min and max values.
      *
      * @method createRandomIntValueFromBase
-     * @return {number} value Random value
+     * @return {number} this.base New base value
      */
     this.createRandomIntValueFromBase = function () {
         console.log("Get randomized INT value:");
@@ -218,10 +218,10 @@ const BLECharacteristic = function (params) {
 
     /**
      * Function creates a random float number , which starts at the base value
-     * and steps up and down at the range of the min and max values.
+     * and steps up and down within the range of the min and max values.
      *
      * @method createRandomFloatValueFromBase
-     * @return {number} value Random value
+     * @return {number} this.base New base value
      */
     this.createRandomFloatValueFromBase = function () {
         console.log("Get randomized FLOAT value");
@@ -247,53 +247,46 @@ const BLECharacteristic = function (params) {
      *
      * @method notificationInterval
      * @param updateValueCallback Callback function
-     * @return updateValueCallback
      */
     this.notificationInterval = function (updateValueCallback) {
-        let arrayContainer = this.array;
-        let charType = this.characteristicType;
-        let dataType = this.datatype;
-        let precision = this.precision;
+        // used to get 'this' to the next scope
         const self = this;
 
         this.intervalId = setInterval(function () {
             console.log("Get next value:");
 
-            if (charType === 'array') {
-                postValue = arrayContainer[arrayIndex];
-                console.log(arrayIndex + ". value: " + postValue);
+            switch (self.characteristicType) {
+                case 'single':
+                    postValue = self.value;
+                    break;
 
-                arrayIndex = arrayIndex + 1;
+                case 'array':
+                    postValue = self.array[self.index];
+                    console.log(self.index + ". value: " + postValue);
 
-                if (arrayIndex >= arrayContainer.length) {
-                    arrayIndex = 0;
-                }
-            }
+                    self.index++;
 
-            if (charType === 'base') {
-                switch (dataType) {
-                    case "float":
-                        // create random value
-                        postValue = self.createRandomFloatValueFromBase().toFixed(precision);
-                        break;
+                    if (self.index >= self.array.length) {
+                        self.index = 0;
+                    }
+                    break;
 
-                    default:
-                        // create random value
-                        postValue = self.createRandomIntValueFromBase().toFixed(precision);
-                }
-            }
+                case 'base':
+                    if (self.datatype === 'float') {
+                        postValue = self.createRandomFloatValueFromBase().toFixed(2);
+                    } else {
+                        postValue = self.createRandomIntValueFromBase();
+                    }
 
-            if (charType === 'range') {
-                switch (dataType) {
-                    case "float":
-                        // create random value
-                        postValue = self.createRandomFloatValueInRange().toFixed(precision);
-                        break;
+                    break;
 
-                    default:
-                        // create random value
-                        postValue = self.createRandomIntValueInRange().toFixed(precision);
-                }
+                case 'range':
+                    if (self.datatype === 'float') {
+                        postValue = self.createRandomFloatValueInRange().toFixed(2);
+                    } else {
+                        postValue = self.createRandomIntValueInRange();
+                    }
+                    break;
             }
 
             // convert value to correct buffer type
@@ -307,53 +300,49 @@ const BLECharacteristic = function (params) {
 };
 
 /**
- * Override prototype method onReadRequest from class bleno.Characteristic
- * This method is called if the master initiates an onReadRequest on the body sensor location type.
- * Creates a random number between 0 and 7 which are used for the position on the body
+ * Overrides prototype method onReadRequest from class bleno.Characteristic
+ * This method is called if the master initiates an onReadRequest.
+ * Depeding on the characteristic type the function returns random numbers,
+ * a number from an array or the characteristic value.
+ *
+ * @method onReadRequest
+ * @param offset Offset for the data
+ * @param callback Callback function
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     console.log("Read");
 
-    if (this.characteristicType === 'base') {
+    switch (this.characteristicType) {
+        case 'single':
+            postValue = this.value;
+            break;
 
-        switch (this.datatype) {
-            case "float":
-                // create random value
+        case 'array':
+            postValue = this.getNextValueFromArray();
+            break;
+
+        case 'base':
+            if (this.datatype === "float") {
                 postValue = this.createRandomFloatValueFromBase();
-                break;
-
-            default:
-                // create random value
+            } else {
                 postValue = this.createRandomIntValueFromBase();
-        }
-    }
+            }
+            break;
 
-    if (this.characteristicType === 'array') {
-
-        postValue = this.getNextValueFromArray();
-    }
-
-    if (this.characteristicType === 'range') {
-        switch (this.datatype) {
-            case "float":
-                // create random value
+        case 'range':
+            if (this.datatype === "float") {
                 postValue = this.createRandomFloatValueInRange();
-                break;
-
-            default:
-                // create random value
+            } else {
                 postValue = this.createRandomIntValueInRange();
-        }
-    }
+            }
+            break;
 
-    if(this.characteristicType === 'single') {
-        postValue = this.value;
+        default:
     }
 
     let data;
 
     data = Utilities.writeBuffer(postValue, this.datatype);
-
 
     // send value to client
     callback(this.RESULT_SUCCESS, data);
@@ -370,7 +359,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
  */
 BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResponse, callback) {
     this.value = data;
-    console.log('Write request: value = ' + this.value.toString("utf-8"));
+    console.log('Write request: value = ' + this.value.toString());
     callback(this.RESULT_SUCCESS);
 };
 
