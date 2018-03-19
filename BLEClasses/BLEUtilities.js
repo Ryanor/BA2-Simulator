@@ -26,7 +26,7 @@ Utilities.writeBuffer = function (value, datatype) {
     console.log("Utilities class called");
     switch (datatype) {
         //case 'uint8' :
-        /*case 'uint16' :
+        case 'uint16' :
             data = Buffer.allocUnsafe(2);
             data.writeUInt16BE(value, 0);
             break;
@@ -34,7 +34,7 @@ Utilities.writeBuffer = function (value, datatype) {
             data = Buffer.allocUnsafe(4);
             data.writeUInt32BE(value, 0);
             break;
-        case 'sint8' :
+        //case 'sint8' :
         case 'sint16' :
             data = Buffer.allocUnsafe(2);
             data.writeInt16BE(value, 0);
@@ -44,15 +44,14 @@ Utilities.writeBuffer = function (value, datatype) {
             data.writeInt32BE(value, 0);
             break;
         case 'float' :
-            data = Buffer.allocUnsafe(value.length);
+            data = Buffer.allocUnsafe(8);
             data.writeFloatBE(value, 0);
             break;
-    */
+
         default :
             if (typeof value === 'string') {
                 data = new Buffer(value);
             } else {
-                //data = Buffer.allocUnsafe(value.length);
                 data = new Buffer([value]);
             }
 
