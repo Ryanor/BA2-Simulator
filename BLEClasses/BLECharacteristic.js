@@ -148,13 +148,9 @@ const BLECharacteristic = function (params) {
      * @return {*} value Actual value at index position
      */
     this.getNextValueFromArray = function () {
-        console.log("Get next value:");
-
         let value = this.array[this.index];
 
-        console.log(this.index + ". value: " + value);
-
-        this.index = this.index + 1;
+        this.index ++;
 
         if (this.index >= this.array.length) {
             this.index = 0;
@@ -310,7 +306,8 @@ const BLECharacteristic = function (params) {
  * @param callback Callback function
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
-    
+    console.log("Read request");
+
     switch (this.characteristicType) {
         case 'single':
             console.log("Single type access...");
@@ -379,9 +376,7 @@ BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCal
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
-    console.log("Log: type type: " + this.characteristicType);
-    console.log("Log: data type: " + this.datatype);
-
+    
     clearInterval(this.intervalId);
     // creates interval function and updates values within a specified interval time
     this.notificationInterval(updateValueCallback);
