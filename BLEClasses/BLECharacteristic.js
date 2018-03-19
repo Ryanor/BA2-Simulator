@@ -30,7 +30,7 @@
  */
 const bleno = require('bleno');
 const util = require('util');
-const Utilities = require('./Utilities');
+const BLEUtilities = require('./BLEUtilities');
 
 // define a variable for the bleno modul base class
 const Characteristic = bleno.Characteristic;
@@ -292,7 +292,7 @@ const BLECharacteristic = function (params) {
             // convert value to correct buffer type
             let data;
 
-            data = Utilities.writeBuffer(postValue, self.datatype);
+            data = BLEUtilities.writeBuffer(postValue, self.datatype);
             updateValueCallback(data);
 
         }, this.interval);
@@ -341,8 +341,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
     }
 
     let data;
-
-    data = Utilities.writeBuffer(postValue, this.datatype);
+    data = BLEUtilities.writeBuffer(postValue, this.datatype);
 
     // send value to client
     callback(this.RESULT_SUCCESS, data);
