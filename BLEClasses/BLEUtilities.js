@@ -1,5 +1,5 @@
 /**
- * Utilities class contains functions used by other classes.
+ * Utilities class contains static functions used by other classes.
  *
  * @class Utilities
  *
@@ -10,6 +10,16 @@
 function Utilities() {
 };
 
+/**
+ * Functions is used to write a value to a buffer using different
+ * datatype representations.
+ *
+ * @method writeBuffer
+ * @static
+ * @param value Value which is written to the buffer
+ * @param datatype Datatype of the value
+ * @return {*} buffer Buffer containing the value in the correct datatype representation.
+ */
 Utilities.writeBuffer = function (value, datatype) {
     let data;
 

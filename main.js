@@ -51,8 +51,8 @@ const address = ip.address();
  *
  * @method http.get
  * @param address Address of the webservice
- * @param function(resp) Response from the webservice
- * @result services[] Add services, which are built out of the response json data, to the services array
+ * @param resp Response from the webservice
+ * @result {Array} services Add services, which are built out of the response json data, to the services array
  * @for main
  */
 http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
@@ -64,7 +64,7 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
      *
      * @method resp.on('data')
      * @param {Event} event Data event
-     * @return {Object}data Container of data
+     * @return {Object} data Container of data
      * @for main
      */
     resp.on('data', function (chunk) {
