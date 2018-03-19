@@ -314,14 +314,17 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
 
     switch (this.characteristicType) {
         case 'single':
+            console.log("Single type access...");
             postValue = this.value;
             break;
 
         case 'array':
+            console.log("Array type access...");
             postValue = this.getNextValueFromArray();
             break;
 
         case 'base':
+            console.log("Base type access...");
             if (this.datatype === "float") {
                 postValue = this.createRandomFloatValueFromBase();
             } else {
@@ -330,6 +333,7 @@ BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
             break;
 
         case 'range':
+            console.log("Range type access...");
             if (this.datatype === "float") {
                 postValue = this.createRandomFloatValueInRange();
             } else {
