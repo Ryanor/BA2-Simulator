@@ -31,7 +31,7 @@ Utilities.writeBuffer = function (value, datatype) {
             break;
         case 'uint16':
             data = Buffer.allocUnsafe(2);
-            data.writeUInt16BE(value, 0);
+            data.writeUInt16LE(value, 0);
             break;
         case 'uint32':
             data = Buffer.allocUnsafe(4);
@@ -43,7 +43,7 @@ Utilities.writeBuffer = function (value, datatype) {
             break;
         case 'sint16':
             data = Buffer.allocUnsafe(2);
-            data.writeInt16BE(value, 0);
+            data.writeInt16LE(value, 0);
             break;
         case 'sint32':
             data = Buffer.allocUnsafe(4);
