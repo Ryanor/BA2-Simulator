@@ -50,8 +50,7 @@ Utilities.writeBuffer = function (value, datatype) {
             data.writeInt32LE(value, 0);
             break;
         case 'float':
-            data = Buffer.allocUnsafe(8);
-            data.writeFloatLE(value, 0);
+            data = new Buffer(value);
             break;
 
         default :
@@ -60,7 +59,6 @@ Utilities.writeBuffer = function (value, datatype) {
             } else {
                 data = new Buffer([value]);
             }
-
     }
     console.log(data);
     return data;
