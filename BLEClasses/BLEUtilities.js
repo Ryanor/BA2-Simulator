@@ -28,11 +28,11 @@ Utilities.writeBuffer = function (value, datatype) {
         //case 'uint8' :
         case 'uint16' :
             data = Buffer.allocUnsafe(2);
-            data.writeUInt16LE(value, 0);
+            data.writeUInt16BE(value, 0);
             break;
         case 'uint32' :
             data = Buffer.allocUnsafe(4);
-            data.writeUInt32LE(value, 0);
+            data.writeUInt32BE(value, 0);
             break;
         //case 'sint8' :
         case 'sint16' :
