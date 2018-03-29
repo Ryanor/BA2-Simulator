@@ -1,10 +1,14 @@
 /**
- * Utilities class contains static functions used by other classes.
+ * Utilities class contains a static function to write the characteristic value
+ * to a buffer. The way the value is written to the buffer depends on its data type:
+ * e.g.:
+ *    datatype uint8 --> Buffer.writeUInt8(value); No little or big endian format
+ *    datatype uint32 --> Buffer.writeUInt32LE(value); Written in little endian format
  *
  * @class Utilities
  *
  * @author gwu
- * @version 0.5
+ * @version 1.0
  */
 
 function Utilities() {
