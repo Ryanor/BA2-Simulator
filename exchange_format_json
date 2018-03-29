@@ -94,3 +94,43 @@
     }
 
 ]
+
+{ // profile name
+  name: "Heart Rate Profile",
+  // services array
+  services: [
+    // single service
+    {   name: "Heart Rate Service",
+        uuid: "180D",
+        // characteristics array
+        characteristics: [
+            // single characteristic
+            {   name: "Heart Rate Measurement",
+                uuid: "2A37",
+                value: null,
+                properties: ["read","notify"],
+                // descriptors array
+                descriptors: [
+                    // single descriptor
+                    {   name: "User description",
+                        uuid: "2901",
+                        datatype: "string",
+                        value: "Heart rate measurement in bpm."
+                    } ]
+                // data type of the values
+                datatype: "uint16",
+                // notification interval in ms
+                interval: 1000,
+                // offset for the value, not used yet
+                offset: 0,
+                // array of values
+                values: [70, 67, 71, 66, 65, 60, 57, 63, 65, 64, 66, ...],
+                // base value for random value generation
+                base: 0,
+                // maximum step for random value generation
+                max: 0,
+                // minimum step for random value generation
+                min: 0,
+            } ]
+    } ]
+}
