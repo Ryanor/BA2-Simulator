@@ -43,12 +43,14 @@ let profile;
 const address = ip.address();
 
 /**
- * Connect to the webservice and get the actual profile as json array
+ * Connect to the webservice and get the actual profile as json array.
+ * The received data is parsed to json which is used to build all of
+ * the profiles services, characteristics and descriptors.
  *
  * @method http.get
  * @param address Address of the webservice
  * @param resp Response from the webservice
- * @return {Array} services Add services, which are built out of the response json data, to the services array
+ * @return {Array} services All services, which were built out of the response profile
  * @for main
  */
 http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
@@ -68,109 +70,119 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
     });
 
     /**
-     * After all data is received, parse data to JSON.
+     * After the data transfer is finished, the data variable
+     * must be checked if it contains enough data to parse a profile from it.
+     * Otherwise it may be the first start and only the ip address service is available,
+     * which will always be included for any profile to get the IP address for the Raspberry Pi 3.
      *
      * @method resp.on('end')
      * @param {Event} event End of data event
      * @for main
      */
     resp.on('end', function () {
-        // parse server response data to profile
-        profile = JSON.parse(data);
-        // build all services in the profile
-        if (profile.hasOwnProperty("services")) {
+        // check if the received data contains the minimum size for a profile = empty profile without any data
+        if (data.length < 15) {
+            console.log("Not enough response data for parsing a profile!");
+            console.log("Only IP address service available.");
+        } else {
+            // parse server response data to profile
+            console.log("Length:" + data.length);
+            profile = JSON.parse(data);
+            // build all services in the profile
+            if (profile.hasOwnProperty("services")) {
 
-            // Service
-            // get a single service from the array
-            for (let i in profile["services"]) {
-                let singleService = profile["services"][i];
+                // Service
+                // get a single service from the array
+                for (let i in profile["services"]) {
+                    let singleService = profile["services"][i];
 
-                // Characteristic
-                // create an empty characteristics array
-                const characteristics = [];
-                // get all characteristics included in the service
-                const characteristicContainer = singleService.characteristics;
-                // check if characteristics are available
-                if (characteristicContainer.length > 0) {
-                    // iterate over all characteristics
-                    for (let char in characteristicContainer) {
-                        // get a single characteristic
-                        const characteristic = characteristicContainer[char];
+                    // Characteristic
+                    // create an empty characteristics array
+                    const characteristics = [];
+                    // get all characteristics included in the service
+                    const characteristicContainer = singleService.characteristics;
+                    // check if characteristics are available
+                    if (characteristicContainer.length > 0) {
+                        // iterate over all characteristics
+                        for (let char in characteristicContainer) {
+                            // get a single characteristic
+                            const characteristic = characteristicContainer[char];
 
-                        // Descriptor
-                        // create an empty descriptors array
-                        const descriptors = [];
-                        // check if descriptors are available
-                        if (characteristic.descriptors.length > 0) {
-                            // iterate over all descriptors
-                            for (let descr in characteristic.descriptors) {
-                                // check for a descriptors with UUID 2902 which have to be build by the bleno modul
-                                if (characteristic.descriptors[descr].uuid.indexOf('2902') === -1) {
-                                    let value;
-                                    // check if the value type is of byte or string
-                                    if (characteristic.descriptors[descr].datatype === "bytes") {
-                                        value = new Buffer(hexStringToBytes(characteristic.descriptors[descr].value), "hex");
-                                    } else {
-                                        value = characteristic.descriptors[descr].value;
+                            // Descriptor
+                            // create an empty descriptors array
+                            const descriptors = [];
+                            // check if descriptors are available
+                            if (characteristic.descriptors.length > 0) {
+                                // iterate over all descriptors
+                                for (let descr in characteristic.descriptors) {
+                                    // check for a descriptors with UUID 2902 which have to be build by the bleno modul
+                                    if (characteristic.descriptors[descr].uuid.indexOf('2902') === -1) {
+                                        let value;
+                                        // check if the value type is of byte or string
+                                        if (characteristic.descriptors[descr].datatype === "bytes") {
+                                            value = new Buffer(hexStringToBytes(characteristic.descriptors[descr].value), "hex");
+                                        } else {
+                                            value = characteristic.descriptors[descr].value;
+                                        }
+                                        // add the new descriptor to the array
+                                        descriptors.push(new BlenoDescriptor({
+                                            uuid: characteristic.descriptors[descr].uuid,
+                                            value: value
+                                        }));
                                     }
-                                    // add the new descriptor to the array
-                                    descriptors.push(new BlenoDescriptor({
-                                        uuid: characteristic.descriptors[descr].uuid,
-                                        value: value
-                                    }));
+                                }
+                            } // END Descriptor
+
+                            // if value and more properties are set: change them to a read only characteristic
+                            if (characteristic.value !== null) {
+                                characteristic.properties = ['read'];
+                                characteristic.characteristicType = 'single';
+                            }
+                            // fallback to set the actual characteristic type, if old data is used
+                            if (characteristic.characteristicType === undefined) {
+                                // values array has data
+                                if (characteristic.values.length > 0) {
+                                    characteristic.characteristicType = 'array';
+                                    // base value is set
+                                } else if (characteristic.base !== 0) {
+                                    characteristic.characteristicType = 'base';
+                                } else {
+                                    // make a random characteristic with fallback values
+                                    characteristic.characteristicType = 'random';
+                                    characteristic.min = 1;
+                                    characteristic.max = 100;
                                 }
                             }
-                        } // END Descriptor
 
-                        // if value and more properties are set: change them to a read only characteristic
-                        if (characteristic.value !== null) {
-                            characteristic.properties = ['read'];
-                            characteristic.characteristicType = 'single';
+                            const bleCharacteristic = new BLECharacteristic({
+                                uuid: characteristic.uuid,
+                                properties: characteristic.properties,
+                                value: characteristic.value,
+                                descriptors: descriptors,
+                                datatype: characteristic.datatype,
+                                offset: characteristic.offset,
+                                interval: characteristic.interval,
+                                values: characteristic.values,
+                                base: characteristic.base,
+                                min: characteristic.min,
+                                max: characteristic.max,
+                                characteristicType: characteristic.characteristicType
+                            });
+
+                            characteristics.push(bleCharacteristic);
                         }
-                        // fallback to set the actual characteristic type, if old data is used
-                        if (characteristic.characteristicType === undefined) {
-                            // values array has data
-                            if (characteristic.values.length > 0) {
-                                characteristic.characteristicType = 'array';
-                                // base value is set
-                            } else if (characteristic.base !== 0) {
-                                characteristic.characteristicType = 'base';
-                            } else {
-                                // make a random characteristic with fallback values
-                                characteristic.characteristicType = 'random';
-                                characteristic.min = 1;
-                                characteristic.max = 100;
-                            }
-                        }
+                    } // END Characteristic
 
-                        const bleCharacteristic = new BLECharacteristic({
-                            uuid: characteristic.uuid,
-                            properties: characteristic.properties,
-                            value: characteristic.value,
-                            descriptors: descriptors,
-                            datatype: characteristic.datatype,
-                            offset: characteristic.offset,
-                            interval: characteristic.interval,
-                            values: characteristic.values,
-                            base: characteristic.base,
-                            min: characteristic.min,
-                            max: characteristic.max,
-                            characteristicType: characteristic.characteristicType
-                        });
-
-                        characteristics.push(bleCharacteristic);
-                    }
-                } // END Characteristic
-
-                // create service from base class
-                const bleService = new BLEService({
-                    uuid: singleService.uuid,
-                    characteristics: characteristics
-                });
-                // add service to services array
-                services.push(bleService);
-            }
-        } // END Service
+                    // create service from base class
+                    const bleService = new BLEService({
+                        uuid: singleService.uuid,
+                        characteristics: characteristics
+                    });
+                    // add service to services array
+                    services.push(bleService);
+                }
+            } // END Service
+        }
     });
 
     /**
