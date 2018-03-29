@@ -12,10 +12,7 @@
  * @version 1.0
  */
 
-/**
- * Module dependencies
- *
- */
+// Module dependencies
 const bleno = require('bleno');
 const util = require('util');
 

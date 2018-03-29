@@ -18,9 +18,7 @@
  * @version 1.0
  */
 
-/**
- * Required modules
- */
+// Module dependencies
 const bleno = require('bleno');
 const http = require('http');
 const ip = require('ip');
@@ -52,7 +50,7 @@ const address = ip.address();
  * @method http.get
  * @param address Address of the webservice
  * @param resp Response from the webservice
- * @result {Array} services Add services, which are built out of the response json data, to the services array
+ * @return {Array} services Add services, which are built out of the response json data, to the services array
  * @for main
  */
 http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
