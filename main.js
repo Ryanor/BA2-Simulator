@@ -86,7 +86,6 @@ http.get("http://" + address + ":3000/startProfile/profile", function (resp) {
             console.log("Only IP address service available.");
         } else {
             // parse server response data to profile
-            console.log("Length:" + data.length);
             profile = JSON.parse(data);
             // build all services in the profile
             if (profile.hasOwnProperty("services")) {
