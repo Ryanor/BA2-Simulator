@@ -28,7 +28,7 @@ const Descriptor = bleno.Descriptor;
 // create characteristic from the modul bleno base class
 const Characteristic = bleno.Characteristic;
 
-/*
+/**
  * Constructor for IPAddressCharacteristic calls constructor from the parent class Characteristic
  * Defines the UUID for the characteristic
  * Includes descriptors

@@ -22,7 +22,7 @@ const BlenoPrimaryService = bleno.PrimaryService;
 // predefine the included characteristics of the service
 const IPAddressCharacteristic = require('./ip-address-characteristic');
 
-/*
+/**
 * Constructor for IPAddressService calls constructor from the parent class PrimaryService
 * Defines the UUID for the service
 * Includes characteristics used

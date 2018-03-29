@@ -7,7 +7,6 @@
  * share data using onRead- onWrite-Request and subscribe and unsubscribe to notifications.
  *
  * @class main
- * @main
  * @uses bleno
  * @uses http
  * @uses ip
@@ -17,7 +16,6 @@
  * @author gwu
  * @version 1.0
  */
-
 // Module dependencies
 const bleno = require('bleno');
 const http = require('http');

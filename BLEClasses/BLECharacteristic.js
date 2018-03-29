@@ -38,7 +38,7 @@ let arrayIndex = 0;
 // variable for the value which is being sent to the client
 let postValue;
 
-/*
+/**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
  *
  * params             Object of parameters including
