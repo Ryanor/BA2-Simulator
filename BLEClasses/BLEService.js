@@ -12,10 +12,7 @@
  * @version 1.0
  */
 
-/**
- * Module dependencies
- *
- */
+// Module dependencies
 const bleno = require('bleno');
 const util = require('util');
 
@@ -24,7 +21,6 @@ const BlenoPrimaryService = bleno.PrimaryService;
 
 /**
  * Constructor for BLEService calls super constructor from the bleno base class PrimaryService
- *
  */
 function BLEService(params) {
     BLEService.super_.call(this, {

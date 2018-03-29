@@ -1,7 +1,7 @@
 /**
- * Class IPAddressCharacteristic extends bleno.Characteristic class
- * IPAddressCharacteristic include child process calls to get actual ip address
- * IPAddressCharacteristic is a self defined test characteristic
+ * Class IPAddressCharacteristic extends bleno. Characteristic class
+ * IPAddressCharacteristic is used to get the actual ip address
+ * of the Raspberry Pi 3 and make it visible as a self defined service.
  *
  * @class ip-address-characteristic
  * @uses bleno
@@ -14,9 +14,7 @@
  * @author gwu
  * @version 1.0
  */
-/**
- * Module dependencies
- */
+// Module dependencies
 const bleno = require('bleno');
 const util = require('util');
 const ip = require('ip');
@@ -34,8 +32,6 @@ const Characteristic = bleno.Characteristic;
  * Constructor for IPAddressCharacteristic calls constructor from the parent class Characteristic
  * Defines the UUID for the characteristic
  * Includes descriptors
- *
- *
 */
 const IPAddressCharacteristic = function() {
   IPAddressCharacteristic.super_.call(this, {

@@ -6,6 +6,7 @@
     "start": "node main.js"
   },
   "dependencies": {
-    "bleno": "^0.4.2"
+    "bleno": "^0.4.2",
+    "yuidocjs": "^0.10.2"
   }
 }

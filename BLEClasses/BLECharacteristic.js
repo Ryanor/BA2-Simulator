@@ -24,12 +24,10 @@
  * @version 1.0
  */
 
-/**
- * Module dependencies
- *
- */
+// Module dependencies
 const bleno = require('bleno');
 const util = require('util');
+const BLEUtilities = require('./BLEUtilities');
 
 // define a variable for the bleno modul base class
 const Characteristic = bleno.Characteristic;
@@ -39,7 +37,6 @@ let arrayIndex = 0;
 
 // variable for the value which is being sent to the client
 let postValue;
-
 
 /**
  * Constructor for BLECharacteristic calls super constructor from parent class bleno.Characteristic
@@ -139,15 +136,17 @@ const BLECharacteristic = function (params) {
      */
     this.index = 0;
 
-    // class method to get next value from array at position index
+    /**
+     * Function returns next value at current index position from the array of values.
+     * If last position is reached the index starts from position 0 again.
+     *
+     * @method getNextValueFromArray
+     * @return {*} value Actual value at index position
+     */
     this.getNextValueFromArray = function () {
-        console.log("Get next value:");
-
         let value = this.array[this.index];
 
-        console.log(this.index + ". value: " + value);
-
-        this.index = this.index + 1;
+        this.index ++;
 
         if (this.index >= this.array.length) {
             this.index = 0;
@@ -155,8 +154,14 @@ const BLECharacteristic = function (params) {
         return value;
     };
 
+    /**
+     * Function creates a random integer number within the min and max values.
+     *
+     * @method createRandomIntValueInRange
+     * @return {number} value Random value
+     */
     this.createRandomIntValueInRange = function () {
-        console.log("Get randomized INT value:");
+        console.log("Get randomized range INT value:");
         // create random value
         let value = parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
 
@@ -164,8 +169,15 @@ const BLECharacteristic = function (params) {
         return value;
     };
 
+    /**
+     * Function creates a random integer number, which starts at the base value
+     * and steps up and down at the range of the min and max values.
+     *
+     * @method createRandomIntValueFromBase
+     * @return {number} this.base New base value
+     */
     this.createRandomIntValueFromBase = function () {
-        console.log("Get randomized INT value:");
+        console.log("Get randomized base INT value:");
         // create random value
         const delta = parseInt(Math.floor((Math.random() * (this.max - this.min) + this.min)));
         // check if even
@@ -181,19 +193,32 @@ const BLECharacteristic = function (params) {
         return this.base;
     };
 
+    /**
+     * Function creates a random float number within the min and max values.
+     *
+     * @method createRandomFloatValueInRange
+     * @return {number} value Random value
+     */
     this.createRandomFloatValueInRange = function () {
-        console.log("Get randomized FLOAT value");
+        console.log("Get randomized range FLOAT value");
         // create random value
-        let value = (Math.random() * (this.max - this.min) + this.min).toFixed(this.precision);
+        let value = (Math.random() * (this.max - this.min) + this.min).toFixed(2);
 
         console.log("FLOAT: " + value);
         return value;
     };
 
+    /**
+     * Function creates a random float number , which starts at the base value
+     * and steps up and down within the range of the min and max values.
+     *
+     * @method createRandomFloatValueFromBase
+     * @return {number} this.base New base value
+     */
     this.createRandomFloatValueFromBase = function () {
-        console.log("Get randomized FLOAT value");
+        console.log("Get randomized base FLOAT value");
         // create random value
-        const delta = (Math.random() * (this.max - this.min) + this.min).toFixed(this.precision);
+        const delta = (Math.random() * (this.max - this.min) + this.min).toFixed(2);
         // check if even
         if ((delta % 2) === 0) {
             // add the value
@@ -207,71 +232,59 @@ const BLECharacteristic = function (params) {
         return this.base;
     };
 
+    /**
+     * Function is called from onSubscribe to send data to the client within an specified interval.
+     * This can't be done from the onSubscribe function because of callback issues about the current value.
+     * Loops inside the setInterval function till the client unsubscribes.
+     *
+     * @method notificationInterval
+     * @param updateValueCallback Callback function
+     */
     this.notificationInterval = function (updateValueCallback) {
-        let arrayContainer = this.array;
-        let charType = this.characteristicType;
-        let dataType = this.datatype;
-        let precision = this.precision;
+        // used to get 'this' to the next scope
         const self = this;
 
         this.intervalId = setInterval(function () {
             console.log("Get next value:");
 
-            if (charType === 'array') {
-                postValue = arrayContainer[arrayIndex];
-                console.log(arrayIndex + ". value: " + postValue);
+            switch (self.characteristicType) {
+                case 'single':
+                    postValue = self.value;
+                    break;
 
-                arrayIndex = arrayIndex + 1;
+                case 'array':
+                    postValue = self.array[self.index];
+                    console.log(self.index + ". value: " + postValue);
 
-                if (arrayIndex >= arrayContainer.length) {
-                    arrayIndex = 0;
-                }
-            }
+                    self.index++;
 
-            if (charType === 'base') {
-                switch (dataType) {
-                    case "float":
-                        // create random value
-                        postValue = self.createRandomFloatValueFromBase().toFixed(precision);
-                        break;
+                    if (self.index >= self.array.length) {
+                        self.index = 0;
+                    }
+                    break;
 
-                    case "uint16":
-                        // create random value
-                        postValue = self.createRandomIntValueFromBase().toFixed(precision);
-                        break;
+                case 'base':
+                    if (self.datatype === 'float') {
+                        postValue = self.createRandomFloatValueFromBase().toFixed(2);
+                    } else {
+                        postValue = self.createRandomIntValueFromBase();
+                    }
 
-                    default:
-                }
-            }
+                    break;
 
-            if (charType === 'range') {
-                switch (dataType) {
-                    case "float":
-                        // create random value
-                        postValue = self.createRandomFloatValueInRange().toFixed(precision);
-                        break;
-
-                    case "uint16":
-                        // create random value
-                        postValue = self.createRandomIntValueInRange().toFixed(precision);
-                        break;
-
-                    default:
-                }
+                case 'range':
+                    if (self.datatype === 'float') {
+                        postValue = self.createRandomFloatValueInRange().toFixed(2);
+                    } else {
+                        postValue = self.createRandomIntValueInRange();
+                    }
+                    break;
             }
 
             // convert value to correct buffer type
             let data;
 
-            if (dataType === 'uint16') {
-                // convert value to UInt16BigEndian
-                data = new Buffer.alloc(2);
-                data.writeUInt16BE(postValue, 0);
-            } else {
-                data = new Buffer(8);
-                data.write('' + postValue, 0);
-            }
-
+            data = BLEUtilities.writeBuffer(postValue, self.datatype);
             updateValueCallback(data);
 
         }, this.interval);
@@ -279,105 +292,98 @@ const BLECharacteristic = function (params) {
 };
 
 /**
- * Override prototype method onReadRequest from class bleno.Characteristic
- * This method is called if the master initiates an onReadRequest on the body sensor location type.
- * Creates a random number between 0 and 7 which are used for the position on the body
+ * Overrides prototype method onReadRequest from class bleno.Characteristic
+ * This method is called if the master initiates an onReadRequest.
+ * Depeding on the characteristic type the function returns random numbers,
+ * a number from an array or the characteristic value.
+ *
+ * @method onReadRequest
+ * @param offset Offset for the data
+ * @param callback Callback function
  */
 BLECharacteristic.prototype.onReadRequest = function (offset, callback) {
-    console.log("Read");
-    console.log("Log: type type: " + this.characteristicType);
-    console.log("Log: data type: " + this.datatype);
-    console.log("Log: offset: " + offset);
-    console.log("Log: value: " + this.value);
+    console.log("Read request");
 
-    if (this.characteristicType === 'base') {
+    switch (this.characteristicType) {
+        case 'single':
+            console.log("Single type access...");
+            postValue = this.value;
+            break;
 
-        switch (this.datatype) {
-            case "float":
-                // create random value
+        case 'array':
+            console.log("Array type access...");
+            postValue = this.getNextValueFromArray();
+            break;
+
+        case 'base':
+            console.log("Base type access...");
+            if (this.datatype === "float") {
                 postValue = this.createRandomFloatValueFromBase();
-                break;
-
-            case "uint16":
-                // create random value
+            } else {
                 postValue = this.createRandomIntValueFromBase();
-                break;
-        }
-    }
+            }
+            break;
 
-    if (this.characteristicType === 'array') {
-
-        postValue = this.getNextValueFromArray();
-    }
-
-    if (this.characteristicType === 'range') {
-        switch (this.datatype) {
-            case "float":
-                // create random value
+        case 'range':
+            console.log("Range type access...");
+            if (this.datatype === "float") {
                 postValue = this.createRandomFloatValueInRange();
-                break;
-
-            case "uint16":
-                // create random value
+            } else {
                 postValue = this.createRandomIntValueInRange();
-                break;
-        }
+            }
+            break;
+
+        default:
     }
 
     let data;
+    data = BLEUtilities.writeBuffer(postValue, this.datatype);
 
-    if(this.characteristicType === 'single') {
-        switch(this.datatype) {
-            case 'uint8':
-                data = new Buffer([this.value]); //.writeUInt8(this.value, 0);
-
-                break;
-            case 'uint16':
-                data.writeUInt16LE(this.value, 0);
-        }
-        callback(this.RESULT_SUCCESS, data);
-    }
-
-    if (this.data === 'uint16') {
-        data = new Buffer.alloc(2);
-        data.writeInt16BE(postValue, 0);
-    } else {
-        data = new Buffer(8);
-        data.write('' + postValue, 0);
-    }
     // send value to client
     callback(this.RESULT_SUCCESS, data);
 };
 
-// Accept a new value for the type's value
+/**
+ * Function receives data from the client and updates the actual value of the characteristic.
+ *
+ * @method onWriteRequest
+ * @param data Received data from the client
+ * @param offset Offset for the data
+ * @param withoutResponse Parameter to write value without sending an acknowledgement to the client.
+ * @param callback Callback function
+ */
 BLECharacteristic.prototype.onWriteRequest = function (data, offset, withoutResponse, callback) {
     this.value = data;
-    console.log('Write request: value = ' + this.value.toString("utf-8"));
+    console.log('Write request: value = ' + this.value.toString());
     callback(this.RESULT_SUCCESS);
 };
 
 
 /**
  * Override prototype method onSubscribe from class bleno.Characteristic
- * This method is called if the master subscribes to the type so it gets a new value every 2s interval.
- * Creates a random number between 1 and 6 and adds or substracts the value form the heartRate value
+ * This method is called if the client subscribes to the characteristic notification to receive new value.
+ * New values are sent after an interval time.
+ *
+ * @method onSubscribe
+ * @param maxValueSize Maximum size of the value
+ * @param updateValueCallback Callback function
  */
 BLECharacteristic.prototype.onSubscribe = function (maxValueSize, updateValueCallback) {
 
     console.log("Notify");
     console.log("Interval:" + this.interval);
-    console.log("Log: type type: " + this.characteristicType);
-    console.log("Log: data type: " + this.datatype);
 
     clearInterval(this.intervalId);
-    // creates interval function and updates values inside at specific interval time
+    // creates interval function and updates values within a specified interval time
     this.notificationInterval(updateValueCallback);
 };
 
 /**
  * Override prototype method onUnsubscribe from class bleno.Characteristic
- * This method is called if the master unsubscribes from the type.
- * Interval is cleared and no data will be transmitted
+ * This method is called if the client unsubscribes from the characteristic.
+ * IntervalID is cleared and no further data is sent.
+ *
+ * @method onUnsubscribe
  */
 BLECharacteristic.prototype.onUnsubscribe = function () {
     clearInterval(this.intervalId);

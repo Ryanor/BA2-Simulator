@@ -4,14 +4,16 @@
 * IPAddressCharacteristic.
 * IPAddressService is a self defined service for test purposes.
 *
+ * @class IPAddressService
+ * @uses bleno
+ * @uses IPAddressCharacteristic
+ *
 * @author gwu
 * @version 1.0
 */
 
-// import utility library to build classes
+// Module dependencies
 const util = require('util');
-
-// import bleno module for bluettoth low energy communication
 const bleno = require('bleno');
 
 // create the PrimaryService class which the battery class inherits from
