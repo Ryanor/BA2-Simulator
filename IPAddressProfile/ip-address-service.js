@@ -4,21 +4,23 @@
 * IPAddressCharacteristic.
 * IPAddressService is a self defined service for test purposes.
 *
+ * @class IPAddressService
+ * @uses bleno
+ * @uses IPAddressCharacteristic
+ *
 * @author gwu
 * @version 1.0
 */
 
-// import utility library to build classes
-var util = require('util');
-
-// import bleno module for bluettoth low energy communication
-var bleno = require('bleno');
+// Module dependencies
+const util = require('util');
+const bleno = require('bleno');
 
 // create the PrimaryService class which the battery class inherits from
-var BlenoPrimaryService = bleno.PrimaryService;
+const BlenoPrimaryService = bleno.PrimaryService;
 
 // predefine the included characteristics of the service
-var IPAddressCharacteristic = require('./ip-address-characteristic');
+const IPAddressCharacteristic = require('./ip-address-characteristic');
 
 /**
 * Constructor for IPAddressService calls constructor from the parent class PrimaryService
@@ -27,7 +29,7 @@ var IPAddressCharacteristic = require('./ip-address-characteristic');
 */ 
 function IPAddressService() {
   IPAddressService.super_.call(this, {
-      uuid: '34AB',
+      uuid: '34NM',
       characteristics: [
           new IPAddressCharacteristic()
       ]

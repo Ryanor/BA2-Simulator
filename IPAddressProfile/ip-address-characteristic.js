@@ -1,70 +1,66 @@
 /**
-* Class IPAddressCharacteristic extends bleno.Characteristic class
-* IPAddressCharacteristic include child process calls to get actual ip address
-* IPAddressCharacteristic is a self defined test characteristic
-*
-* @author gwu
-* @version 1.0
-*/
+ * Class IPAddressCharacteristic extends bleno. Characteristic class
+ * IPAddressCharacteristic is used to get the actual ip address
+ * of the Raspberry Pi 3 and make it visible as a self defined service.
+ *
+ * @class ip-address-characteristic
+ * @uses bleno
+ * @uses utils
+ * @extends bleno
+ *
+ * @constructor IPAddressCharacteristic
+ * @param {Object} characteristic Object containing all characteristic data
+ *
+ * @author gwu
+ * @version 1.0
+ */
+// Module dependencies
+const bleno = require('bleno');
+const util = require('util');
+const ip = require('ip');
 
-// import utility library to build classes
-var util = require('util');
+// get actual ip address
+const address = ip.address();
 
-// import ip library to get ip address
-var ip = require('ip');
+// create descriptor from the modul bleno base class
+const Descriptor = bleno.Descriptor;
 
-// uses child process library to open a command shell and execute system commands
-var exec = require('child_process').exec;
-
-// import bleno module for bluettoth low energy communication
-var bleno = require('bleno');
-
-// predefine the included descriptors of the service
-var Descriptor = bleno.Descriptor;
-
-// create the Characteristic class which the battery level characteristic inherits from
-var Characteristic = bleno.Characteristic;
+// create characteristic from the modul bleno base class
+const Characteristic = bleno.Characteristic;
 
 /**
-* Constructor for IPAddressCharacteristic calls constructor from the parent class Characteristic
-* Defines the UUID for the characteristic
-* Includes descriptors used
-*/ 
-var IPAddressCharacteristic = function() {
+ * Constructor for IPAddressCharacteristic calls constructor from the parent class Characteristic
+ * Defines the UUID for the characteristic
+ * Includes descriptors
+*/
+const IPAddressCharacteristic = function() {
   IPAddressCharacteristic.super_.call(this, {
-    uuid: '34CD',
-    value: null,
-    properties: ['read','write'],
+    uuid: '34XY',
+    value: address,
+    properties: ['read'],
     descriptors: [
       new Descriptor({
         uuid: '2901',
-        value: 'Actual IP-Address of the slave'
+        value: 'Actual IP-Address of the server'
       })
     ]
   });
 };
 
-// define inhertance
+// inherit form bleno base class
 util.inherits(IPAddressCharacteristic, Characteristic);
 
-
 /**
-* Override prototype method onReadRequest from class bleno.Characteristic 
-* This method is called if the master initiates an onReadRequest on the battery level characteristic.
-* We check the os if the application runs on linux, and if so, return the actual battery level
-*/
+ * Override prototype method onReadRequest from class bleno.Characteristic
+ * This method is called if the master initiates an onReadRequest on the ip address characteristic.
+ *
+ * @method onReadRequest
+ * @param {Number} offset Offset for writing data to the buffer
+ * @param {Object} callback Callback function
+ * @for ip-address-characteristic
+ */
 IPAddressCharacteristic.prototype.onReadRequest = function(offset, callback) {
-  console.log("Get IP address of device");
-  var address = ip.address();
-  console.log("IP: " + address);
-  callback(this.RESULT_SUCCESS, new Buffer(address));
-};
-
-// Accept a new value for the characterstic's value
-IPAddressCharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
-  this.value = data;
-  console.log('Write request: value = ' + this.value.toString("utf-8"));
-  callback(this.RESULT_SUCCESS);
+  callback(this.RESULT_SUCCESS, new Buffer(this.value));
 };
 
 // export class as IPAddressCharacteristic
