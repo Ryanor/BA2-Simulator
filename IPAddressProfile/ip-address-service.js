@@ -29,7 +29,7 @@ const IPAddressCharacteristic = require('./ip-address-characteristic');
 */ 
 function IPAddressService() {
   IPAddressService.super_.call(this, {
-      uuid: '34NM',
+      uuid: '34AC',
       characteristics: [
           new IPAddressCharacteristic()
       ]
