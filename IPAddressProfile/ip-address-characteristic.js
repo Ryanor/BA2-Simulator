@@ -35,13 +35,13 @@ const Characteristic = bleno.Characteristic;
 */
 const IPAddressCharacteristic = function() {
   IPAddressCharacteristic.super_.call(this, {
-    uuid: '34XY',
+    uuid: '34BD',
     value: address,
     properties: ['read'],
     descriptors: [
       new Descriptor({
         uuid: '2901',
-        value: 'Actual IP-Address of the server'
+        value: 'Actual IP-Address of the Raspberry Pi 3.'
       })
     ]
   });
