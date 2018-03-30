@@ -1,122 +1,38 @@
-// Array of services = complete profile
-[
-    // Service
-    {
-        // Service UUID either 4 values or complete UUID
-        "uuid": "XXXX" or "0000XXXX-0000-1000-8000-00805F9B34FB",
-
-        // Name of Service
-        "name": "Service name",
-
-        // Array of characteristics
-        "characteristics": [
-            {
-                // Standard input fields for a characteristic:
-
-                // Characteristic UUID
-                "uuid" : "XXXX" or "0000XXXX-0000-1000-8000-00805F9B34FB",
-
-                // Array of properties
-                "properties" : [ "read", "write", "notify" ],
-
-                //if value exists only read property possible
-                "value" : null,
-
-                // array of descriptors
-                "descriptors" : [
-                    {
-                        // Descriptor UUID
-                        "uuid" : "XXXX",
-
-                        // value string or byte array
-                        "value" : "Message in human readable form",
-
-                        // Format of value either string or bytes
-                        "data" : "string" // or "bytes",
-
-                        // Name of Descriptor
-                        "name": "Descriptor name",
-                    }
-                ],
-
-
-                /* Extended fields for exchange format to build characteristic depending on formular data
-                 *
-                 * Actually there are three possible types of characteristics available:
-                 *
-                 * 1. Array:
-                 *      - Array of values
-                 *
-                 * 2. Range:
-                 *      - min value of range
-                 *      - max value of range
-                 *
-                 * 3. Base:
-                 *      - base value to start randomizing steps from
-                 *      - min value of step
-                 *      - max value of step
-                 *
-                 *
-                 *  - type of data (float, int etc.)
-                 *  - precision of digits after comma
-                 *  - notification interval
-                */
-
-                // Name of Characteristic
-                "name": "Characteristic name",
-
-                // Datentypen UINT8 - UINT32, SINT8 - SINT32, FLOAT
-                // data type of values
-                "data" : "uint16", // "float"
-
-                // Wert weglassen: User ist für die Daten und die Interpretation verantwortlich
-                // precision means: digits after the comma
-                "precision" : 2,
-
-                // notification interval in milli seconds
-                "interval" : 2000,
-
-                // Array of values, empty if another type of characteristic is used either random or range
-                "values" : [ ], // or [ 1, 2, 3, 4, 5, 6 ] or [ 36.09, 36.15, 26.26 ]
-
-                // Base value to start stepping from, empty means either array type or range type
-                "base" : 60, // or 36.30 for float
-
-                // minimum value of range or step
-                "min" : 1, // or 0.01 for float
-
-                // maximum value of range or step
-                "max" : 9, // of 0.09 for float
-
-            }
-
-        ]
-    }
-
-]
-
-{ // profile name
+// exchange format
+{ // profile name, used for the web application
   name: "Heart Rate Profile",
   // services array
   services: [
-    // single service
-    {   name: "Heart Rate Service",
-        uuid: "180D",
+   // single service
+   {    // service UUID either 4 values or complete UUID
+        uuid: "XXXX" or "0000XXXX-0000-1000-8000-00805F9B34FB",
+        // service name, for better user identification
+        name: "Heart Rate Service",
         // characteristics array
         characteristics: [
             // single characteristic
-            {   name: "Heart Rate Measurement",
+            {   // characteristic UUID
                 uuid: "2A37",
+                // characteristic value, only set for read only characteristics
                 value: null,
-                properties: ["read","notify"],
+                // characteristic properties
+                properties: ["read","notify","write"],
                 // descriptors array
                 descriptors: [
                     // single descriptor
-                    {   name: "User description",
+                    {   // descriptor UUID
                         uuid: "2901",
-                        datatype: "string",
-                        value: "Heart rate measurement in bpm."
+                        // descriptor value
+                        value: "Heart rate measurement in bpm.",
+                        // descriptor name, for better user identification
+                        name: "User description",
+                        // data type of the descriptor value, either string or bytes
+                        datatype: "string"
                     } ]
+                // characteristic name, for better user identification
+                name: "Heart Rate Measurement",
+                // type of the characteristic
+                characteristicType = "array",
                 // data type of the values
                 datatype: "uint16",
                 // notification interval in ms
@@ -131,6 +47,6 @@
                 max: 0,
                 // minimum step for random value generation
                 min: 0,
-            } ]
+            } ],
     } ]
 }
