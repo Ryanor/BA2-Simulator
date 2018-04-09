@@ -3,7 +3,8 @@ Description=BLE-Simulator
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/node /home/pi/main.js 2>&1 /var/log/node/blesimulator.log
+ExecStart=/usr/bin/node /home/pi/project/BA2-Simulator/main.js 2>&1 
+/var/log/node/blesimulator.log
 RemainAfterExit=yes
 
 
