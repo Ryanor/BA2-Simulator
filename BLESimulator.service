@@ -1,11 +1,11 @@
 [Unit]
 Description=BLE-Simulator
-After=multi.user.target BLEServer.service
+After=multi-user.target BLEServer.service
 
 [Service]
 Type=idle
-ExecStart=/usr/bin/node /home/pi/project/BA2-Simulator/main.js 2>&1 
-/var/log/node/blesimulator.log
+User=pi
+ExecStart=/usr/bin/node /home/pi/project/BA2-Simulator/main.js
 
 [Install]
 WantedBy=multi-user.target
