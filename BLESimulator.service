@@ -1,5 +1,5 @@
 [Unit]
-Description=BLE-Simulator
+Description=BLESimulator service
 After=multi-user.target BLEServer.service
 
 [Service]
